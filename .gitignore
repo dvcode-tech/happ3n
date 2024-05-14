@@ -1,0 +1,16 @@
+# Node
+node_modules
+
+# Turbo
+.turbo
+
+# VSC
+.vscode/*
+!.vscode/settings.json
+
+# DFX
+.dfx
+src/declarations
+
+# Azle
+.azle
