@@ -1,8 +1,8 @@
 {
-  "name": "azle-api-rest-nextjs",
+  "name": "happ3n-icp-hackathon",
   "version": "0.2.0",
   "license": "MIT",
-  "author": "Adrián Darío Hidalgo Flores",
+  "author": "DvCode Technologies Inc",
   "workspaces": [
     "backend",
     "frontend"

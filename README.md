@@ -1,4 +1,4 @@
-# ICP Freedom Wall
+# happ3n ICP HACKATHON PROJECT
 
 # Fullstack dApp (Azle + Express + NextJS + ICP)
 
@@ -24,13 +24,13 @@ This boilerplate is designed to easily build 100% descentralized fullstack web a
 Clone the project
 
 ```bash
-  git clone https://github.com/adrian-d-hidalgo/azle-api-rest-nextjs
+  git clone https://gitlab.com/dvcode.tech/icp-hub/happ3n-hackathon.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd azle-api-rest-nextjs
+  cd happ3n-hackathon
 ```
 
 Install dependencies
