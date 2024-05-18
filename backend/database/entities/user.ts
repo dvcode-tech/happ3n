@@ -1,30 +1,48 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({
-  name: "users",
+  name: 'users',
 })
 export class UserEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "text", unique: true })
+  @Column({ type: 'text', unique: true })
   email: string;
 
-  @Column({ type: "text", unique: true })
+  @Column({ type: 'text', unique: true })
+  username: string;
+
+  @Column({ type: 'text', unique: true })
   principal_id: string;
 
-  @Column({ type: "text" })
+  @Column({ type: 'text' })
   name: string;
 
-  @Column({ type: "text", default: "user" })
-  role: string;
+  @Column({ type: 'text' })
+  bio: string;
 
-  @Column({ type: "int", default: 0 })
+  @Column({ type: 'text' })
+  facebook: string;
+
+  @Column({ type: 'text' })
+  twitter: string;
+
+  @Column({ type: 'text' })
+  tiktok: string;
+
+  @Column({ type: 'text' })
+  instagram: string;
+
+  @Column({ type: 'text' })
+  website: string;
+
+  @Column({ type: 'int', default: 0 })
   status: number;
 
-  @Column({ type: "bigint" })
+  @Column({ type: 'bigint' })
   created_at: number;
 
-  @Column({ type: "bigint" })
+  @Column({ type: 'bigint' })
   updated_at: number;
 }

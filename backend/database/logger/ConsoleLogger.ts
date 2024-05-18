@@ -6,7 +6,7 @@ import {
   LoggerOptions,
   PrepareLogMessagesOptions,
   QueryRunner,
-} from "typeorm";
+} from 'typeorm';
 
 // import { PlatformTools } from "typeorm/platform/PlatformTools";
 
@@ -29,20 +29,20 @@ export class ConsoleLogger implements Logger {
    * Logs query and parameters used in it.
    */
   logQuery(query: string, parameters?: any[], queryRunner?: QueryRunner) {
-    if (!this.isLogEnabledFor("query")) {
+    if (!this.isLogEnabledFor('query')) {
       return;
     }
 
     this.writeLog(
-      "query",
+      'query',
       {
-        type: "query",
-        prefix: "query",
+        type: 'query',
+        prefix: 'query',
         message: query,
-        format: "sql",
+        format: 'sql',
         parameters,
       },
-      queryRunner
+      queryRunner,
     );
   }
 
@@ -50,27 +50,27 @@ export class ConsoleLogger implements Logger {
    * Logs query that is failed.
    */
   logQueryError(error: string, query: string, parameters?: any[], queryRunner?: QueryRunner) {
-    if (!this.isLogEnabledFor("query-error")) {
+    if (!this.isLogEnabledFor('query-error')) {
       return;
     }
 
     this.writeLog(
-      "warn",
+      'warn',
       [
         {
-          type: "query-error",
-          prefix: "query failed",
+          type: 'query-error',
+          prefix: 'query failed',
           message: query,
-          format: "sql",
+          format: 'sql',
           parameters,
         },
         {
-          type: "query-error",
-          prefix: "error",
+          type: 'query-error',
+          prefix: 'error',
           message: error,
         },
       ],
-      queryRunner
+      queryRunner,
     );
   }
 
@@ -78,30 +78,30 @@ export class ConsoleLogger implements Logger {
    * Logs query that is slow.
    */
   logQuerySlow(time: number, query: string, parameters?: any[], queryRunner?: QueryRunner) {
-    if (!this.isLogEnabledFor("query-slow")) {
+    if (!this.isLogEnabledFor('query-slow')) {
       return;
     }
 
     this.writeLog(
-      "warn",
+      'warn',
       [
         {
-          type: "query-slow",
-          prefix: "query is slow",
+          type: 'query-slow',
+          prefix: 'query is slow',
           message: query,
-          format: "sql",
+          format: 'sql',
           parameters,
           additionalInfo: {
             time,
           },
         },
         {
-          type: "query-slow",
-          prefix: "execution time",
+          type: 'query-slow',
+          prefix: 'execution time',
           message: time,
         },
       ],
-      queryRunner
+      queryRunner,
     );
   }
 
@@ -109,17 +109,17 @@ export class ConsoleLogger implements Logger {
    * Logs events from the schema build process.
    */
   logSchemaBuild(message: string, queryRunner?: QueryRunner) {
-    if (!this.isLogEnabledFor("schema-build")) {
+    if (!this.isLogEnabledFor('schema-build')) {
       return;
     }
 
     this.writeLog(
-      "schema",
+      'schema',
       {
-        type: "schema-build",
+        type: 'schema-build',
         message,
       },
-      queryRunner
+      queryRunner,
     );
   }
 
@@ -127,17 +127,17 @@ export class ConsoleLogger implements Logger {
    * Logs events from the migration run process.
    */
   logMigration(message: string, queryRunner?: QueryRunner) {
-    if (!this.isLogEnabledFor("migration")) {
+    if (!this.isLogEnabledFor('migration')) {
       return;
     }
 
     this.writeLog(
-      "log",
+      'log',
       {
-        type: "migration",
+        type: 'migration',
         message,
       },
-      queryRunner
+      queryRunner,
     );
   }
 
@@ -145,51 +145,51 @@ export class ConsoleLogger implements Logger {
    * Perform logging using given logger, or by default to the console.
    * Log has its own level and message.
    */
-  log(level: "log" | "info" | "warn", message: any, queryRunner?: QueryRunner) {
+  log(level: 'log' | 'info' | 'warn', message: any, queryRunner?: QueryRunner) {
     switch (level) {
-      case "log":
-        if (!this.isLogEnabledFor("log")) {
+      case 'log':
+        if (!this.isLogEnabledFor('log')) {
           return;
         }
 
         this.writeLog(
-          "log",
+          'log',
           {
-            type: "log",
+            type: 'log',
             message,
           },
-          queryRunner
+          queryRunner,
         );
         break;
 
-      case "info":
-        if (!this.isLogEnabledFor("info")) {
+      case 'info':
+        if (!this.isLogEnabledFor('info')) {
           return;
         }
 
         this.writeLog(
-          "info",
+          'info',
           {
-            type: "info",
-            prefix: "info",
+            type: 'info',
+            prefix: 'info',
             message,
           },
-          queryRunner
+          queryRunner,
         );
         break;
 
-      case "warn":
-        if (!this.isLogEnabledFor("warn")) {
+      case 'warn':
+        if (!this.isLogEnabledFor('warn')) {
           return;
         }
 
         this.writeLog(
-          "warn",
+          'warn',
           {
-            type: "warn",
+            type: 'warn',
             message,
           },
-          queryRunner
+          queryRunner,
         );
         break;
     }
@@ -204,41 +204,39 @@ export class ConsoleLogger implements Logger {
    */
   protected isLogEnabledFor(type?: LogLevel | LogMessageType) {
     switch (type) {
-      case "query":
+      case 'query':
         return (
-          this.options === "all" ||
+          this.options === 'all' ||
           this.options === true ||
-          (Array.isArray(this.options) && this.options.indexOf("query") !== -1)
+          (Array.isArray(this.options) && this.options.indexOf('query') !== -1)
         );
 
-      case "error":
-      case "query-error":
+      case 'error':
+      case 'query-error':
         return (
-          this.options === "all" ||
+          this.options === 'all' ||
           this.options === true ||
-          (Array.isArray(this.options) && this.options.indexOf("error") !== -1)
+          (Array.isArray(this.options) && this.options.indexOf('error') !== -1)
         );
 
-      case "query-slow":
+      case 'query-slow':
         return true;
 
-      case "schema":
-      case "schema-build":
-        return (
-          this.options === "all" || (Array.isArray(this.options) && this.options.indexOf("schema") !== -1)
-        );
+      case 'schema':
+      case 'schema-build':
+        return this.options === 'all' || (Array.isArray(this.options) && this.options.indexOf('schema') !== -1);
 
-      case "migration":
+      case 'migration':
         return true;
 
-      case "log":
-        return this.options === "all" || (Array.isArray(this.options) && this.options.indexOf("log") !== -1);
+      case 'log':
+        return this.options === 'all' || (Array.isArray(this.options) && this.options.indexOf('log') !== -1);
 
-      case "info":
-        return this.options === "all" || (Array.isArray(this.options) && this.options.indexOf("info") !== -1);
+      case 'info':
+        return this.options === 'all' || (Array.isArray(this.options) && this.options.indexOf('info') !== -1);
 
-      case "warn":
-        return this.options === "all" || (Array.isArray(this.options) && this.options.indexOf("warn") !== -1);
+      case 'warn':
+        return this.options === 'all' || (Array.isArray(this.options) && this.options.indexOf('warn') !== -1);
 
       default:
         return false;
@@ -255,14 +253,14 @@ export class ConsoleLogger implements Logger {
 
     for (let message of messages) {
       switch (message.type ?? level) {
-        case "log":
-        case "schema-build":
-        case "migration":
+        case 'log':
+        case 'schema-build':
+        case 'migration':
           console.log(message.message);
           break;
 
-        case "info":
-        case "query":
+        case 'info':
+        case 'query':
           if (message.prefix) {
             console.info(message.prefix, message.message);
           } else {
@@ -270,8 +268,8 @@ export class ConsoleLogger implements Logger {
           }
           break;
 
-        case "warn":
-        case "query-slow":
+        case 'warn':
+        case 'query-slow':
           if (message.prefix) {
             console.warn(message.prefix, message.message);
           } else {
@@ -279,8 +277,8 @@ export class ConsoleLogger implements Logger {
           }
           break;
 
-        case "error":
-        case "query-error":
+        case 'error':
+        case 'query-error':
           if (message.prefix) {
             console.error(message.prefix, message.message);
           } else {
@@ -296,7 +294,7 @@ export class ConsoleLogger implements Logger {
    */
   protected prepareLogMessages(
     logMessage: LogMessage | string | number | (LogMessage | string | number)[],
-    options?: Partial<PrepareLogMessagesOptions>
+    options?: Partial<PrepareLogMessagesOptions>,
   ): LogMessage[] {
     options = {
       ...{
@@ -309,13 +307,13 @@ export class ConsoleLogger implements Logger {
     const messages = Array.isArray(logMessage) ? logMessage : [logMessage];
 
     for (let message of messages) {
-      if (typeof message !== "object") {
+      if (typeof message !== 'object') {
         message = {
           message,
         };
       }
 
-      if (message.format === "sql") {
+      if (message.format === 'sql') {
         let sql = String(message.message);
 
         if (options.appendParameterAsComment && message.parameters && message.parameters.length) {
@@ -330,7 +328,7 @@ export class ConsoleLogger implements Logger {
       }
 
       if (options.addColonToPrefix && message.prefix) {
-        message.prefix += ":";
+        message.prefix += ':';
       }
     }
 

@@ -1,7 +1,7 @@
-import initSqlJs, { Database as SqlJsDatabase } from "sql.js/dist/sql-asm.js";
-import { DataSource, EntitySchema, Logger, MixedList } from "typeorm";
+import initSqlJs, { Database as SqlJsDatabase } from 'sql.js/dist/sql-asm.js';
+import { DataSource, EntitySchema, Logger, MixedList } from 'typeorm';
 
-import { DatabaseStorage, DatabaseStorageInterface } from "./storage";
+import { DatabaseStorage, DatabaseStorageInterface } from './storage';
 
 export type DatabaseOptions = {
   storage: DatabaseStorageInterface;
@@ -10,7 +10,7 @@ export type DatabaseOptions = {
   sincronize?: boolean;
   migrationsRun?: boolean;
   logging?: boolean;
-  logger?: "advanced-console" | "simple-console" | "file" | "debug" | Logger | undefined;
+  logger?: 'advanced-console' | 'simple-console' | 'file' | 'debug' | Logger | undefined;
 };
 
 export const DatabaseDefaults = {
@@ -27,7 +27,7 @@ export class Database {
 
   private async connect(bytes: Uint8Array) {
     const AppDataSource = new DataSource({
-      type: "sqljs",
+      type: 'sqljs',
       // TODO: may I get this from the options?
       driver: await initSqlJs({}),
       database: bytes,
@@ -49,7 +49,7 @@ export class Database {
       this.options.sincronize = true;
       this.dataSource = await this.connect(Uint8Array.from([]));
     } catch (error) {
-      console.error("Error initializing database:", error);
+      console.error('Error initializing database:', error);
       throw error;
     }
   }
@@ -60,19 +60,19 @@ export class Database {
 
       if (data.length === 0) {
         this.options.sincronize = true;
-        console.log("Empty database found in storage");
+        console.log('Empty database found in storage');
       }
 
       this.dataSource = await this.connect(data);
     } catch (error) {
-      console.error("Error initializing database:", error);
+      console.error('Error initializing database:', error);
       throw error;
     }
   }
 
   public async save() {
     if (!this.dataSource) {
-      throw new Error("Database not initialized");
+      throw new Error('Database not initialized');
     }
 
     const driver = this.dataSource.driver as unknown as SqlJsDatabase;
@@ -83,7 +83,7 @@ export class Database {
 
   public async getDataSource() {
     if (!this.dataSource) {
-      throw new Error("Database not initialized");
+      throw new Error('Database not initialized');
     }
 
     return this.dataSource;

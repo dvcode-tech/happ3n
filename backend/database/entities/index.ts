@@ -1,6 +1,5 @@
-import { CategoryEntity } from "./category";
-import { ConfigurationEntity } from "./configuration";
-import { PostEntity } from "./post";
-import { UserEntity } from "./user";
+import { ConfigurationEntity } from './configuration';
+import { EventEntity } from './event';
+import { UserEntity } from './user';
 
-export const ENTITIES = [UserEntity, PostEntity, CategoryEntity, ConfigurationEntity];
+export const ENTITIES = [UserEntity, EventEntity, ConfigurationEntity];

@@ -1,13 +1,11 @@
-import { ic } from "azle";
-import cors from "cors";
-import express, { NextFunction, Request, Response } from "express";
-import { In } from "typeorm";
+import { ic } from 'azle';
+import cors from 'cors';
+import express, { NextFunction, Request, Response } from 'express';
+import { In } from 'typeorm';
 
-import { Database } from "./database";
-import { CategoryEntity } from "./database/entities/category";
-import { ConfigurationEntity } from "./database/entities/configuration";
-import { PostEntity } from "./database/entities/post";
-import { UserEntity } from "./database/entities/user";
+import { Database } from './database';
+import { ConfigurationEntity } from './database/entities/configuration';
+import { UserEntity } from './database/entities/user';
 
 export type CreateServerOptions = {
   database: Database;
@@ -21,59 +19,46 @@ export function CreateServer({ database }: CreateServerOptions) {
 
   app.use(function (err: Error, req: Request, res: Response, next: NextFunction) {
     console.error(err.message);
-    res.status(500).send("Something broke!");
+    res.status(500).send('Something broke!');
   });
 
   function AuthGuard(req: Request, res: Response, next: NextFunction) {
     if (ic.caller().isAnonymous()) {
       res.status(401);
-      res.send("You are not authorized to access this resource.");
+      res.send('You are not authorized to access this resource.');
     } else {
       next();
     }
   }
 
-  app.get("/health", (req, res) => {
+  app.get('/health', (req, res) => {
     res.send().statusCode = 204;
   });
 
-  app.post("/initialize", AuthGuard, async (req: Request, res) => {
+  app.post('/initialize', AuthGuard, async (req: Request, res) => {
     try {
       const dataSource = await database.getDataSource();
       const configurationRepository = dataSource.getRepository(ConfigurationEntity);
-      const categoryRepository = dataSource.getRepository(CategoryEntity);
-
-      await categoryRepository.save([
-        {
-          name: "General",
-        },
-        {
-          name: "Web3",
-        },
-        {
-          name: "ICP",
-        },
-      ]);
 
       await configurationRepository.save([
         {
-          key: "site_name",
-          value: "ICP HUB PH",
+          key: 'site_name',
+          value: 'happ3n',
         },
         {
-          key: "site_description",
+          key: 'site_description',
           value:
-            "Propelling the adoption of ICP and Web3 in the Philippines. We educate, incubate and accelerate.",
+            'Happ3n is an innovative event management platform powered by the ICP (Internet Computer) blockchain. It offers a seamless experience for creating, managing, and promoting events with enhanced security, transparency, and decentralization. Ideal for organizers seeking cutting-edge blockchain technology to elevate their event planning and execution.',
         },
         {
-          key: "admin_principal_id",
+          key: 'admin_principal_id',
           value: ic.caller().toText(),
         },
       ]);
 
       res.json({
         status: 1,
-        message: "System initialized!",
+        message: 'System initialized!',
       });
     } catch (error: any) {
       res.status(400);
@@ -84,7 +69,7 @@ export function CreateServer({ database }: CreateServerOptions) {
     }
   });
 
-  app.get("/config", async (req: Request, res) => {
+  app.get('/config', async (req: Request, res) => {
     try {
       const dataSource = await database.getDataSource();
       const configurationRepository = dataSource.getRepository(ConfigurationEntity);
@@ -104,27 +89,7 @@ export function CreateServer({ database }: CreateServerOptions) {
     }
   });
 
-  app.get("/categories", async (req: Request, res) => {
-    try {
-      const dataSource = await database.getDataSource();
-      const categoryRepository = dataSource.getRepository(CategoryEntity);
-
-      const categories = await categoryRepository.find();
-
-      res.json({
-        status: 1,
-        data: categories,
-      });
-    } catch (error: any) {
-      res.status(400);
-      res.json({
-        status: 0,
-        message: error.message,
-      });
-    }
-  });
-
-  app.get("/user", AuthGuard, async (req: Request, res) => {
+  app.get('/user', AuthGuard, async (req: Request, res) => {
     try {
       const dataSource = await database.getDataSource();
       const userRepository = dataSource.getRepository(UserEntity);
@@ -136,7 +101,7 @@ export function CreateServer({ database }: CreateServerOptions) {
         res.status(404);
         res.json({
           status: 0,
-          message: "User not found.",
+          message: 'User not found.',
         });
         return;
       }
@@ -154,14 +119,14 @@ export function CreateServer({ database }: CreateServerOptions) {
     }
   });
 
-  app.post("/user/register", async (req: Request, res) => {
+  app.post('/user/register', async (req: Request, res) => {
     const { email, name } = req.body;
 
     if (!email || !name) {
       res.status(400);
       res.json({
         status: 0,
-        message: "Email and name are required.",
+        message: 'Email and name are required.',
       });
       return;
     }
@@ -170,7 +135,7 @@ export function CreateServer({ database }: CreateServerOptions) {
       email,
       name,
       principal_id: ic.caller().toText(),
-      role: "user",
+      role: 'user',
       status: 1,
       created_at: Date.now(),
       updated_at: Date.now(),
@@ -186,7 +151,7 @@ export function CreateServer({ database }: CreateServerOptions) {
         res.status(400);
         res.json({
           status: 0,
-          message: "User already exist.",
+          message: 'User already exist.',
         });
         return;
       }
@@ -195,7 +160,7 @@ export function CreateServer({ database }: CreateServerOptions) {
         res.status(400);
         res.json({
           status: 0,
-          message: "User already exist.",
+          message: 'User already exist.',
         });
         return;
       }
@@ -204,7 +169,7 @@ export function CreateServer({ database }: CreateServerOptions) {
 
       res.json({
         status: 1,
-        message: "Registration success!",
+        message: 'Registration success!',
       });
     } catch (error: any) {
       res.status(400);
@@ -215,157 +180,14 @@ export function CreateServer({ database }: CreateServerOptions) {
     }
   });
 
-  app.post("/user/post", AuthGuard, async (req: Request, res) => {
-    const { message } = req.body;
-
-    if (!message) {
-      res.status(400);
-      res.json({
-        status: 0,
-        message: "Message is required.",
-      });
-      return;
-    }
-
-    try {
-      const dataSource = await database.getDataSource();
-      const userRepository = dataSource.getRepository(UserEntity);
-      const postRepository = dataSource.getRepository(PostEntity);
-      const userInfo = await userRepository.findOneBy({
-        principal_id: ic.caller().toText(),
-      });
-
-      if (!userInfo) {
-        res.status(404);
-        res.json({
-          status: 0,
-          message: "User not found.",
-        });
-        return;
-      }
-
-      if (!userInfo.status) {
-        res.status(400);
-        res.json({
-          status: 0,
-          message: "User is not active.",
-        });
-        return;
-      }
-
-      await postRepository.save({
-        userId: userInfo.id,
-        message,
-        categoryId: 1,
-        status: 1,
-        created_at: Date.now(),
-        updated_at: Date.now(),
-      });
-
-      res.json({
-        status: 1,
-        message: "Post created!",
-      });
-    } catch (error: any) {
-      res.status(400);
-      res.json({
-        status: 0,
-        message: error.message,
-      });
-      return;
-    }
-  });
-
-  app.get("/user/posts", AuthGuard, async (req: Request, res) => {
-    try {
-      const dataSource = await database.getDataSource();
-      const postRepository = dataSource.getRepository(PostEntity);
-      const configurationRepository = dataSource.getRepository(ConfigurationEntity);
-
-      const checkIfAdmin = await configurationRepository.findOneBy({
-        key: "admin_principal_id",
-        value: ic.caller().toText(),
-      });
-
-      let posts: PostEntity[] = [];
-
-      if (!checkIfAdmin) {
-        posts = await postRepository.findBy({ status: 1 });
-      } else {
-        posts = await postRepository.find();
-      }
-
-      res.json({
-        status: 1,
-        data: posts,
-      });
-    } catch (error: any) {
-      res.status(400);
-      res.json({
-        status: 0,
-        message: error.message,
-      });
-      return;
-    }
-  });
-
-  app.post("/admin/post/moderate", AuthGuard, async (req: Request, res) => {
+  app.post('/admin/user/moderate', AuthGuard, async (req: Request, res) => {
     const { id, status } = req.body;
 
     if (!id) {
       res.status(400);
       res.json({
         status: 0,
-        message: "Post id is required.",
-      });
-      return;
-    }
-
-    const dataSource = await database.getDataSource();
-    const postRepository = dataSource.getRepository(PostEntity);
-    const configurationRepository = dataSource.getRepository(ConfigurationEntity);
-
-    const checkIfAdmin = await configurationRepository.findOneBy({
-      key: "admin_principal_id",
-      value: ic.caller().toText(),
-    });
-
-    if (!checkIfAdmin) {
-      res.status(400);
-      res.json({
-        status: 0,
-        message: "Only admins can moderate posts.",
-      });
-      return;
-    }
-
-    const post = await postRepository.findOneBy({ id });
-
-    if (!post) {
-      res.status(404);
-      res.json({
-        status: 0,
-        message: "Post not found.",
-      });
-      return;
-    }
-
-    await postRepository.update({ id }, { status });
-
-    res.json({
-      status: 1,
-      message: "Post moderated!",
-    });
-  });
-
-  app.post("/admin/user/moderate", AuthGuard, async (req: Request, res) => {
-    const { id, status } = req.body;
-
-    if (!id) {
-      res.status(400);
-      res.json({
-        status: 0,
-        message: "User id is required.",
+        message: 'User id is required.',
       });
       return;
     }
@@ -375,7 +197,7 @@ export function CreateServer({ database }: CreateServerOptions) {
     const configurationRepository = dataSource.getRepository(ConfigurationEntity);
 
     const checkIfAdmin = await configurationRepository.findOneBy({
-      key: "admin_principal_id",
+      key: 'admin_principal_id',
       value: ic.caller().toText(),
     });
 
@@ -383,7 +205,7 @@ export function CreateServer({ database }: CreateServerOptions) {
       res.status(400);
       res.json({
         status: 0,
-        message: "Only admins can moderate users.",
+        message: 'Only admins can moderate users.',
       });
       return;
     }
@@ -394,7 +216,7 @@ export function CreateServer({ database }: CreateServerOptions) {
       res.status(404);
       res.json({
         status: 0,
-        message: "User not found.",
+        message: 'User not found.',
       });
       return;
     }
@@ -403,18 +225,18 @@ export function CreateServer({ database }: CreateServerOptions) {
 
     res.json({
       status: 1,
-      message: "User moderated!",
+      message: 'User moderated!',
     });
   });
 
-  app.post("/admin/configuration/manage", AuthGuard, async (req: Request, res) => {
+  app.post('/admin/configuration/manage', AuthGuard, async (req: Request, res) => {
     const { key, value } = req.body;
 
     if (!key) {
       res.status(400);
       res.json({
         status: 0,
-        message: "Key is required.",
+        message: 'Key is required.',
       });
       return;
     }
@@ -423,7 +245,7 @@ export function CreateServer({ database }: CreateServerOptions) {
       res.status(400);
       res.json({
         status: 0,
-        message: "Value is required.",
+        message: 'Value is required.',
       });
       return;
     }
@@ -432,7 +254,7 @@ export function CreateServer({ database }: CreateServerOptions) {
     const configurationRepository = dataSource.getRepository(ConfigurationEntity);
 
     const checkIfAdmin = await configurationRepository.findOneBy({
-      key: "admin_principal_id",
+      key: 'admin_principal_id',
       value: ic.caller().toText(),
     });
 
@@ -440,7 +262,7 @@ export function CreateServer({ database }: CreateServerOptions) {
       res.status(400);
       res.json({
         status: 0,
-        message: "Only admins can manage configurations.",
+        message: 'Only admins can manage configurations.',
       });
       return;
     }
@@ -451,7 +273,7 @@ export function CreateServer({ database }: CreateServerOptions) {
       res.status(404);
       res.json({
         status: 0,
-        message: "Configuration not found.",
+        message: 'Configuration not found.',
       });
       return;
     }
@@ -460,7 +282,7 @@ export function CreateServer({ database }: CreateServerOptions) {
 
     res.json({
       status: 1,
-      message: "Configuration updated!",
+      message: 'Configuration updated!',
     });
   });
 

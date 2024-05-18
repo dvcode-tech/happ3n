@@ -1,4 +1,4 @@
-import { Opt, StableBTreeMap, stableJson } from "azle";
+import { Opt, StableBTreeMap, stableJson } from 'azle';
 
 export interface DatabaseStorageInterface {
   get(): Promise<Uint8Array | undefined>;
@@ -17,7 +17,7 @@ export class DatabaseStorage implements DatabaseStorageInterface {
   private storage: any;
 
   constructor(options?: DatabaseStorageOptions) {
-    this.STORAGE_KEY = options?.key || "DATABASE";
+    this.STORAGE_KEY = options?.key || 'DATABASE';
     this.STORAGE_INDEX = options?.index || 0;
 
     this.storage = StableBTreeMap<string, Uint8Array>(this.STORAGE_INDEX, stableJson, {

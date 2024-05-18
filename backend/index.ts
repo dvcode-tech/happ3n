@@ -1,22 +1,22 @@
-import { Server, init, postUpgrade, preUpgrade, setNodeServer } from "azle";
-import "reflect-metadata";
+import { Server, init, postUpgrade, preUpgrade, setNodeServer } from 'azle';
+import 'reflect-metadata';
 
-import { Database, DatabaseOptions } from "./database";
-import { ENTITIES } from "./database/entities";
-import { ConsoleLogger } from "./database/logger";
-import { DatabaseStorage } from "./database/storage";
-import { CreateServer } from "./server";
+import { Database, DatabaseOptions } from './database';
+import { ENTITIES } from './database/entities';
+import { ConsoleLogger } from './database/logger';
+import { DatabaseStorage } from './database/storage';
+import { CreateServer } from './server';
 
 const databaseOptions: DatabaseOptions = {
   sincronize: false,
   migrationsRun: true,
   storage: new DatabaseStorage({
-    key: "DATABASE",
+    key: 'DATABASE',
     index: 0,
   }),
   entities: ENTITIES,
   // TODO: Migrations are not found
-  migrations: ["/migrations/*.{ts,js}"],
+  migrations: ['/migrations/*.{ts,js}'],
   // TODO: logger not working,
   logger: new ConsoleLogger(false),
 };
@@ -36,19 +36,19 @@ export default Server(
         await db.init();
         setNodeServer(CreateServer({ database: db }));
       } catch (error) {
-        console.error("Error initializing database:", error);
+        console.error('Error initializing database:', error);
         throw error;
       }
     }),
     preUpgrade: preUpgrade(() => {
       try {
         if (!db) {
-          throw new Error("Database not initialized");
+          throw new Error('Database not initialized');
         }
 
         db.save();
       } catch (error) {
-        console.error("Error saving database:", error);
+        console.error('Error saving database:', error);
       }
     }),
     postUpgrade: postUpgrade([], async () => {
@@ -57,8 +57,8 @@ export default Server(
         await db.load();
         setNodeServer(CreateServer({ database: db }));
       } catch (error) {
-        console.error("Error loading database:", error);
+        console.error('Error loading database:', error);
       }
     }),
-  }
+  },
 );
