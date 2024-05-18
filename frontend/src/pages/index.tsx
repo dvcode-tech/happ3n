@@ -29,7 +29,7 @@ export default function IcConnectPage(): JSX.Element {
 
   async function getUserInfo() {
     try {
-      const userInfo = await backend.get('/user');
+      const userInfo = await backend.get('/me');
       setUserInfo(JSON.stringify(userInfo, null, 2));
       console.log('userInfo', userInfo);
     } catch (error) {
@@ -88,11 +88,13 @@ export default function IcConnectPage(): JSX.Element {
 type CreateContactsResponse = {
   name: string;
   email: string;
+  username: string;
 };
 
 function ContactForm(): JSX.Element {
   const backend = useRestActor('backend');
   const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -103,16 +105,25 @@ function ContactForm(): JSX.Element {
     setEmail(e.target.value);
   };
 
+  const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setUsername(e.target.value);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle form submission logic here
     console.log('Name:', name);
     console.log('Email:', email);
+    console.log('Username:', username);
 
     try {
       const response = await backend.post<CreateContactsResponse>(
-        '/contacts',
-        { name, email },
+        '/user/register',
+        {
+          name,
+          email,
+          username,
+        },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -120,7 +131,7 @@ function ContactForm(): JSX.Element {
         },
       );
 
-      console.log(response.data.email, response.data.name);
+      console.log(response.data);
     } catch (error) {
       console.error({ error });
     }
@@ -150,6 +161,18 @@ function ContactForm(): JSX.Element {
           className="w-full border border-gray-300 rounded-md py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500"
           value={email}
           onChange={handleEmailChange}
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="username" className="block text-gray-700 font-bold mb-2">
+          Username:
+        </label>
+        <input
+          id="username"
+          type="text"
+          className="w-full border border-gray-300 rounded-md py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500"
+          value={username}
+          onChange={handleUsernameChange}
         />
       </div>
       <button
