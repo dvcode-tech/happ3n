@@ -120,22 +120,22 @@ export function CreateServer({ database }: CreateServerOptions) {
   });
 
   app.post('/user/register', async (req: Request, res) => {
-    const { email, name } = req.body;
+    const { email, name, username } = req.body;
 
-    if (!email || !name) {
+    if (!email || !name || !username) {
       res.status(400);
       res.json({
         status: 0,
-        message: 'Email and name are required.',
+        message: 'Email and name, username are required.',
       });
       return;
     }
 
-    const userData = {
+    const userData: Partial<UserEntity> = {
       email,
       name,
+      username,
       principal_id: ic.caller().toText(),
-      role: 'user',
       status: 1,
       created_at: Date.now(),
       updated_at: Date.now(),

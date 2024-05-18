@@ -16,25 +16,25 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'text', unique: true })
   principal_id: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   name: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   bio: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   facebook: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   twitter: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   tiktok: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   instagram: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   website: string;
 
   @Column({ type: 'int', default: 0 })

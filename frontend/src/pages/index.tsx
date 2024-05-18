@@ -14,7 +14,6 @@ export default function IcConnectPage(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
     getUserInfo();
   }, [isAuthenticated]);
 
@@ -32,6 +31,7 @@ export default function IcConnectPage(): JSX.Element {
     try {
       const userInfo = await backend.get('/user');
       setUserInfo(JSON.stringify(userInfo, null, 2));
+      console.log('userInfo', userInfo);
     } catch (error) {
       console.error({ error });
     }
