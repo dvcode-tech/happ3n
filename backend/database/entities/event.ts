@@ -51,7 +51,7 @@ export class EventEntity extends BaseEntity {
   @Column({ type: 'int', default: EventType.PUBLIC })
   type: EventType;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   parameter: string;
 
   @Column({ type: 'text' })
