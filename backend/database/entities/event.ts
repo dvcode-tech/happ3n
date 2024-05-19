@@ -51,6 +51,12 @@ export class EventEntity extends BaseEntity {
   @Column({ type: 'int', default: EventType.PUBLIC })
   type: EventType;
 
+  @Column({ type: 'text' })
+  parameter: string;
+
+  @Column({ type: 'text' })
+  description: string;
+
   @Column({ type: 'int', default: 0 })
   feedback_count: number;
 

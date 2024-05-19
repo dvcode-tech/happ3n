@@ -8,6 +8,7 @@ export default function IcConnectPage(): JSX.Element {
   const { isAuthenticated, identity } = useAuth();
   const [apiStatus, setApiStatus] = useState<string>('pending');
   const [userInfo, setUserInfo] = useState<any>(null);
+  const [events, setEvents] = useState<any>(null);
 
   useEffect(() => {
     healthCheck();
@@ -77,7 +78,43 @@ export default function IcConnectPage(): JSX.Element {
               <ContactForm />
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">{/* More connections */}</div>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <button
+                onClick={async () => {
+                  try {
+                    const response = await backend.post<CreateContactsResponse>(
+                      '/event/create',
+                      {},
+                      {
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                      },
+                    );
+
+                    console.log(response.data);
+                  } catch (error) {
+                    console.error({ error });
+                  }
+                }}
+              >
+                Create
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const data = (await backend.get('/event/view_all_by_user')).data;
+                    console.log(data);
+                    setEvents(JSON.stringify(data));
+                  } catch (error) {
+                    console.error({ error });
+                    setEvents('Error');
+                  }
+                }}
+              >
+                get All events
+              </button>
+            </div>
           </div>
         </div>
       </main>
