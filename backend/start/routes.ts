@@ -24,6 +24,7 @@ Route.post('/user/update', isAuth, UsersController.update);
 
 // EVENT
 Route.post('/event/create', isAuth, EventsController.create);
+Route.post('/event/update/:eventId', isAuth, EventsController.update);
 Route.get('/event/view_all_by_user', isAuth, EventsController.view_all_by_user);
 
 export { Route as routes };

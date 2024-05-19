@@ -86,6 +86,7 @@ export default function IcConnectPage(): JSX.Element {
                       '/event/create',
                       {
                         name: 'Developer Summit 2024: Innovate, Code, Create',
+                        slug: 'developer-summit-2024-innovate-code-create',
                         start_at: new Date('2024-05-20').getTime(),
                         end_at: new Date('2024-05-26').getTime(),
                         location: JSON.stringify({ type: 'VIRTUAL', location: 'https://meet.google.com/sys-qrfs-ivm' }),
@@ -182,6 +183,29 @@ export default function IcConnectPage(): JSX.Element {
                 }}
               >
                 Update User info
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const response = await backend.post<CreateContactsResponse>(
+                      '/event/update/1',
+                      {
+                        name: 'Developer Summit 2024: Innovate, Code, Create, Edited',
+                      },
+                      {
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                      },
+                    );
+
+                    console.log(response.data);
+                  } catch (error) {
+                    console.error({ error });
+                  }
+                }}
+              >
+                Update Event Name
               </button>
             </div>
           </div>

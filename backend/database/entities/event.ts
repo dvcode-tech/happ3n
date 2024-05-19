@@ -30,6 +30,9 @@ export class Event extends BaseEntity {
   @Column({ type: 'text' })
   name: string;
 
+  @Column({ type: 'text' })
+  slug: string;
+
   @Column({ type: 'bigint' })
   start_at: number;
 

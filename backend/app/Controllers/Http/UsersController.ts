@@ -138,6 +138,8 @@ export default class UsersController {
         findUser.website = website;
       }
 
+      findUser.updated_at = Date.now();
+
       await findUser.save();
 
       return response.json({
