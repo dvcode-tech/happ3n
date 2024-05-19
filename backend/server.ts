@@ -1,17 +1,10 @@
 import cors from 'cors';
 import express from 'express';
 
-import { Database } from './database';
 import ExceptionHandler from './app/Exceptions/Handler';
 import { routes } from './start/routes';
 
-export type CreateServerOptions = {
-  database: Database;
-};
-
-export function CreateServer({ database }: CreateServerOptions) {
-  global.database = database;
-
+export function CreateServer() {
   const app = express();
 
   app.use(cors());

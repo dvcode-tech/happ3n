@@ -8,9 +8,7 @@ export default class ApisController {
 
   static async config(request: Request, response: Response) {
     try {
-      const dataSource = await database.getDataSource();
-      const configurationRepository = dataSource.getRepository(ConfigurationEntity);
-      const configurations = await configurationRepository.find();
+      const configurations = await ConfigurationEntity.find();
 
       return response.json({
         status: 1,

@@ -70,7 +70,7 @@ export default function IcConnectPage(): JSX.Element {
         </div>
 
         <div>
-          <h2 className="text-2xl text-center">Send multiple data types</h2>
+          <h2 className="text-2xl text-center">Send multiple data types x</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-8">
             <div className="bg-white rounded-lg shadow-md p-6">

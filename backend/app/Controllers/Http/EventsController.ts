@@ -19,9 +19,7 @@ export default class EventsController {
         });
       }
 
-      const dataSource = await database.getDataSource();
-
-      const findUser = await dataSource.getRepository(UserEntity).findOneBy({
+      const findUser = await UserEntity.findOneBy({
         principal_id: ic.caller().toText(),
       });
 
@@ -41,7 +39,7 @@ export default class EventsController {
         updated_at: Date.now(),
       };
 
-      await dataSource.getRepository(EventEntity).save(eventData);
+      await EventEntity.save(eventData);
 
       return response.json({
         status: 1,
@@ -58,9 +56,7 @@ export default class EventsController {
 
   static async view_all_by_user(request: Request, response: Response) {
     try {
-      const dataSource = await database.getDataSource();
-      const userRepository = dataSource.getRepository(UserEntity);
-      const findUser = await userRepository.findOneBy({ principal_id: ic.caller().toText() });
+      const findUser = await UserEntity.findOneBy({ principal_id: ic.caller().toText() });
 
       if (!findUser) {
         response.status(400);
@@ -70,7 +66,7 @@ export default class EventsController {
         });
       }
 
-      const findEvents = await dataSource.getRepository(EventEntity).find({
+      const findEvents = await EventEntity.find({
         where: { user: findUser },
         relations: ['user'],
         select: {

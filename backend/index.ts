@@ -27,14 +27,14 @@ export default Server(
   async () => {
     db = new Database(databaseOptions);
     await db.load();
-    return CreateServer({ database: db });
+    return CreateServer();
   },
   {
     init: init([], async () => {
       try {
         db = new Database(databaseOptions);
         await db.init();
-        setNodeServer(CreateServer({ database: db }));
+        setNodeServer(CreateServer());
       } catch (error) {
         console.error('Error initializing database:', error);
         throw error;
@@ -55,7 +55,7 @@ export default Server(
       try {
         db = new Database(databaseOptions);
         await db.load();
-        setNodeServer(CreateServer({ database: db }));
+        setNodeServer(CreateServer());
       } catch (error) {
         console.error('Error loading database:', error);
       }

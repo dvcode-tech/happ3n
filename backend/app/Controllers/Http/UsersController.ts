@@ -5,9 +5,7 @@ import { Response, Request } from 'express';
 export default class UsersController {
   static async me(request: Request, response: Response) {
     try {
-      const dataSource = await database.getDataSource();
-      const userRepository = dataSource.getRepository(UserEntity);
-      const user = await userRepository.findOneBy({
+      const user = await UserEntity.findOneBy({
         principal_id: ic.caller().toText(),
       });
 
@@ -54,12 +52,11 @@ export default class UsersController {
     };
 
     try {
-      const dataSource = await database.getDataSource();
-      const userRepository = dataSource.getRepository(UserEntity);
-      const checkIfEmailExists = await userRepository.findOneBy({ email });
-      const checkIfPrincipalIdExist = await userRepository.findOneBy({ principal_id: ic.caller().toText() });
+      const isUserExists = await UserEntity.findOne({
+        where: [{ email }, { principal_id: ic.caller().toText() }],
+      });
 
-      if (checkIfEmailExists) {
+      if (isUserExists) {
         response.status(400);
         return response.json({
           status: 0,
@@ -67,15 +64,7 @@ export default class UsersController {
         });
       }
 
-      if (checkIfPrincipalIdExist) {
-        response.status(400);
-        return response.json({
-          status: 0,
-          message: 'User already exist.',
-        });
-      }
-
-      await userRepository.save(userData);
+      await UserEntity.save(userData);
 
       return response.json({
         status: 1,
