@@ -1,5 +1,4 @@
 import { ConfigurationEntity } from 'Database/entities/configuration';
-import { Database } from 'Database/index';
 import { Response, Request } from 'express';
 
 export default class ApisController {
@@ -9,7 +8,7 @@ export default class ApisController {
 
   static async config(request: Request, response: Response) {
     try {
-      const dataSource = await (request.app.locals.database as Database).getDataSource();
+      const dataSource = await database.getDataSource();
       const configurationRepository = dataSource.getRepository(ConfigurationEntity);
       const configurations = await configurationRepository.find();
 

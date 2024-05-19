@@ -1,7 +1,6 @@
 import CreateEventValidator from 'App/Validators/CreateEventValidator';
-import { EventEntity, EventRequiredApproval, EventStatus, EventType } from 'Database/entities/event';
+import { EventEntity, EventStatus } from 'Database/entities/event';
 import { UserEntity } from 'Database/entities/user';
-import { Database } from 'Database/index';
 import { ic } from 'azle';
 import { Response, Request } from 'express';
 
@@ -20,7 +19,7 @@ export default class EventsController {
         });
       }
 
-      const dataSource = await (request.app.locals.database as Database).getDataSource();
+      const dataSource = await database.getDataSource();
 
       const findUser = await dataSource.getRepository(UserEntity).findOneBy({
         principal_id: ic.caller().toText(),
@@ -59,7 +58,7 @@ export default class EventsController {
 
   static async view_all_by_user(request: Request, response: Response) {
     try {
-      const dataSource = await (request.app.locals.database as Database).getDataSource();
+      const dataSource = await database.getDataSource();
       const userRepository = dataSource.getRepository(UserEntity);
       const findUser = await userRepository.findOneBy({ principal_id: ic.caller().toText() });
 

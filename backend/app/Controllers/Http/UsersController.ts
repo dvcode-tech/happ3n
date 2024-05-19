@@ -1,12 +1,11 @@
 import { UserEntity } from 'Database/entities/user';
-import { Database } from 'Database/index';
 import { ic } from 'azle';
 import { Response, Request } from 'express';
 
 export default class UsersController {
   static async me(request: Request, response: Response) {
     try {
-      const dataSource = await (request.app.locals.database as Database).getDataSource();
+      const dataSource = await database.getDataSource();
       const userRepository = dataSource.getRepository(UserEntity);
       const user = await userRepository.findOneBy({
         principal_id: ic.caller().toText(),
@@ -55,7 +54,7 @@ export default class UsersController {
     };
 
     try {
-      const dataSource = await (request.app.locals.database as Database).getDataSource();
+      const dataSource = await database.getDataSource();
       const userRepository = dataSource.getRepository(UserEntity);
       const checkIfEmailExists = await userRepository.findOneBy({ email });
       const checkIfPrincipalIdExist = await userRepository.findOneBy({ principal_id: ic.caller().toText() });

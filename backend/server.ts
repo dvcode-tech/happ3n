@@ -10,9 +10,9 @@ export type CreateServerOptions = {
 };
 
 export function CreateServer({ database }: CreateServerOptions) {
-  const app = express();
+  global.database = database;
 
-  app.locals.database = database;
+  const app = express();
 
   app.use(cors());
   app.use(express.json());
