@@ -3,8 +3,8 @@ import { Database } from 'Database/index';
 import { ic } from 'azle';
 import { Response, Request } from 'express';
 
-const UsersController = {
-  async me(request: Request, response: Response) {
+export default class UsersController {
+  static async me(request: Request, response: Response) {
     try {
       const dataSource = await (request.app.locals.database as Database).getDataSource();
       const userRepository = dataSource.getRepository(UserEntity);
@@ -31,8 +31,9 @@ const UsersController = {
         message: error.message,
       });
     }
-  },
-  async register(request: Request, response: Response) {
+  }
+
+  static async register(request: Request, response: Response) {
     const { email, name, username } = request.body;
 
     if (!email || !name || !username) {
@@ -88,7 +89,5 @@ const UsersController = {
         message: error.message,
       });
     }
-  },
-};
-
-export default UsersController;
+  }
+}

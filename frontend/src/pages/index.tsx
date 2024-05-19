@@ -118,7 +118,7 @@ function ContactForm(): JSX.Element {
 
     try {
       const response = await backend.post<CreateContactsResponse>(
-        '/user/register',
+        '/register',
         {
           name,
           email,
