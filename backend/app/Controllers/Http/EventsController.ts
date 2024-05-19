@@ -1,6 +1,6 @@
 import CreateEventValidator from 'App/Validators/CreateEventValidator';
-import { EventEntity, EventStatus } from 'Database/entities/event';
-import { UserEntity } from 'Database/entities/user';
+import { Event, EventStatus } from 'Database/entities/event';
+import { User } from 'Database/entities/user';
 import { ic } from 'azle';
 import { Response, Request } from 'express';
 
@@ -19,7 +19,7 @@ export default class EventsController {
         });
       }
 
-      const findUser = await UserEntity.findOneBy({
+      const findUser = await User.findOneBy({
         principal_id: ic.caller().toText(),
       });
 
@@ -31,7 +31,7 @@ export default class EventsController {
         });
       }
 
-      const eventData: Partial<EventEntity> = {
+      const eventData: Partial<Event> = {
         ...data,
         user: findUser,
         status: EventStatus.SHOWN,
@@ -39,7 +39,7 @@ export default class EventsController {
         updated_at: Date.now(),
       };
 
-      await EventEntity.save(eventData);
+      await Event.save(eventData);
 
       return response.json({
         status: 1,
@@ -56,7 +56,7 @@ export default class EventsController {
 
   static async view_all_by_user(request: Request, response: Response) {
     try {
-      const findUser = await UserEntity.findOneBy({ principal_id: ic.caller().toText() });
+      const findUser = await User.findOneBy({ principal_id: ic.caller().toText() });
 
       if (!findUser) {
         response.status(400);
@@ -66,7 +66,7 @@ export default class EventsController {
         });
       }
 
-      const findEvents = await EventEntity.find({
+      const findEvents = await Event.find({
         where: { user: findUser },
         relations: ['user'],
         select: {

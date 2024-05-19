@@ -30,7 +30,7 @@ export default function IcConnectPage(): JSX.Element {
 
   async function getUserInfo() {
     try {
-      const userInfo = await backend.get('/me');
+      const userInfo = await backend.get('/user/me');
       setUserInfo(JSON.stringify(userInfo, null, 2));
       console.log('userInfo', userInfo);
     } catch (error) {
@@ -157,6 +157,32 @@ export default function IcConnectPage(): JSX.Element {
               >
                 get All events
               </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const response = await backend.post<CreateContactsResponse>(
+                      '/user/update',
+                      {
+                        name: 'Ariz Dagunan Edited',
+                        bio: 'DvCode Technologies developer',
+                        tiktok: 'www.tiktok.com/xendev',
+                        facebook: 'www.facebook.com/xendevph',
+                      },
+                      {
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                      },
+                    );
+
+                    console.log(response.data);
+                  } catch (error) {
+                    console.error({ error });
+                  }
+                }}
+              >
+                Update User info
+              </button>
             </div>
           </div>
         </div>
@@ -198,7 +224,7 @@ function ContactForm(): JSX.Element {
 
     try {
       const response = await backend.post<CreateContactsResponse>(
-        '/register',
+        '/user/register',
         {
           name,
           email,

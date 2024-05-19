@@ -1,5 +1,5 @@
-import { ConfigurationEntity } from './configuration';
-import { EventEntity } from './event';
-import { UserEntity } from './user';
+import { Configuration } from './configuration';
+import { Event } from './event';
+import { User } from './user';
 
-export const ENTITIES = [UserEntity, EventEntity, ConfigurationEntity];
+export const ENTITIES = [User, Event, Configuration];

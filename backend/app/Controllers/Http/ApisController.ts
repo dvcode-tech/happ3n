@@ -1,4 +1,4 @@
-import { ConfigurationEntity } from 'Database/entities/configuration';
+import { Configuration } from 'Database/entities/configuration';
 import { Response, Request } from 'express';
 
 export default class ApisController {
@@ -8,7 +8,7 @@ export default class ApisController {
 
   static async config(request: Request, response: Response) {
     try {
-      const configurations = await ConfigurationEntity.find();
+      const configurations = await Configuration.find();
 
       return response.json({
         status: 1,

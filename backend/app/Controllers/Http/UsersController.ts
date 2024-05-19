@@ -1,11 +1,13 @@
-import { UserEntity } from 'Database/entities/user';
+import UserRegisterValidator from 'App/Validators/UserRegisterValidator';
+import UserUpdateValidator from 'App/Validators/UserUpdateValidator';
+import { User } from 'Database/entities/user';
 import { ic } from 'azle';
 import { Response, Request } from 'express';
 
 export default class UsersController {
   static async me(request: Request, response: Response) {
     try {
-      const user = await UserEntity.findOneBy({
+      const user = await User.findOneBy({
         principal_id: ic.caller().toText(),
       });
 
@@ -31,17 +33,21 @@ export default class UsersController {
   }
 
   static async register(request: Request, response: Response) {
-    const { email, name, username } = request.body;
+    const { data, success, error } = UserRegisterValidator.validate(request.body);
 
-    if (!email || !name || !username) {
+    if (!success) {
       response.status(400);
+      const { path, message } = error.issues?.[0];
+
       return response.json({
         status: 0,
-        message: 'Email and name, username are required.',
+        message: `${path?.join('.')}: ${message}`,
       });
     }
 
-    const userData: Partial<UserEntity> = {
+    const { email, username, name } = data;
+
+    const userData: Partial<User> = {
       email,
       name,
       username,
@@ -52,23 +58,91 @@ export default class UsersController {
     };
 
     try {
-      const isUserExists = await UserEntity.findOne({
-        where: [{ email }, { principal_id: ic.caller().toText() }],
+      const isUserExists = await User.findOne({
+        where: [{ email }, { principal_id: ic.caller().toText() }, { username }],
       });
 
       if (isUserExists) {
         response.status(400);
         return response.json({
           status: 0,
-          message: 'User already exist.',
+          message: 'Username/Email/Identity already taken.',
         });
       }
 
-      await UserEntity.save(userData);
+      await User.save(userData);
 
       return response.json({
         status: 1,
         message: 'Registration success!',
+      });
+    } catch (error: any) {
+      response.status(400);
+      return response.json({
+        status: 0,
+        message: error.message,
+      });
+    }
+  }
+
+  static async update(request: Request, response: Response) {
+    const { data, success, error } = UserUpdateValidator.validate(request.body);
+
+    if (!success) {
+      response.status(400);
+      const { path, message } = error.issues?.[0];
+      return response.json({
+        status: 0,
+        message: `${path?.join('.')}: ${message}`,
+      });
+    }
+
+    const { name, tiktok, instagram, facebook, twitter, website, bio } = data;
+
+    try {
+      const findUser = await User.findOneBy({ principal_id: ic.caller().toText() });
+
+      if (!findUser) {
+        response.status(400);
+        return response.json({
+          status: 0,
+          message: 'User not found!',
+        });
+      }
+
+      if (bio) {
+        findUser.bio = bio;
+      }
+
+      if (name) {
+        findUser.name = name;
+      }
+
+      if (tiktok) {
+        findUser.tiktok = tiktok;
+      }
+
+      if (twitter) {
+        findUser.twitter = twitter;
+      }
+
+      if (instagram) {
+        findUser.instagram = instagram;
+      }
+
+      if (facebook) {
+        findUser.facebook = facebook;
+      }
+
+      if (website) {
+        findUser.website = website;
+      }
+
+      await findUser.save();
+
+      return response.json({
+        status: 1,
+        message: 'User updated successfully!',
       });
     } catch (error: any) {
       response.status(400);

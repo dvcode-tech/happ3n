@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { UserEntity } from './user';
+import { User } from './user';
 
 export enum EventType {
   PUBLIC = 0,
@@ -20,12 +20,12 @@ export enum EventRequiredApproval {
 @Entity({
   name: 'events',
 })
-export class EventEntity extends BaseEntity {
+export class Event extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => UserEntity)
-  user: UserEntity;
+  @ManyToOne(() => User)
+  user: User;
 
   @Column({ type: 'text' })
   name: string;

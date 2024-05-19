@@ -17,8 +17,12 @@ const Route = Router();
 Route.get('/health', ApisController.health);
 Route.get('/config', ApisController.config);
 
-Route.get('/me', isAuth, UsersController.me);
-Route.post('/register', isAuth, UsersController.register);
+// USER
+Route.get('/user/me', isAuth, UsersController.me);
+Route.post('/user/register', isAuth, UsersController.register);
+Route.post('/user/update', isAuth, UsersController.update);
+
+// EVENT
 Route.post('/event/create', isAuth, EventsController.create);
 Route.get('/event/view_all_by_user', isAuth, EventsController.view_all_by_user);
 
