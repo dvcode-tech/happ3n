@@ -32,6 +32,16 @@ export default class EventsController {
         });
       }
 
+      const findEvent = await Event.findOneBy({ slug: data.slug });
+
+      if (findEvent) {
+        response.status(400);
+        return response.json({
+          status: 0,
+          message: 'Event slug already exists.',
+        });
+      }
+
       const eventData: Partial<Event> = {
         ...data,
         user: findUser,
@@ -169,12 +179,78 @@ export default class EventsController {
 
       const findEvents = await Event.find({
         where: { user: findUser },
-        relations: ['user'],
-        select: {
-          user: {
-            name: true,
-            username: true,
-          },
+        relations: {
+          user: true,
+        },
+      });
+
+      return response.json({
+        status: 1,
+        data: findEvents,
+      });
+    } catch (error: any) {
+      response.status(400);
+      return response.json({
+        status: 0,
+        message: error.message,
+      });
+    }
+  }
+
+  static async view_by_slug(request: Request, response: Response) {
+    try {
+      const { slug } = request.params;
+
+      const findEvent = await Event.findOne({
+        where: { slug, status: EventStatus.SHOWN },
+        relations: {
+          user: true,
+        },
+      });
+
+      if (!findEvent) {
+        response.status(400);
+        return response.json({
+          status: 0,
+          message: 'Event not found.',
+        });
+      }
+
+      return response.json({
+        status: 1,
+        data: findEvent,
+      });
+    } catch (error: any) {
+      response.status(400);
+      return response.json({
+        status: 0,
+        message: error.message,
+      });
+    }
+  }
+
+  static async view_all_of_user_by_public(request: Request, response: Response) {
+    try {
+      const { username } = request.params;
+
+      const findUser = await User.findOneBy({ username });
+
+      if (!findUser) {
+        response.status(400);
+        return response.json({
+          status: 0,
+          message: 'User not found.',
+        });
+      }
+
+      const findEvents = await Event.find({
+        where: {
+          user: findUser,
+          status: EventStatus.SHOWN,
+          type: EventType.PUBLIC,
+        },
+        relations: {
+          user: true,
         },
       });
 

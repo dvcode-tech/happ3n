@@ -154,4 +154,34 @@ export default class UsersController {
       });
     }
   }
+
+  static async view_info_of_user_by_public(request: Request, response: Response) {
+    try {
+      const { username } = request.params;
+
+      const user = await User.findOneBy({
+        username,
+        status: 1,
+      });
+
+      if (!user) {
+        response.status(404);
+        return response.json({
+          status: 0,
+          message: 'User not found.',
+        });
+      }
+
+      return response.json({
+        status: 1,
+        data: user,
+      });
+    } catch (error: any) {
+      response.status(400);
+      return response.json({
+        status: 0,
+        message: error.message,
+      });
+    }
+  }
 }

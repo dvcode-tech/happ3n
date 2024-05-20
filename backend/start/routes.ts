@@ -10,12 +10,9 @@ const Route = Router();
 
 /*
 |--------------------------------------------------------------------------
-| Routes
+| Authenticated Routes
 |--------------------------------------------------------------------------
 */
-
-Route.get('/health', ApisController.health);
-Route.get('/config', ApisController.config);
 
 // USER
 Route.get('/user/me', isAuth, UsersController.me);
@@ -25,6 +22,22 @@ Route.post('/user/update', isAuth, UsersController.update);
 // EVENT
 Route.post('/event/create', isAuth, EventsController.create);
 Route.post('/event/update/:eventId', isAuth, EventsController.update);
-Route.get('/event/view_all_by_user', isAuth, EventsController.view_all_by_user);
+Route.get('/event/list', isAuth, EventsController.view_all_by_user);
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+
+Route.get('/health', ApisController.health);
+Route.get('/config', ApisController.config);
+
+// EVENT
+Route.post('/event/slug/:slug', EventsController.view_by_slug);
+
+// USER
+Route.post('/user/:username/event/list', EventsController.view_all_of_user_by_public);
+Route.post('/user/:username/info', UsersController.view_info_of_user_by_public);
 
 export { Route as routes };
