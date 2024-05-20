@@ -1,6 +1,8 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { User } from './user';
+import { Guest } from './guest';
+import { Feedback } from './feedback';
 
 export enum EventType {
   PUBLIC = 0,
@@ -26,6 +28,12 @@ export class Event extends BaseEntity {
 
   @ManyToOne(() => User)
   user: User;
+
+  @OneToMany(() => Guest, (guest) => guest.event)
+  guests: Guest[];
+
+  @OneToMany(() => Feedback, (feedback) => feedback.event)
+  feedbacks: Feedback[];
 
   @Column({ type: 'text' })
   name: string;
@@ -59,6 +67,9 @@ export class Event extends BaseEntity {
 
   @Column({ type: 'text' })
   description: string;
+
+  @Column({ type: 'text', nullable: true })
+  questions: string;
 
   @Column({ type: 'int', default: 0 })
   feedback_count: number;
