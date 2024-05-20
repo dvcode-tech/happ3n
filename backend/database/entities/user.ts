@@ -37,6 +37,12 @@ export class User extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   website: string;
 
+  @Column({ type: 'text', nullable: true })
+  profile_photo: string;
+
+  @Column({ type: 'text', nullable: true })
+  banner_photo: string;
+
   @Column({ type: 'int', default: 0 })
   status: number;
 

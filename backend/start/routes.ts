@@ -34,10 +34,10 @@ Route.get('/health', ApisController.health);
 Route.get('/config', ApisController.config);
 
 // EVENT
-Route.post('/event/slug/:slug', EventsController.view_by_slug);
+Route.get('/event/slug/:slug', EventsController.view_by_slug);
 
 // USER
-Route.post('/user/:username/event/list', EventsController.view_all_of_user_by_public);
-Route.post('/user/:username/info', UsersController.view_info_of_user_by_public);
+Route.get('/user/:username/event/list', EventsController.view_all_of_user_by_public);
+Route.get('/user/:username/info', UsersController.view_info_of_user_by_public);
 
 export { Route as routes };

@@ -97,7 +97,7 @@ export default class UsersController {
       });
     }
 
-    const { name, tiktok, instagram, facebook, twitter, website, bio } = data;
+    const { name, tiktok, instagram, facebook, twitter, website, bio, profile_photo, banner_photo } = data;
 
     try {
       const findUser = await User.findOneBy({ principal_id: ic.caller().toText() });
@@ -136,6 +136,14 @@ export default class UsersController {
 
       if (website) {
         findUser.website = website;
+      }
+
+      if (profile_photo) {
+        findUser.profile_photo = profile_photo;
+      }
+
+      if (banner_photo) {
+        findUser.banner_photo = banner_photo;
       }
 
       findUser.updated_at = Date.now();

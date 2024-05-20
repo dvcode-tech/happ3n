@@ -78,7 +78,7 @@ export default function IcConnectPage(): JSX.Element {
               <ContactForm />
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex flex-col bg-white rounded-lg shadow-md p-6">
               <button
                 onClick={async () => {
                   try {
@@ -147,7 +147,7 @@ export default function IcConnectPage(): JSX.Element {
               <button
                 onClick={async () => {
                   try {
-                    const data = (await backend.get('/event/view_all_by_user')).data;
+                    const data = (await backend.get('/event/list')).data;
                     console.log(data);
                     setEvents(JSON.stringify(data));
                   } catch (error) {
