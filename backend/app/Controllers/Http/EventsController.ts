@@ -1,6 +1,7 @@
 import CreateEventValidator from 'App/Validators/CreateEventValidator';
 import UpdateEventValidator from 'App/Validators/UpdateEventValidator';
 import { Event, EventRequiredApproval, EventStatus, EventType } from 'Database/entities/event';
+import { Guest } from 'Database/entities/guest';
 import { User } from 'Database/entities/user';
 import { ic } from 'azle';
 import { Response, Request } from 'express';
@@ -216,9 +217,15 @@ export default class EventsController {
         });
       }
 
+      const findGuests = await Guest.findBy({ event: findEvent });
+
       return response.json({
         status: 1,
-        data: findEvent,
+        data: {
+          ...findEvent,
+          guests_count: findGuests.length,
+          guests_list: findGuests.slice(0, 6),
+        },
       });
     } catch (error: any) {
       response.status(400);
