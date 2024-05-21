@@ -45,6 +45,7 @@ export default class EventsController {
 
       const eventData: Partial<Event> = {
         ...data,
+        questions: data?.questions ? data.questions : '[{"question":"Name"},{"question":"Email"}]',
         user: findUser,
         status: EventStatus.SHOWN,
         created_at: Date.now(),
@@ -93,8 +94,19 @@ export default class EventsController {
         });
       }
 
-      const { name, start_at, end_at, location, required_approval, capacity, banner, type, parameter, description } =
-        data;
+      const {
+        name,
+        questions,
+        start_at,
+        end_at,
+        location,
+        required_approval,
+        capacity,
+        banner,
+        type,
+        parameter,
+        description,
+      } = data;
 
       const findEvent = await Event.findOneBy({
         id: eventId as unknown as number,
@@ -135,6 +147,10 @@ export default class EventsController {
 
       if (parameter) {
         findEvent.parameter = parameter;
+      }
+
+      if (questions) {
+        findEvent.questions = questions;
       }
 
       if (description) {

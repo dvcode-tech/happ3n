@@ -43,7 +43,6 @@ Route.get('/config', ApisController.config);
 
 // EVENT
 Route.get('/event/slug/:slug', EventsController.view_by_slug);
-Route.get('/event/slug/:slug/info', EventsController.view_by_slug);
 
 // USER
 Route.get('/user/:username/event/list', EventsController.view_all_of_user_by_public);

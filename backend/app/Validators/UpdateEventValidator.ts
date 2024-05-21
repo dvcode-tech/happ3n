@@ -12,6 +12,7 @@ export default class UpdateEventValidator {
     capacity: z.number().optional(),
     banner: z.string().optional(),
     type: z.nativeEnum(EventType).optional(),
+    questions: z.string().optional(),
     parameter: z.string().optional(),
     description: z.string().optional(),
   });

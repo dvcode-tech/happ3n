@@ -11,6 +11,7 @@ export default class CreateEventValidator {
     required_approval: z.nativeEnum(EventRequiredApproval),
     capacity: z.number(),
     banner: z.string().min(1),
+    questions: z.string().optional(),
     type: z.nativeEnum(EventType),
     parameter: z.string().optional(),
     description: z.string().min(1),
