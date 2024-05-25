@@ -15,7 +15,7 @@ const Home: NextPage = () => {
             <h1 className="text-[64px] leading-none text-white font-semibold">Delightful events <br />
             <span className="bg-gradient-to-r from-[#099ef1] from-0% via-[#6863f8] via-19% to-[#d84ffa] to-90% bg-clip-text text-transparent"> starts here.</span></h1>
             <p className="text-[20px] mt-[24px] text-white">Set up an event page, invite friends and sell tickets. Host a memorable event today.</p>
-            <button className="mt-[32px] py-2 px-4 rounded-lg text-[18px] bg-white">Create Your First Event</button>
+            <button className="mt-[32px] py-2 px-6 rounded-lg text-[18px] bg-white">Create Your First Event</button>
           </div>
         </div>
         

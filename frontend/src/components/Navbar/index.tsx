@@ -21,7 +21,7 @@ const Navbar: NextPage = () => {
   return(
     <section className="flex justify-between items-center flex-1 px-[16px] py-[12px] sticky top-0">
         <a href="/">
-            <img className="h-5" src="/assets/logo/logo-main.png" alt="" />
+            <img className="h-5" src="/assets/logo/icon.png" alt="" />
         </a>
         <div className="flex gap-4 font-medium text-[14px] text-[#FFFFFFA3] items-center">
             <div>{time} GMT+8</div>
