@@ -2,7 +2,6 @@ import { NextPage } from "next"
 import Header from "@components/Header";
 import Navbar from "@components/Navbar";
 
-
 const Home: NextPage = () => {
   return(
     <div className="bg-[url('/assets/bg.png')] bg-center bg-cover bg-no-repeat bg-black">
@@ -20,9 +19,7 @@ const Home: NextPage = () => {
           </div>
         </div>
         
-        <div className="flex items-center w-[620px]">
-          
-        </div>
+        <div className="flex items-center w-[620px]"></div>
       </div>
     </section>
     </div>
