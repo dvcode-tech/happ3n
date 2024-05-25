@@ -24,9 +24,9 @@ const Navbar: NextPage = () => {
             <img className="h-5" src="/assets/logo/icon.png" alt="" />
         </a>
         <div className="flex gap-4 font-medium text-[14px] text-[#FFFFFFA3] items-center">
-            <div>{time} GMT+8</div>
+            <div className="md:block hidden">{time} GMT+8</div>
             <button>Explore Events</button>
-            <a href="/signin" className="rounded-3xl px-4 py-1 text-[14px] bg-gray-500 hover:bg-gray-400 text-[#FFFFFFA3]">Sign In</a>
+            <a href="/signin" className="rounded-3xl px-4 py-1 text-[14px] bg-gray-500/50 hover:bg-gray-400 text-[#FFFFFFA3]">Sign In</a>
         </div>
     </section>
   )
