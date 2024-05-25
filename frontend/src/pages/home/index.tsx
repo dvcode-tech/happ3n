@@ -10,22 +10,26 @@ const Home: NextPage = () => {
       <Header />
       <Navbar/>
     <section className="max-w-[1080px] h-[727px] mx-auto px-[14px] pt-[48px] pb-[14px]">
-      <div className="bg-red-500">
-        <Tabs defaultValue="account" className="flex justify-between bg-green-500">
-            <div>
-                <div className="text-white text-[32px] font-semibold">Events</div>
-                    <div className="flex flex-col flex-1 items-end justify-center bg-red-50">
-                        <TabsList className="grid grid-cols-2">
-                            <TabsTrigger value="account">Account</TabsTrigger>
-                            <TabsTrigger value="password">Password</TabsTrigger>
-                        </TabsList>
-                    </div>
-            </div>
-            <TabsContent className="flex flex-1 items-start justify-normal" value="account">
-                <div>Helloee</div>
-            </TabsContent>
+      <div className="max-w-[820px] mx-auto">
+        <Tabs defaultValue="upcoming">
+          <div className="flex justify-between items-center w-full">
+            <div className="text-white text-[32px] font-semibold">Events</div>
+              <TabsList className="grid grid-cols-2 bg-[#252F3A]">
+                <TabsTrigger className="" value="upcoming">Upcoming</TabsTrigger>
+                <TabsTrigger className="" value="past">Past</TabsTrigger>
+              </TabsList>
+          </div>
+
+          <TabsContent className="text-white" value="upcoming">
+            <div>Upcoming</div>
+          </TabsContent>
+          <TabsContent className="text-white" value="past">
+            <div>Past</div>
+          </TabsContent>
         </Tabs>
       </div>
+      
+
     </section>
     </div>
   )
