@@ -26,7 +26,3 @@ body {
     text-wrap: balance;
   }
 }
-
-.text-radial-gradient {
-  background: radial-gradient(circle at top left, #099ef1 0%, #6863f8 18.82%, #d84ffa 32.6%, #f058c5 52.83%, #ff4f90 68.03%, #ff6558 87.66%, #ff891f 100%);
-}
