@@ -71,10 +71,18 @@ const Home: NextPage = () => {
             </TabsContent>
             <TabsContent className="text-white" value="past">
               <div className="container mx-auto py-4">
-                <div className="relative border-l-[2px] border-dashed border-[#262729]">
+                <div className="relative ml-[150px] border-l-[2px] border-dashed border-[#262729]">
                   {timelineData.map((event, index) => (
                     <Sheet key={index}>
                       <div key={index} className="mb-10 ml-4">
+                        <div className="absolute -left-[150px] ">
+                          <h3 className="text-[17px] font-semibold text-white">
+                            {event.date}
+                          </h3>
+                          <h3 className="text-[16px] font-semibold text-[#88898A]">
+                            {'Friday'}
+                          </h3>
+                        </div>
                         <div className="absolute -left-[6.2px] h-3 w-3 rounded-full bg-[#5F6062]"></div>
                         <SheetTrigger className="w-full">
                           <a className="ml-6 flex flex-row justify-between rounded-md border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">

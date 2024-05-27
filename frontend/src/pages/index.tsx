@@ -37,7 +37,7 @@ const Home: NextPage = () => {
   }, [isAuthenticated]);
 
   return (
-    <div className="bg-black bg-[url('/assets/bg.png')] bg-cover bg-no-repeat md:bg-center">
+    <div className="bg-black min-h-screen bg-[url('/assets/bg.png')] bg-cover bg-no-repeat md:bg-center">
       <Header />
       <Navbar />
       <section className="mx-auto h-screen max-w-[1080px] px-[16px] pb-[14px] pt-[20px] md:h-[727px] md:px-[14px] md:pt-[48px]">
