@@ -36,7 +36,7 @@ const Navbar: NextPage = () => {
   }, []);
 
   return (
-    <section className="sticky z-[99] top-0 bg-[#131517]/50 flex flex-1 items-center justify-between px-[16px] py-[12px]">
+    <section className="sticky z-[98] top-0 bg-[#131517]/50 flex flex-1 items-center justify-between px-[16px] py-[12px]">
       <a href="/">
         <img className="h-5" src="/assets/logo/icon.png" alt="" />
       </a>

@@ -41,27 +41,31 @@ export default function IcConnectPage(): JSX.Element {
   return (
     <>
       {/* <Header /> */}
-      {/* <main className="p-6">
-        <h1 className="text-2xl text-center">Build Fullstack dApps with Azle and Ares</h1>
+      <main className="p-6">
+        <h1 className="text-center text-2xl">
+          Build Fullstack dApps with Azle and Ares
+        </h1>
 
         <div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-8">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-2">User Info</h2>
+          <div className="grid grid-cols-1 gap-4 py-8 md:grid-cols-2">
+            <div className="rounded-lg bg-white p-6 shadow-md">
+              <h2 className="mb-2 text-xl font-bold">User Info</h2>
               <p className="mt-4 text-sm text-gray-500">
-                <strong>Status:</strong> {isAuthenticated ? 'Authenticated' : 'Not Authenticated'}
+                <strong>Status:</strong>{" "}
+                {isAuthenticated ? "Authenticated" : "Not Authenticated"}
               </p>
               <p className="text-gray-700">
-                <strong>Principal ID:</strong> {identity.getPrincipal().toString()}
+                <strong>Principal ID:</strong>{" "}
+                {identity.getPrincipal().toString()}
               </p>
             </div>
 
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-2">REST API Info</h2>
+            <div className="rounded-lg bg-white p-6 shadow-md">
+              <h2 className="mb-2 text-xl font-bold">REST API Info</h2>
               <p className="mt-4 text-sm text-gray-500">
                 <strong>Status:</strong> {apiStatus}
               </p>
-              <h2 className="text-xl font-bold mb-2">User Info</h2>
+              <h2 className="mb-2 text-xl font-bold">User Info</h2>
               <p className="mt-4 text-sm text-gray-500">
                 <strong>UserInfo:</strong> {userInfo}
               </p>
@@ -70,29 +74,33 @@ export default function IcConnectPage(): JSX.Element {
         </div>
 
         <div>
-          <h2 className="text-2xl text-center">Send multiple data types x</h2>
+          <h2 className="text-center text-2xl">Send multiple data types x</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-8">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-2">JSON Data</h2>
+          <div className="grid grid-cols-1 gap-4 py-8 md:grid-cols-2">
+            <div className="rounded-lg bg-white p-6 shadow-md">
+              <h2 className="mb-2 text-xl font-bold">JSON Data</h2>
               <ContactForm />
             </div>
 
-            <div className="flex flex-col bg-white rounded-lg shadow-md p-6">
+            <div className="flex flex-col rounded-lg bg-white p-6 shadow-md">
               <button
                 onClick={async () => {
                   try {
                     const response = await backend.post<CreateContactsResponse>(
-                      '/event/create',
+                      "/event/create",
                       {
-                        name: 'Developer Summit 2024: Innovate, Code, Create',
-                        slug: 'developer-summit-2024-innovate-code-create',
-                        start_at: new Date('2024-05-20').getTime(),
-                        end_at: new Date('2024-05-26').getTime(),
-                        location: JSON.stringify({ type: 'VIRTUAL', location: 'https://meet.google.com/sys-qrfs-ivm' }),
+                        name: "Developer Summit 2024: Innovate, Code, Create",
+                        slug: "developer-summit-2024-innovate-code-create",
+                        start_at: new Date("2024-05-20").getTime(),
+                        end_at: new Date("2024-05-26").getTime(),
+                        location: JSON.stringify({
+                          type: "VIRTUAL",
+                          location: "https://meet.google.com/sys-qrfs-ivm",
+                        }),
                         required_approval: 1,
                         capacity: 100,
-                        banner: 'https://img.pikbest.com/origin/06/13/64/688pIkbEsTCDu.jpg!w700wp',
+                        banner:
+                          "https://img.pikbest.com/origin/06/13/64/688pIkbEsTCDu.jpg!w700wp",
                         type: 0,
                         parameter: JSON.stringify({}),
                         description: `<h1>Developer Summit 2024: Innovate, Code, Create</h1>
@@ -131,7 +139,7 @@ export default function IcConnectPage(): JSX.Element {
                       },
                       {
                         headers: {
-                          'Content-Type': 'application/json',
+                          "Content-Type": "application/json",
                         },
                       },
                     );
@@ -147,12 +155,12 @@ export default function IcConnectPage(): JSX.Element {
               <button
                 onClick={async () => {
                   try {
-                    const data = (await backend.get('/event/list')).data;
+                    const data = (await backend.get("/event/list")).data;
                     console.log(data);
                     setEvents(JSON.stringify(data));
                   } catch (error) {
                     console.error({ error });
-                    setEvents('Error');
+                    setEvents("Error");
                   }
                 }}
               >
@@ -162,16 +170,16 @@ export default function IcConnectPage(): JSX.Element {
                 onClick={async () => {
                   try {
                     const response = await backend.post<CreateContactsResponse>(
-                      '/user/update',
+                      "/user/update",
                       {
-                        name: 'Ariz Dagunan Edited',
-                        bio: 'DvCode Technologies developer',
-                        tiktok: 'www.tiktok.com/xendev',
-                        facebook: 'www.facebook.com/xendevph',
+                        name: "Ariz Dagunan Edited",
+                        bio: "DvCode Technologies developer",
+                        tiktok: "www.tiktok.com/xendev",
+                        facebook: "www.facebook.com/xendevph",
                       },
                       {
                         headers: {
-                          'Content-Type': 'application/json',
+                          "Content-Type": "application/json",
                         },
                       },
                     );
@@ -188,13 +196,13 @@ export default function IcConnectPage(): JSX.Element {
                 onClick={async () => {
                   try {
                     const response = await backend.post<CreateContactsResponse>(
-                      '/event/update/1',
+                      "/event/update/1",
                       {
-                        name: 'Developer Summit 2024: Innovate, Code, Create, Edited',
+                        name: "Developer Summit 2024: Innovate, Code, Create, Edited",
                       },
                       {
                         headers: {
-                          'Content-Type': 'application/json',
+                          "Content-Type": "application/json",
                         },
                       },
                     );
@@ -210,7 +218,7 @@ export default function IcConnectPage(): JSX.Element {
             </div>
           </div>
         </div>
-      </main> */}
+      </main>
     </>
   );
 }
