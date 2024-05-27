@@ -1,11 +1,11 @@
-import Head from 'next/head';
+import Head from "next/head";
 
 export default function Header({
-  title = 'happ3n',
-  description = '',
-  icon = '/assets/logo/logo.png',
-  preview = '',
-  keywords = '',
+  title = "happ3n",
+  description = "",
+  icon = "/assets/logo/logo.png",
+  preview = "",
+  keywords = "",
 }) {
   return (
     <Head>

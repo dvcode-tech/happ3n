@@ -1,12 +1,12 @@
 // import Header from '@components/header';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
-import { useAuth, useRestActor } from '@bundly/ares-react';
+import { useAuth, useRestActor } from "@bundly/ares-react";
 
 export default function IcConnectPage(): JSX.Element {
-  const backend = useRestActor('backend');
+  const backend = useRestActor("backend");
   const { isAuthenticated, identity } = useAuth();
-  const [apiStatus, setApiStatus] = useState<string>('pending');
+  const [apiStatus, setApiStatus] = useState<string>("pending");
   const [userInfo, setUserInfo] = useState<any>(null);
   const [events, setEvents] = useState<any>(null);
 
@@ -20,19 +20,19 @@ export default function IcConnectPage(): JSX.Element {
 
   async function healthCheck() {
     try {
-      await backend.get('/health');
-      setApiStatus('Ok');
+      await backend.get("/health");
+      setApiStatus("Ok");
     } catch (error) {
       console.error({ error });
-      setApiStatus('Error');
+      setApiStatus("Error");
     }
   }
 
   async function getUserInfo() {
     try {
-      const userInfo = await backend.get('/user/me');
+      const userInfo = await backend.get("/user/me");
       setUserInfo(JSON.stringify(userInfo, null, 2));
-      console.log('userInfo', userInfo);
+      console.log("userInfo", userInfo);
     } catch (error) {
       console.error({ error });
     }
@@ -222,10 +222,10 @@ type CreateContactsResponse = {
 };
 
 function ContactForm(): JSX.Element {
-  const backend = useRestActor('backend');
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
+  const backend = useRestActor("backend");
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -242,13 +242,13 @@ function ContactForm(): JSX.Element {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle form submission logic here
-    console.log('Name:', name);
-    console.log('Email:', email);
-    console.log('Username:', username);
+    console.log("Name:", name);
+    console.log("Email:", email);
+    console.log("Username:", username);
 
     try {
       const response = await backend.post<CreateContactsResponse>(
-        '/user/register',
+        "/user/register",
         {
           name,
           email,
@@ -256,7 +256,7 @@ function ContactForm(): JSX.Element {
         },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         },
       );
@@ -270,44 +270,47 @@ function ContactForm(): JSX.Element {
   return (
     <form onSubmit={handleSubmit}>
       <div className="mb-4">
-        <label htmlFor="name" className="block text-gray-700 font-bold mb-2">
+        <label htmlFor="name" className="mb-2 block font-bold text-gray-700">
           Name:
         </label>
         <input
           id="name"
           type="text"
-          className="w-full border border-gray-300 rounded-md py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:border-blue-500 focus:outline-none"
           value={name}
           onChange={handleNameChange}
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="email" className="block text-gray-700 font-bold mb-2">
+        <label htmlFor="email" className="mb-2 block font-bold text-gray-700">
           Email:
         </label>
         <input
           id="email"
           type="text"
-          className="w-full border border-gray-300 rounded-md py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:border-blue-500 focus:outline-none"
           value={email}
           onChange={handleEmailChange}
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="username" className="block text-gray-700 font-bold mb-2">
+        <label
+          htmlFor="username"
+          className="mb-2 block font-bold text-gray-700"
+        >
           Username:
         </label>
         <input
           id="username"
           type="text"
-          className="w-full border border-gray-300 rounded-md py-2 px-3 text-gray-700 focus:outline-none focus:border-blue-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:border-blue-500 focus:outline-none"
           value={username}
           onChange={handleUsernameChange}
         />
       </div>
       <button
         type="submit"
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        className="focus:shadow-outline rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
       >
         Submit
       </button>

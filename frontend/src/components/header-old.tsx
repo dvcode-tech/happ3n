@@ -1,4 +1,4 @@
-import { AuthButton } from '@bundly/ares-react';
+import { AuthButton } from "@bundly/ares-react";
 
 export default function HeaderOld() {
   return (
