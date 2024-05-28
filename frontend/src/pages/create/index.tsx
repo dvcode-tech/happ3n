@@ -137,7 +137,7 @@ const Create: NextPage = () => {
             </FormItem>
 
             <div className="flex flex-1 flex-col space-y-4">
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name="status"
                 render={({ field }) => (
@@ -146,7 +146,7 @@ const Create: NextPage = () => {
                       <div className="flex h-full flex-1">
                         <Select>
                           <SelectTrigger className="h-9 max-w-[101px] dark:bg-[#FFFFFF14] dark:text-[#FFFFFFA3]">
-                            <SelectValue placeholder="Public" />
+                            <SelectValue placeholder="Public" {...field} />
                           </SelectTrigger>
                           <SelectContent className="max-w-[280px] p-2 dark:bg-[#232331] dark:text-[#FFFFFFA3]">
                             <SelectGroup>
@@ -177,7 +177,7 @@ const Create: NextPage = () => {
                     </FormControl>
                   </FormItem>
                 )}
-              /> */}
+              />
 
               <div>
                 <FormField
@@ -187,7 +187,7 @@ const Create: NextPage = () => {
                     <FormItem>
                       <FormControl>
                         <input
-                          className="bg-transparent text-[28px] font-semibold text-[#FFFFFFA3] outline-none focus:ring-transparent lg:text-[40px]"
+                          className=":text-[40px] bg-transparent text-[28px] font-semibold text-[#FFFFFFA3] outline-none focus:ring-transparent"
                           placeholder="Event Name"
                           {...field}
                         />
