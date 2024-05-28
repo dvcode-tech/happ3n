@@ -9,13 +9,6 @@ const Signin: NextPage = () => {
       <Navbar />
       <section className="mx-auto h-[727px] max-w-[1080px] px-[14px] pb-[14px] pt-[48px]">
         <div className="flex h-full flex-1 items-center justify-center">
-          {/* <div className="w-[360px] flex flex-col rounded-2xl backdrop-blur-md bg-gray-500/40 border p-[24px] border-slate-500">
-            <div className="flex flex-col gap-0.5 mb-[16px]">
-                <div className="text-[22px] font-semibold text-slate-200">Welcome to happ3n</div>
-                <p className="text-slate-200 text-[14px] py-[2px]">Please sign in or sign up below.</p>
-            </div>
-            <a href="#" className="rounded-md px-4 w-f py-2 text-center text-[14px] bg-gray-500 hover:bg-gray-400 text-[#FFFFFF]">Sign In with Identity</a>
-        </div> */}
           <div className="flex w-[360px] flex-col rounded-2xl border border-gray-600 bg-gray-500/40 backdrop-blur-md">
             <div className="mb-[24px] flex flex-col gap-0.5 px-[24px] pt-[24px]">
               <div className="text-[22px] font-semibold text-slate-200">
