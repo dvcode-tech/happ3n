@@ -122,7 +122,7 @@ const ManageEvent: NextPage = () => {
         </div>
 
         <div>
-          <Tabs defaultValue="guest" className="pt-[8px]">
+          <Tabs defaultValue="overview" className="pt-[8px]">
             <TabsList className="mx-auto flex max-w-[788px] items-start justify-start px-0 dark:bg-transparent dark:text-[#818384]">
               <TabsTrigger
                 value="overview"
@@ -160,10 +160,11 @@ const ManageEvent: NextPage = () => {
 
                 <div className="flex gap-x-[20px] rounded-lg border border-gray-600/30 bg-gray-800/40 p-[12px] text-white backdrop-blur-sm">
                   <div className="flex flex-1">
+                    {/* TODO: Overview Banner */}
                     <div className="relative h-[280px] w-[371px] overflow-hidden rounded-lg bg-blue-950">
                       <div className="absolute bottom-2 left-1/2 mx-auto flex w-[355px] -translate-x-1/2 justify-between rounded-md bg-[#13151752] py-2 backdrop-blur-md">
                         <div className="flex items-center gap-1 pl-4 text-[14px] text-[#FFFFFFCC]">
-                          happ3n/654jhsd78 <LuArrowUpRight />
+                          {`happ3n/${slug}`} <LuArrowUpRight />
                         </div>
                         <div className="pr-4 text-[14px] uppercase text-[#FFFFFF7A]">
                           Copy
@@ -215,9 +216,12 @@ const ManageEvent: NextPage = () => {
                         <div className="text-[13px] text-[#FFFFFFC9]">
                           The Address is shown publicly on the event page.
                         </div>
-                        <button className="mt-[16px] flex items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]">
+                        <a
+                          href={`/check-in/${slug}`}
+                          className="mt-[16px] flex items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]"
+                        >
                           <LuScanLine /> Check In Guests
-                        </button>
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -273,7 +277,7 @@ const ManageEvent: NextPage = () => {
 
                 <div className="flex gap-4 border-b border-gray-600/30 pb-[32px]">
                   <a
-                    href="#"
+                    href={`/check-in/${slug}/scan`}
                     className="flex w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-gray-800/40 py-[9px] pl-[10px] pr-[40px] text-[18px] font-semibold text-white backdrop-blur-sm"
                   >
                     <div className="rounded-md bg-[#29804e]/25 p-2">
