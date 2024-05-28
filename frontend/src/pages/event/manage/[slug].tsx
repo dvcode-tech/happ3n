@@ -51,6 +51,42 @@ const GuestList = [
     status: 0,
     date: "Sept 20, 2024",
   },
+  {
+    name: "Juan Dela Cruz",
+    email: "jdcruz@me.com",
+    status: 0,
+    date: "Sept 20, 2024",
+  },
+  {
+    name: "Juan Dela Cruz",
+    email: "jdcruz@me.com",
+    status: 0,
+    date: "Sept 20, 2024",
+  },
+  {
+    name: "Juan Dela Cruz",
+    email: "jdcruz@me.com",
+    status: 0,
+    date: "Sept 20, 2024",
+  },
+  {
+    name: "Juan Dela Cruz",
+    email: "jdcruz@me.com",
+    status: 0,
+    date: "Sept 20, 2024",
+  },
+  {
+    name: "Juan Dela Cruz",
+    email: "jdcruz@me.com",
+    status: 0,
+    date: "Sept 20, 2024",
+  },
+  {
+    name: "Juan Dela Cruz",
+    email: "jdcruz@me.com",
+    status: 0,
+    date: "Sept 20, 2024",
+  },
 ];
 
 const ManageEvent: NextPage = () => {
@@ -59,7 +95,7 @@ const ManageEvent: NextPage = () => {
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">
       <Header />
       <Navbar />
-      <section className="h-[727px] pb-[14px] pt-[48px]">
+      <section className="pb-[14px] pt-[48px]">
         <div className="mx-auto flex max-w-[788px] items-center justify-between">
           <div className="flex items-center justify-center gap-2">
             <img
