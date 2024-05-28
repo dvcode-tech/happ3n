@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 const Signin: NextPage = () => {
   return (
-    <div className="bg-black min-h-screen bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">
+    <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">
       <Header />
       <Navbar />
       <section className="mx-auto h-[727px] max-w-[1080px] px-[14px] pb-[14px] pt-[48px]">
