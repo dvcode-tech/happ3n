@@ -1,12 +1,60 @@
 import { NextPage } from "next";
+import { useState } from "react";
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
 
-import { LuArrowUpRight, LuMapPin, LuShare, LuScanLine } from "react-icons/lu";
+import {
+  LuArrowUpRight,
+  LuMapPin,
+  LuShare,
+  LuScanLine,
+  LuQrCode,
+  LuUsers,
+  LuSearch,
+} from "react-icons/lu";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+
+const GuestList = [
+  {
+    name: "Juan Dela Cruz",
+    email: "jdcruz@me.com",
+    status: 0,
+    date: "Sept 20, 2024",
+  },
+  {
+    name: "Jirumaa Dev",
+    email: "dev.jirumaa@me.com",
+    status: 0,
+    date: "Sept 20, 2024",
+  },
+  {
+    name: "Sandugo Dimagiba",
+    email: "jdcruz@me.com",
+    status: 1,
+    date: "Sept 20, 2024",
+  },
+  {
+    name: "Juan Dela Cruz",
+    email: "jdcruz@me.com",
+    status: 0,
+    date: "Sept 20, 2024",
+  },
+];
 
 const ManageEvent: NextPage = () => {
+  const [guest, setGuest] = useState(45);
   return (
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">
       <Header />
@@ -32,7 +80,7 @@ const ManageEvent: NextPage = () => {
         </div>
 
         <div>
-          <Tabs defaultValue="overview" className="pt-[8px]">
+          <Tabs defaultValue="guest" className="pt-[8px]">
             <TabsList className="mx-auto flex max-w-[788px] items-start justify-start px-0 dark:bg-transparent dark:text-[#818384]">
               <TabsTrigger
                 value="overview"
@@ -44,7 +92,7 @@ const ManageEvent: NextPage = () => {
                 value="guest"
                 className="items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
               >
-                Guest
+                Guests
               </TabsTrigger>
               <TabsTrigger
                 value="registration"
@@ -160,8 +208,101 @@ const ManageEvent: NextPage = () => {
             </TabsContent>
 
             <TabsContent value="guest" className="border-t border-gray-600/30">
-              <div className="mx-auto mt-[28px] flex max-w-[788px] text-white">
-                Guest
+              <div className="mx-auto mt-[28px] flex max-w-[788px] flex-col gap-[20px]">
+                <div className="flex text-[20px] font-semibold text-white">
+                  At a Glance
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex w-full justify-between pb-[8px]">
+                    <div className="text-[24px] text-[#939597]">
+                      {guest} <span className="text-[16px]">guests</span>
+                    </div>
+                    <div className="text-[24px] text-[#939597]">
+                      <span className="text-[16px]">cap</span> 50
+                    </div>
+                  </div>
+
+                  <progress
+                    value={guest}
+                    max={50}
+                    className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
+                  />
+                </div>
+
+                <div className="flex gap-4 border-b border-gray-600/30 pb-[32px]">
+                  <a
+                    href="#"
+                    className="flex w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-gray-800/40 py-[9px] pl-[10px] pr-[40px] text-[18px] font-semibold text-white backdrop-blur-sm"
+                  >
+                    <div className="rounded-md bg-[#29804e]/25 p-2">
+                      <LuQrCode className="text-[25px] text-[#50bd7d]" />
+                    </div>
+                    Check In Guests
+                  </a>
+                  <a
+                    href="#"
+                    className="flex w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-gray-800/40 py-[9px] pl-[10px] pr-[40px] text-[18px] font-semibold text-white backdrop-blur-sm"
+                  >
+                    <div className="rounded-md bg-[#FBD85B]/25 p-2">
+                      <LuUsers className="text-[25px] text-[#FBD85B]" />
+                    </div>
+                    <div className="flex flex-col">
+                      <p className="flex">Guest List</p>
+                      <span className="text-[13px] text-[#939597]">
+                        Shown to guests
+                      </span>
+                    </div>
+                  </a>
+                </div>
+
+                <div>
+                  <div className="flex pb-[12px] text-[20px] font-semibold text-white">
+                    Guest List
+                  </div>
+                  <div className="relative">
+                    <Input
+                      className="pl-10 text-[18px] font-semibold text-[#939597] dark:bg-transparent placeholder:dark:text-[#939597]"
+                      placeholder="Search..."
+                    />
+                    <LuSearch className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#939597]" />
+                  </div>
+                </div>
+
+                <Table className="border-gray-600/30">
+                  <TableBody className="rounded-lg border-gray-600/30">
+                    {GuestList.map((guest, index) => (
+                      <TableRow
+                        key={index}
+                        className="border-gray-600/30 bg-gray-800/40"
+                      >
+                        <TableCell className="flex gap-2 ">
+                          <img
+                            className="h-5 rounded-full"
+                            src="/assets/logo/icon.png"
+                            alt=""
+                          />
+                          <p className="text-[16px] font-medium text-[#FFFFFF]">
+                            {guest.name}{" "}
+                            <span className="ml-2 text-[15px] text-[#FFFFFF80]">
+                              {guest.email}
+                            </span>
+                          </p>
+                        </TableCell>
+                        {/* <TableCell className="text-[16px] text-[#FFFFFF80]">
+                          
+                        </TableCell> */}
+                        <TableCell className="text-right">
+                          <div className="rounded-md bg-[#29804e]/25 text-center text-[12px] font-medium text-[#29804e] ">
+                            Going
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right text-[14px] font-medium text-[#FFFFFF80]">
+                          {guest.date}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             </TabsContent>
             <TabsContent
