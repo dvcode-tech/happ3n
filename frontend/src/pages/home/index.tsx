@@ -45,6 +45,7 @@ const Home: NextPage = () => {
       <Navbar />
       <section className="mx-auto max-w-[1080px] p-[16px] md:px-[14px] md:pb-[14px] md:pt-[48px]">
         <div className="mx-auto max-w-[820px]">
+          {/* TODO: Tabs paddings */}
           <Tabs defaultValue="past">
             <div className="mb-[8px] flex w-full items-center justify-between">
               <div className="text-[32px] font-semibold text-white">Events</div>
