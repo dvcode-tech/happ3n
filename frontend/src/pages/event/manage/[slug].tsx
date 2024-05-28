@@ -1,4 +1,5 @@
 //TODO:Mobile View
+//TODO:Registration Tab
 
 import { NextPage } from "next";
 import { useState } from "react";
