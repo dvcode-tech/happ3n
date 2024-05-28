@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/router";
 
 const GuestList = [
   {
@@ -93,6 +94,8 @@ const GuestList = [
 ];
 
 const ManageEvent: NextPage = () => {
+  const router = useRouter();
+  const { slug } = router.query;
   const [guest, setGuest] = useState(45);
   return (
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">
@@ -111,7 +114,7 @@ const ManageEvent: NextPage = () => {
             </div>
           </div>
           <a
-            href="#"
+            href={`/${slug}`}
             className="flex h-7 items-center justify-center gap-1 rounded-md bg-[#FFFFFF14] px-[12px] py-[11px] text-[14px] font-medium leading-none text-[#FFFFFFA3] hover:bg-gray-400"
           >
             Event Page <LuArrowUpRight />
