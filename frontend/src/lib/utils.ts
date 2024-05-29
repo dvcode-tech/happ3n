@@ -76,3 +76,10 @@ export function formatDate(millis: number) {
   // return `${monthLongName} ${day}, ${time}`;
   return { monthLongName, day, time, dayName };
 }
+
+export function urlify(str: string) {
+  if (!str) return str;
+  return str?.includes("http")
+    ? str
+    : `${process.env.NEXT_PUBLIC_API_REST_URL}/uploads/` + `${str}`;
+}

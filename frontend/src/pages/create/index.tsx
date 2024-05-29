@@ -1,9 +1,8 @@
 import { NextPage } from "next";
 import { useState } from "react";
-import axios from "axios";
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
-
+import path from "path";
 import {
   LuMapPin,
   LuUserCheck2,
@@ -51,6 +50,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileDialog } from "@/components/ui/file-dialog";
+import { useRestActor } from "@bundly/ares-react";
+import { toast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -76,6 +77,7 @@ const formSchema = z.object({
 });
 
 const Create: NextPage = () => {
+  const backend = useRestActor("backend");
   const [locationValue, setLocationValue] = useState(
     "Offline Location or Virtual Link",
   );
@@ -87,7 +89,6 @@ const Create: NextPage = () => {
   const [endAt, setEndAt] = useState("");
 
   const [selectedFile, setSelectedFile] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
 
   // const handleFileChange = (event) => {
   //   setSelectedFile(event.target.files[0]);
@@ -118,41 +119,52 @@ const Create: NextPage = () => {
       const handleUpload = async () => {
         // @ts-ignore
         if (!values.banner[0]) return;
+        const file = (values.banner as unknown as any)[0];
 
-        const formData = new FormData();
-        // @ts-ignore
-        formData.append("image", values.banner[0]);
+        const reference = (
+          new Date().getTime().toString(36) +
+          Math.random().toString(36).slice(2)
+        ).toLowerCase();
 
-        try {
-          const response = await axios.post(
-            "https://api.imgur.com/3/image",
-            formData,
-            {
-              headers: {
-                Authorization: process.env.NEXT_PUBLIC_CLIENTID,
-                "Content-Type": "multipart/form-data",
-              },
-            },
-          );
-
-          setImageUrl(response.data.data.link);
-        } catch (error) {
-          console.error("Error uploading the image:", error);
-        }
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve({
+              filename: `${reference}${path.extname(file.name)}`,
+              contents: (reader.result as any)?.split(",")[1],
+            });
+          };
+          reader.onerror = (error) => {
+            reject(error);
+          };
+          reader.readAsDataURL(file);
+        });
       };
 
-      handleUpload();
+      const bannerRessult = await handleUpload();
+
+      const imagePost = await backend.post(
+        "/upload",
+        { file: bannerRessult },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
 
       const slug = slugify(values.name);
+
       const locationData = {
         type: values.location_type,
         location: values.location,
       };
+
       const locationJson = JSON.stringify(locationData);
 
       const data = {
         type: Number(type),
-        banner: imageUrl,
+        banner: (imagePost.data as any)?.data,
         name: values.name,
         slug: slug,
         start_at: Number(new Date(startAt).getTime()),
@@ -164,8 +176,27 @@ const Create: NextPage = () => {
       };
 
       console.log(data);
-    } catch (e) {
+
+      const eventPost = await backend.post("/event/create", data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      toast({
+        variant: "default",
+        title: "Success",
+        description: (eventPost.data as any)?.message,
+        duration: 2000,
+      });
+    } catch (e: any) {
       console.error(e);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: e?.message || e?.data?.message,
+        duration: 1000,
+      });
     }
   }
 

@@ -36,7 +36,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/router";
 import { useRestActor } from "@bundly/ares-react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, urlify } from "@/lib/utils";
 import { useHappenContext } from "@/context/HappenContext";
 import { LoginButton } from "@/components/AuthButton";
 
@@ -107,7 +107,7 @@ const EventPage = () => {
         <div className="flex h-full flex-col gap-5 p-4 lg:gap-8">
           <img
             className="hidden aspect-[1/1] h-[358px] flex-col items-center justify-center rounded-xl md:flex md:h-[280px] lg:h-[330px]"
-            src={data?.banner}
+            src={urlify(data?.banner)}
             alt=""
           />
 
@@ -170,7 +170,7 @@ const EventPage = () => {
           <div className="flex w-full flex-col gap-4 p-[16px]">
             <img
               className="flex aspect-[1/1] h-[358px] flex-col items-center justify-center rounded-xl md:hidden md:h-[280px] lg:h-[330px]"
-              src={data?.banner}
+              src={urlify(data?.banner)}
               alt=""
             />
             <div className="flex flex-col gap-8 text-left">
@@ -232,7 +232,7 @@ const EventPage = () => {
                 <div className="bg-[#404953] px-4 py-2 text-white">
                   <p className="text-[14px]">Registration</p>
                 </div>
-                {data?.required_approval && (
+                {data?.required_approval === 1 && (
                   <div className="flex items-center border-b border-gray-600/30 px-4 py-2 text-white">
                     <div className="flex items-center rounded-md bg-[#404953]/30 p-2 text-[#a0a2a2]">
                       <LuUserCheck2 />
