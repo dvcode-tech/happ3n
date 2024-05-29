@@ -12,9 +12,10 @@ import {
   LuImage,
 } from "react-icons/lu";
 
+import slugify from "react-slugify";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { date, z } from "zod";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 
@@ -50,18 +51,42 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileDialog } from "@/components/ui/file-dialog";
 
+export enum EventType {
+  PUBLIC = 0,
+  PRIVATE = 1,
+}
+
+export enum EventStatus {
+  HIDDEN = 0,
+  SHOWN = 1,
+}
+
+export enum EventRequiredApproval {
+  NOT_REQUIRED = 0,
+  REQUIRED = 1,
+}
+
 const formSchema = z.object({
-  status: z.string(),
-  banner: z.string(),
-  eventName: z.string(),
-  startDate: z.string(),
-  startTime: z.string(),
-  endDate: z.string(),
-  endTime: z.string(),
-  location: z.string(),
-  locationLink: z.string(),
-  description: z.string(),
-  require_approval: z.string(),
+  name: z.string().min(1),
+  slug: z.string(),
+  start_at: z.string(),
+  end_at: z.string(),
+  location_type: z.string().min(1),
+  location: z.string().min(1),
+  required_approval: z.boolean(),
+  capacity: z.string(),
+  banner: z
+    .unknown()
+    .refine((val) => {
+      if (!Array.isArray(val)) return false;
+      if (val.some((file) => !(file instanceof File))) return false;
+      return true;
+    }, "Must be an array of File")
+    .optional()
+    .nullable()
+    .default(null),
+  type: z.string(),
+  description: z.string().min(1),
 });
 
 const Create: NextPage = () => {
@@ -69,6 +94,11 @@ const Create: NextPage = () => {
     "Offline Location or Virtual Link",
   );
   const [descriptionValue, setDescriptionValue] = useState("");
+  const [approvalStatus, setApprovalStatus] = useState(0);
+  const [type, setType] = useState("");
+  const [capacity, setCapacity] = useState("");
+  const [startAt, setStartAt] = useState("");
+  const [endAt, setEndAt] = useState("");
 
   const dialogClose = () => {
     document.getElementById("closeDialog")?.click();
@@ -77,29 +107,50 @@ const Create: NextPage = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      status: "",
-      banner: "",
-      eventName: "",
-      startDate: "",
-      startTime: "",
-      endDate: "",
-      endTime: "",
+      type: "",
+      name: "",
+      slug: "",
+      start_at: "",
+      end_at: "",
       location: "",
-      locationLink: "",
+      required_approval: false,
+      capacity: "",
+      banner: null,
       description: "",
-      require_approval: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const data = {
-        eventName: values.eventName,
+      const slug = slugify(values.name);
+      const locationData = {
+        type: values.location_type,
+        location: values.location,
       };
+      const locationJson = JSON.stringify(locationData);
+
+      const data = {
+        type: Number(type),
+        banner: values.banner,
+        name: values.name,
+        slug: slug,
+        start_at: Number(new Date(startAt).getTime()),
+        end_at: Number(new Date(endAt).getTime()),
+        location: locationJson,
+        required_approval: approvalStatus,
+        capacity: Number(capacity),
+        description: descriptionValue,
+      };
+
+      console.log(data);
     } catch (e) {
       console.error(e);
     }
   }
+
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    await onSubmit(values);
+  };
 
   return (
     <div className="min-h-screen overflow-hidden bg-gradient-to-b from-[#131517] from-10% via-[#00071C] via-50% to-[#00071C] to-90% bg-fixed">
@@ -108,7 +159,7 @@ const Create: NextPage = () => {
       <section className="mx-auto max-w-[950px]">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(handleSubmit)}
             className="flex h-full flex-col gap-5 p-4 md:flex-row lg:gap-8"
           >
             <FormItem>
@@ -139,36 +190,45 @@ const Create: NextPage = () => {
             <div className="flex flex-1 flex-col space-y-4">
               <FormField
                 control={form.control}
-                name="status"
+                name="type"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <div className="flex h-full flex-1">
-                        <Select>
-                          <SelectTrigger className="h-9 max-w-[101px] dark:bg-[#FFFFFF14] dark:text-[#FFFFFFA3]">
-                            <SelectValue placeholder="Public" {...field} />
+                        <Select
+                          onValueChange={(e) => {
+                            field.onChange;
+                            console.log(e);
+                            setType(e);
+                          }}
+                        >
+                          <SelectTrigger className="h-9 max-w-[150px] dark:bg-[#FFFFFF14] dark:text-[#FFFFFFA3]">
+                            <SelectValue
+                              placeholder="Public"
+                              defaultValue={type}
+                            />
                           </SelectTrigger>
                           <SelectContent className="max-w-[280px] p-2 dark:bg-[#232331] dark:text-[#FFFFFFA3]">
                             <SelectGroup>
                               <SelectItem
-                                className="text-[14px] text-white"
-                                value="public"
+                                className="flex items-start justify-start text-left text-[14px] text-white"
+                                value="0"
                               >
                                 Public
-                                <p className="text-[#FFFFFF80]">
+                                {/* <p className="text-[#FFFFFF80]">
                                   Shown on your calendar and eligible to be
                                   featured.
-                                </p>
+                                </p> */}
                               </SelectItem>
                               <SelectItem
                                 className="text-[14px] text-white"
-                                value="create"
+                                value="1"
                               >
                                 Private
-                                <p className="text-[#FFFFFF80]">
+                                {/* <p className="text-[#FFFFFF80]">
                                   Unlisted. Only people with the link can
                                   register.
-                                </p>
+                                </p> */}
                               </SelectItem>
                             </SelectGroup>
                           </SelectContent>
@@ -179,15 +239,16 @@ const Create: NextPage = () => {
                 )}
               />
 
+              {/* Eventname */}
               <div>
                 <FormField
                   control={form.control}
-                  name="eventName"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <input
-                          className=":text-[40px] bg-transparent text-[28px] font-semibold text-[#FFFFFFA3] outline-none focus:ring-transparent"
+                        <Input
+                          className="flex h-10 w-full rounded-md border border-none bg-transparent px-0 py-2 text-[40px] font-semibold text-[#FFFFFFA3] ring-offset-transparent file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-transparent focus-visible:ring-offset-transparent disabled:cursor-not-allowed disabled:opacity-50 dark:border-none dark:bg-transparent dark:ring-offset-transparent dark:placeholder:text-[#939597] dark:focus-visible:ring-transparent"
                           placeholder="Event Name"
                           {...field}
                         />
@@ -212,32 +273,22 @@ const Create: NextPage = () => {
                       <div className="flex gap-1">
                         <FormField
                           control={form.control}
-                          name="startDate"
+                          name="start_at"
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
                                 <input
-                                  defaultValue={
-                                    new Date().toISOString().split("T")[0]
-                                  }
-                                  type="date"
+                                  defaultValue={new Date().toISOString()}
+                                  type="datetime-local"
                                   className="rounded-sm px-1 py-1 dark:bg-[#FFFFFF14] dark:text-[#FFFFFFA3]"
                                   {...field}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="startTime"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <input
-                                  type="time"
-                                  className="rounded-sm px-1 py-1 dark:bg-[#FFFFFF14] dark:text-[#FFFFFFA3]"
-                                  {...field}
+                                  onChange={(e) => {
+                                    field.onChange(e.target.value);
+                                    setStartAt(e.target.value);
+                                    console.log(
+                                      new Date(e.target.value).getTime(),
+                                    );
+                                  }}
                                 />
                               </FormControl>
                             </FormItem>
@@ -248,32 +299,19 @@ const Create: NextPage = () => {
                       <div className="flex gap-1">
                         <FormField
                           control={form.control}
-                          name="endDate"
+                          name="end_at"
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
                                 <input
-                                  defaultValue={
-                                    new Date().toISOString().split("T")[0]
-                                  }
-                                  type="date"
+                                  defaultValue={new Date().toISOString()}
+                                  type="datetime-local"
                                   className="rounded-sm px-1 py-1 dark:bg-[#FFFFFF14] dark:text-[#FFFFFFA3]"
                                   {...field}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="endTime"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <input
-                                  type="time"
-                                  className="rounded-sm px-1 py-1 dark:bg-[#FFFFFF14] dark:text-[#FFFFFFA3]"
-                                  {...field}
+                                  onChange={(e) => {
+                                    field.onChange(e.target.value);
+                                    setEndAt(e.target.value);
+                                  }}
                                 />
                               </FormControl>
                             </FormItem>
@@ -296,10 +334,11 @@ const Create: NextPage = () => {
                   </div>
                 </div>
 
+                {/* Location */}
                 <div className="flex flex-1 flex-col gap-2 md:flex-row">
                   <FormField
                     control={form.control}
-                    name="location"
+                    name="location_type"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
@@ -309,11 +348,10 @@ const Create: NextPage = () => {
                                 field.onChange(e);
                                 setLocationValue(e);
                               }}
-                              defaultValue={field.value}
                             >
                               <SelectTrigger className="h-9 rounded-sm dark:bg-[#FFFFFF14]  dark:text-[#FFFFFFA3]">
                                 <SelectValue
-                                  placeholder="Offline Location"
+                                  placeholder="Select Offline or Virtual"
                                   {...field}
                                 />
                               </SelectTrigger>
@@ -345,13 +383,13 @@ const Create: NextPage = () => {
 
                   <FormField
                     control={form.control}
-                    name="locationLink"
+                    name="location"
                     render={({ field }) => (
                       <FormItem className="flex w-full flex-1">
                         <FormControl>
                           <div className="flex h-full w-full flex-1">
                             <input
-                              placeholder={locationValue}
+                              placeholder="Enter Offline Location or Virtual Link"
                               className="w-full rounded-sm px-4 py-1 text-[14px] dark:bg-[#FFFFFF14] dark:text-[#FFFFFFA3]"
                               {...field}
                             />
@@ -363,6 +401,7 @@ const Create: NextPage = () => {
                 </div>
               </div>
 
+              {/* Description */}
               <FormField
                 control={form.control}
                 name="description"
@@ -377,7 +416,7 @@ const Create: NextPage = () => {
                               <div className="flex flex-col items-start">
                                 <h3>Add Description</h3>
                                 <p className="line-clamp-1 text-left text-[12px]">
-                                  {}
+                                  {descriptionValue}
                                 </p>
                               </div>
                             </div>
@@ -395,7 +434,12 @@ const Create: NextPage = () => {
                                 />
                               </DialogDescription>
                               <div className="flex w-full flex-1 items-center justify-end gap-2 rounded-b-lg bg-[#333537] px-4 py-2">
-                                <Button onClick={() => dialogClose()}>
+                                <Button
+                                  onClick={() => {
+                                    setDescriptionValue(field.value);
+                                    dialogClose();
+                                  }}
+                                >
                                   Done
                                 </Button>
                               </div>
@@ -415,77 +459,96 @@ const Create: NextPage = () => {
                 <div className="flex flex-col gap-1 rounded-md  border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
                   <FormField
                     control={form.control}
-                    name="require_approval"
+                    name="required_approval"
                     render={({ field }) => (
                       <FormItem>
-                        <FormControl>
-                          <div className="flex w-full items-center justify-between border-b border-gray-600/30">
-                            <div className="flex items-center gap-2 py-2 text-gray-300 ">
-                              <LuUserCheck2 className="min-w-[25px]" />
-                              <div className="flex flex-col items-start">
-                                <h3>Require Approval</h3>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2 text-gray-400">
-                              <Switch {...field} />
+                        <div className="flex w-full items-center justify-between border-b border-gray-600/30">
+                          <div className="flex items-center gap-2 py-2 text-gray-300 ">
+                            <LuUserCheck2 className="min-w-[25px]" />
+                            <div className="flex flex-col items-start">
+                              <h3>Require Approval</h3>
                             </div>
                           </div>
-                        </FormControl>
+                          <div className="flex items-center gap-2 text-gray-400">
+                            <FormControl>
+                              <Switch
+                                onCheckedChange={(e) => {
+                                  field.onChange(e);
+                                  console.log(e);
+
+                                  if (e) {
+                                    setApprovalStatus(1);
+                                    console.log(1);
+                                  } else {
+                                    console.log(0);
+                                    setApprovalStatus(0);
+                                  }
+                                }}
+                              />
+                            </FormControl>
+                          </div>
+                        </div>
                       </FormItem>
                     )}
                   />
 
                   <FormField
                     control={form.control}
-                    name="description"
+                    name="capacity"
                     render={({ field }) => (
                       <FormItem>
-                        <FormControl>
-                          <Dialog>
-                            <DialogTrigger className="flex w-full flex-1">
-                              <div className="flex w-full flex-1 items-center justify-between">
-                                <div className="flex items-center gap-2 py-2 text-gray-300">
-                                  <LuArrowUpToLine className="min-w-[25px]" />
-                                  <div className="flex flex-col items-start">
-                                    <h3>Capacity</h3>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2 text-gray-400">
-                                  Unlimited <LuPenLine />
+                        <Dialog>
+                          <DialogTrigger className="flex w-full flex-1">
+                            <div className="flex w-full flex-1 items-center justify-between">
+                              <div className="flex items-center gap-2 py-2 text-gray-300">
+                                <LuArrowUpToLine className="min-w-[25px]" />
+                                <div className="flex flex-col items-start">
+                                  <h3>Capacity</h3>
                                 </div>
                               </div>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-[340px] overflow-hidden rounded-3xl bg-black/60 p-0">
-                              <DialogHeader className="space-y-0">
-                                <DialogDescription className="flex flex-col gap-2 bg-[#1D2025]/40 px-4 pt-5 backdrop-blur-md">
-                                  <div className="text-white">
-                                    <div className="mb-[8px] text-[20px]">
-                                      Max Capacity
-                                    </div>
-                                    <p className="text-[#FFFFFFC9]">
-                                      Auto-close registration when the capacity
-                                      is reached. Only approved guests count
-                                      toward the cap.
-                                    </p>
-                                    <h3 className="mt-[8px] pt-[4px] font-bold">
-                                      Capacity
-                                    </h3>
+                              <div className="flex items-center gap-2 text-gray-400">
+                                {capacity} <LuPenLine />
+                              </div>
+                            </div>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-[340px] overflow-hidden rounded-3xl bg-black/60 p-0">
+                            <DialogHeader className="space-y-0">
+                              <DialogDescription className="flex flex-col gap-2 bg-[#1D2025]/40 px-4 pt-5 backdrop-blur-md">
+                                <div className="text-white">
+                                  <div className="mb-[8px] text-[20px]">
+                                    Max Capacity
                                   </div>
+                                  <p className="text-[#FFFFFFC9]">
+                                    Auto-close registration when the capacity is
+                                    reached. Only approved guests count toward
+                                    the cap.
+                                  </p>
+                                  <h3 className="mt-[8px] pt-[4px] font-bold">
+                                    Capacity
+                                  </h3>
+                                </div>
+                                <FormControl>
                                   <Input
                                     defaultValue={"50"}
                                     className="text-white outline-none"
+                                    {...field}
                                   />
-                                </DialogDescription>
-                                <div className="flex w-full flex-1 items-center gap-2 rounded-b-lg bg-[#1D2025]/40 px-4 py-5">
-                                  <Button className="w-full">Set Limit</Button>
-                                  <Button className="w-full dark:bg-[#2F3136] dark:text-white">
-                                    Remove Limit
-                                  </Button>
-                                </div>
-                              </DialogHeader>
-                            </DialogContent>
-                          </Dialog>
-                        </FormControl>
+                                </FormControl>
+                              </DialogDescription>
+                              <div className="flex w-full flex-1 items-center gap-2 rounded-b-lg bg-[#1D2025]/40 px-4 py-5">
+                                <Button
+                                  onClick={() => {
+                                    setCapacity(field.value);
+                                    dialogClose();
+                                  }}
+                                  className="w-full"
+                                >
+                                  Set Limit
+                                </Button>
+                              </div>
+                            </DialogHeader>
+                          </DialogContent>
+                        </Dialog>
                       </FormItem>
                     )}
                   />
