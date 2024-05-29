@@ -45,15 +45,14 @@ const Home: NextPage = () => {
       <Navbar />
       <section className="mx-auto max-w-[1080px] p-[16px] md:px-[14px] md:pb-[14px] md:pt-[48px]">
         <div className="mx-auto max-w-[820px]">
-          {/* TODO: Tabs paddings */}
           <Tabs defaultValue="past">
             <div className="mb-[8px] flex w-full items-center justify-between">
               <div className="text-[32px] font-semibold text-white">Events</div>
               <TabsList className="grid grid-cols-2 bg-[#252F3A]">
-                <TabsTrigger className="" value="upcoming">
+                <TabsTrigger className="px-2" value="upcoming">
                   Upcoming
                 </TabsTrigger>
-                <TabsTrigger className="" value="past">
+                <TabsTrigger className="px-2" value="past">
                   Past
                 </TabsTrigger>
               </TabsList>
@@ -133,18 +132,18 @@ const Home: NextPage = () => {
                               </div>
                             </SheetTitle>
                             <SheetDescription>
-                              <ScrollArea className="flex h-[750px] w-full flex-col px-[16px] md:h-[660px]">
+                              <ScrollArea className="flex h-[750px] w-full flex-col px-[16px] md:h-[660px] xl:md:h-[800px]">
                                 <div className="mb-[40px] flex flex-1 items-center justify-center md:mx-[16px] md:mt-[16px]">
                                   <img
                                     className="h-[358px] rounded-lg md:h-[280px]"
-                                    src="/assets/placeholder/placeholder.png"
+                                    src="/assets/placeholder/jirumaa_banner.png"
                                     alt=""
                                   />
                                 </div>
                                 <div className="flex flex-col gap-8 text-left">
                                   <div className="flex flex-col gap-4">
                                     <h3 className="text-[32px] font-semibold leading-8 text-white">
-                                      Shardeum Builders Meet-up
+                                      Jirumaa Builders Meet-up
                                     </h3>
                                     <p className="text-[16px] font-semibold text-[#818384]">
                                       Hosted by Web3 Bulacan & 3 others

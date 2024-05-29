@@ -126,19 +126,19 @@ const ManageEvent: NextPage = () => {
             <TabsList className="mx-auto flex max-w-[788px] items-start justify-start px-0 dark:bg-transparent dark:text-[#818384]">
               <TabsTrigger
                 value="overview"
-                className="items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
+                className="mr-3 items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
               >
                 Overview
               </TabsTrigger>
               <TabsTrigger
                 value="guest"
-                className="items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
+                className="mr-3 items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
               >
                 Guests
               </TabsTrigger>
               <TabsTrigger
                 value="registration"
-                className="items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
+                className="mr-3 items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
               >
                 Registration
               </TabsTrigger>
