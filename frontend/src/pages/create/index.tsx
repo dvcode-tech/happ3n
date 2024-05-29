@@ -52,6 +52,7 @@ import { Input } from "@/components/ui/input";
 import { FileDialog } from "@/components/ui/file-dialog";
 import { useRestActor } from "@bundly/ares-react";
 import { toast } from "@/components/ui/use-toast";
+import { useHappenContext } from "@/context/HappenContext";
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -77,7 +78,7 @@ const formSchema = z.object({
 });
 
 const Create: NextPage = () => {
-  const backend = useRestActor("backend");
+  const { backend } = useHappenContext();
   const [locationValue, setLocationValue] = useState(
     "Offline Location or Virtual Link",
   );

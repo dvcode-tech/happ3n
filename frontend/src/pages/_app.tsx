@@ -24,8 +24,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <IcpConnectContextProvider client={client}>
       <HappenProvider>
         <Component {...pageProps} />
-        <Toaster />
       </HappenProvider>
+      <Toaster />
     </IcpConnectContextProvider>
   );
 }

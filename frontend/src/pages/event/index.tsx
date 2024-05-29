@@ -50,8 +50,7 @@ const formSchema = z.object({
 });
 
 const EventPage = () => {
-  const { isAuthenticated, ctxAccount } = useHappenContext();
-  const backend = useRestActor("backend");
+  const { isAuthenticated, ctxAccount, backend } = useHappenContext();
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const slug = router?.query?.q;

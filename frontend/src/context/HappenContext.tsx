@@ -2,6 +2,7 @@
 
 import { toast } from "@/components/ui/use-toast";
 import { useAuth, useRestActor } from "@bundly/ares-react";
+import { RestClientInstance } from "@bundly/ares-rest";
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -28,6 +29,7 @@ export type HappenContextType = {
   ctxAccount?: CtxAccount;
   restoreSession: () => Promise<void>;
   isAuthenticated: boolean;
+  backend: RestClientInstance;
 };
 
 export const HappenContext = createContext<HappenContextType>(
@@ -62,12 +64,6 @@ export default function HappenProvider({ children }: { children: any }) {
 
   const restoreSession = async () => {
     if (!isAuthenticated) {
-      toast({
-        variant: "destructive",
-        title: "Session expired!",
-        duration: 1000,
-      });
-
       router.push("/");
       return;
     }
@@ -81,6 +77,7 @@ export default function HappenProvider({ children }: { children: any }) {
         ctxAccount,
         isAuthenticated,
         restoreSession,
+        backend,
       }}
     >
       {children}

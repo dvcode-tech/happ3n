@@ -12,9 +12,7 @@ import { useHappenContext } from "@/context/HappenContext";
 
 const Signin: NextPage = () => {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
-  const { restoreSession, ctxAccount } = useHappenContext();
-  const backend = useRestActor("backend");
+  const { restoreSession, ctxAccount, backend } = useHappenContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const [data, setData] = useState({

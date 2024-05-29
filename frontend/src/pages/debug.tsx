@@ -2,9 +2,10 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 import { useAuth, useRestActor } from "@bundly/ares-react";
+import { useHappenContext } from "@/context/HappenContext";
 
 export default function IcConnectPage(): JSX.Element {
-  const backend = useRestActor("backend");
+  const { backend } = useHappenContext();
   const { isAuthenticated, identity } = useAuth();
   const [apiStatus, setApiStatus] = useState<string>("pending");
   const [userInfo, setUserInfo] = useState<any>(null);
