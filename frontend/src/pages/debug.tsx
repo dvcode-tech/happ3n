@@ -90,7 +90,7 @@ export default function IcConnectPage(): JSX.Element {
                       "/event/create",
                       {
                         name: "Developer Summit 2024: Innovate, Code, Create",
-                        slug: "developer-summit-2024-innovate-code-create",
+                        slug: "developer-summit-2024",
                         start_at: new Date("2024-05-20").getTime(),
                         end_at: new Date("2024-05-26").getTime(),
                         location: JSON.stringify({

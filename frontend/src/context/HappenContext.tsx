@@ -27,6 +27,7 @@ export interface CtxAccount {
 export type HappenContextType = {
   ctxAccount?: CtxAccount;
   restoreSession: () => Promise<void>;
+  isAuthenticated: boolean;
 };
 
 export const HappenContext = createContext<HappenContextType>(
@@ -78,6 +79,7 @@ export default function HappenProvider({ children }: { children: any }) {
     <HappenContext.Provider
       value={{
         ctxAccount,
+        isAuthenticated,
         restoreSession,
       }}
     >

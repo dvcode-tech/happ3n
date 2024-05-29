@@ -19,7 +19,15 @@ function selectProvider(providers: IdentityProvider[]): IdentityProvider {
   return providers[0];
 }
 
-const LoginButton = ({ children = null, className = "", ...props }) => {
+const LoginButton = ({
+  children = null,
+  className = "",
+  ...props
+}: {
+  [x: string]: any;
+  children?: any;
+  className?: string | undefined;
+}) => {
   const client = useClient();
   const providers = useProviders();
 
