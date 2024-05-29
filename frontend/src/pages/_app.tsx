@@ -3,6 +3,7 @@ import "tailwindcss/tailwind.css";
 
 import { Client, InternetIdentity } from "@bundly/ares-core";
 import { IcpConnectContextProvider } from "@bundly/ares-react";
+import HappenProvider from "@/context/HappenContext";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const client = Client.create({
@@ -20,7 +21,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <IcpConnectContextProvider client={client}>
-      <Component {...pageProps} />
+      <HappenProvider>
+        <Component {...pageProps} />
+      </HappenProvider>
     </IcpConnectContextProvider>
   );
 }

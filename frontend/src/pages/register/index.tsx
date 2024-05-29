@@ -8,10 +8,12 @@ import { useEffect, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth, useRestActor } from "@bundly/ares-react";
 import { useRouter } from "next/router";
+import { useHappenContext } from "@/context/HappenContext";
 
 const Signin: NextPage = () => {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { restoreSession, ctxAccount } = useHappenContext();
   const backend = useRestActor("backend");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -96,32 +98,13 @@ const Signin: NextPage = () => {
     console.log(data);
   };
 
-  const fetchUserInfo = async () => {
-    try {
-      const userInfo = await backend.get("/user/me");
-      console.log("userInfo", userInfo);
-      return true;
-    } catch (error) {
-      console.error({ error });
-      return false;
-    }
-  };
-
   useEffect(() => {
-    const checkAuthUser = async () => {
-      if (!isAuthenticated) {
-        router.push("/");
-        return;
-      }
-      if (await fetchUserInfo()) {
-        router.push("/home");
-      } else {
-        router.push("/register");
-      }
-    };
-
-    checkAuthUser();
-  }, [isAuthenticated]);
+    if (!ctxAccount) {
+      restoreSession();
+    } else {
+      router.push("/home");
+    }
+  }, [ctxAccount]);
 
   return (
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">

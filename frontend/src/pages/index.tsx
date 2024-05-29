@@ -2,39 +2,21 @@
 import { NextPage } from "next";
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
-import { useAuth, useRestActor } from "@bundly/ares-react";
+import { useHappenContext } from "@/context/HappenContext";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
-  const backend = useRestActor("backend");
-  const { isAuthenticated, identity } = useAuth();
   const router = useRouter();
-
-  const fetchUserInfo = async () => {
-    try {
-      const userInfo = await backend.get("/user/me");
-      console.log("userInfo", userInfo);
-      return true;
-    } catch (error) {
-      console.error({ error });
-      return false;
-    }
-  };
+  const { restoreSession, ctxAccount } = useHappenContext();
 
   useEffect(() => {
-    const checkAuthUser = async () => {
-      if (!isAuthenticated) return;
-
-      if (await fetchUserInfo()) {
-        router.push("/home");
-      } else {
-        router.push("/register");
-      }
-    };
-
-    checkAuthUser();
-  }, [isAuthenticated]);
+    if (!ctxAccount) {
+      restoreSession();
+    } else {
+      router.push("/home");
+    }
+  }, [ctxAccount]);
 
   return (
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-no-repeat md:bg-center">
