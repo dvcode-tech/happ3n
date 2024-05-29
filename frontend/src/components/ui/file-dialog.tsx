@@ -129,14 +129,14 @@ export function FileDialog<TFieldValues extends FieldValues>({
                   if (!files) return;
                   setFiles(files.filter((_, j) => j !== i));
                 }}
-                className="absolute right-1 top-1 flex cursor-pointer flex-col items-center justify-center rounded-md !border-dashed bg-black/50 p-1 transition-all duration-300 hover:bg-red-500/50"
+                className="absolute bottom-2 right-2 flex cursor-pointer flex-col items-center justify-center rounded-md !border-dashed bg-black/50 p-1 transition-all duration-300 hover:bg-red-500/50"
               >
                 <LuTrash className="h-4 w-4 text-red-500" aria-hidden="true" />
                 <span className="sr-only">Remove</span>
               </div>
               <object
                 data={file.preview}
-                className="checkers-bg h-20 w-20 shrink-0 rounded-md border border-slate-200 object-contain"
+                className="checkers-bg aspect-[1/1] h-[358px] items-center justify-center rounded-xl md:h-[280px] lg:h-[330px]"
                 type={file.type}
               />
             </div>
@@ -206,7 +206,7 @@ export function FileDialog<TFieldValues extends FieldValues>({
           )}
 
           {files?.length ? (
-            <div className="mt-6 grid max-h-[40vh] shrink-0 gap-5 overflow-y-auto">
+            <div className="mt-6 grid max-h-[40vh] shrink-0 gap-5 overflow-y-auto text-[#FFFFFF80]">
               {files?.map((file, i) => (
                 <FileCard
                   key={file.preview}
@@ -223,7 +223,7 @@ export function FileDialog<TFieldValues extends FieldValues>({
               type="button"
               variant="outline"
               size="sm"
-              className="mt-2.5 w-full"
+              className="mt-2.5 w-full text-[#FFFFFF80] dark:bg-[#FFFFFF14]"
               onClick={() => setFiles(null)}
             >
               <LuTrash className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -245,6 +245,9 @@ interface FileCardProps {
 }
 
 function FileCard({ i, file, files, setFiles }: FileCardProps) {
+  const dialogClose = () => {
+    document.getElementById("closeDialog")?.click();
+  };
   return (
     <div className="relative flex items-center justify-between gap-2.5">
       <div className="flex items-center gap-2">
@@ -267,14 +270,15 @@ function FileCard({ i, file, files, setFiles }: FileCardProps) {
           type="button"
           variant="outline"
           size="icon"
-          className="h-7 w-7"
+          className="h-7 w-7 text-[#FFFFFF80] dark:bg-[#FFFFFF14]"
           onClick={() => {
-            if (!files) return;
-            setFiles(files.filter((_, j) => j !== i));
+            // if (!files) return;
+            // setFiles(files.filter((_, j) => j !== i));
+            dialogClose();
           }}
         >
           <LuX className="h-4 w-4" aria-hidden="true" />
-          <span className="sr-only">Remove file</span>
+          {/* <span className="sr-only">Remove file</span> */}
         </Button>
       </div>
     </div>
