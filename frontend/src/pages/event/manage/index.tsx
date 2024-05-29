@@ -1,8 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 //TODO:Mobile View
 //TODO:Registration Tab
 
 import { NextPage } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
 
@@ -14,6 +15,7 @@ import {
   LuQrCode,
   LuUsers,
   LuSearch,
+  LuVideo,
 } from "react-icons/lu";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,9 +28,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/router";
+import { useHappenContext } from "@/context/HappenContext";
+import { formatDate, urlify } from "@/lib/utils";
 
 const GuestList = [
   {
@@ -94,9 +97,28 @@ const GuestList = [
 ];
 
 const ManageEvent: NextPage = () => {
+  const { isAuthenticated, ctxAccount, backend } = useHappenContext();
   const router = useRouter();
-  const { slug } = router.query;
+  const slug = router?.query?.q;
+
+  const [data, setData] = useState<any>(null);
   const [guest, setGuest] = useState(45);
+
+  const fetchEvent = async (q: any) => {
+    try {
+      const data: any = (await backend.get(`/event/slug/${q}`)).data;
+      console.log(data?.data);
+      setData(data?.data);
+    } catch (error) {
+      console.error({ error });
+    }
+  };
+
+  useEffect(() => {
+    if (!slug) return;
+    fetchEvent(slug);
+  }, [slug]);
+
   return (
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">
       <Header />
@@ -110,7 +132,7 @@ const ManageEvent: NextPage = () => {
               alt=""
             />
             <div className="text-[32px] font-medium text-[#FFFFFFC8]">
-              DvCode General Assembly
+              {data?.name}
             </div>
           </div>
           <a
@@ -181,33 +203,47 @@ const ManageEvent: NextPage = () => {
                       <div className="flex gap-4">
                         <div className="h-[50px] w-[50px] rounded-lg border border-gray-600/30 text-center">
                           <div className="rounded-t-md bg-[#FFFFFF14] py-1 text-[9px] font-medium uppercase text-gray-300">
-                            May
+                            {formatDate(data?.start_at).monthLongName}
                           </div>
                           <div className="flex flex-1 items-center justify-center rounded-b-md p-0.5 text-[16px] font-medium uppercase text-gray-300">
-                            10
+                            {formatDate(data?.start_at).day}
                           </div>
                         </div>
                         <div className="flex flex-col">
-                          <div className="text-[16px] font-medium">Today</div>
+                          <div className="text-[16px] font-medium">
+                            {formatDate(data?.start_at).dayName},{" "}
+                            {formatDate(data?.start_at).monthLongName}{" "}
+                            {formatDate(data?.start_at).day}
+                          </div>
                           <div className="text-[14px] text-[#FFFFFFC9]">
-                            10:00 PM - May 29, 11:00 PM GMT+8
+                            {formatDate(data?.start_at).time}
+                            {" - "}
+                            {data?.end_at - data?.start_at >= 24 * 60 * 60
+                              ? `${formatDate(data?.end_at).monthLongName} ${formatDate(data?.end_at).day}, `
+                              : ""}
+                            {formatDate(data?.end_at).time} GMT+8
                           </div>
                         </div>
                       </div>
 
                       <div className="flex">
                         <div className="flex h-[50px] w-[50px] items-center justify-center rounded-lg border border-gray-600/30 text-center">
-                          <LuMapPin className="text-xl text-gray-300" />
+                          {JSON.parse(data?.location || "{}")?.type ===
+                          "VIRTUAL" ? (
+                            <LuVideo className="text-xl text-gray-300" />
+                          ) : (
+                            <LuMapPin className="text-xl text-gray-300" />
+                          )}
                         </div>
                         <a
                           href="#"
                           className="ml-4 flex flex-col justify-center gap-0.5 text-white"
                         >
                           <div className="flex gap-1 text-[16px] font-medium">
-                            Mendez Resort and Events Place{" "}
+                            {JSON.parse(data?.location || "{}")?.type}{" "}
                           </div>
                           <div className="text-[14px] font-medium text-[#FFFFFFC9]">
-                            San Jose Delmonte Bulacan, Central Luzon
+                            {JSON.parse(data?.location || "{}")?.location}
                           </div>
                         </a>
                       </div>
@@ -235,14 +271,17 @@ const ManageEvent: NextPage = () => {
                     <div className="flex items-center text-[14px] text-[#818384]">
                       <img
                         className="h-5 rounded-full"
-                        src="/assets/logo/icon.png"
+                        src={
+                          urlify(data?.user?.profile_photo) ||
+                          "/assets/logo/icon.png"
+                        }
                         alt=""
                       />
                       <h1 className="ml-2 text-[16px] font-medium text-white">
-                        Jirumaa Dev
+                        {data?.user?.name}
                       </h1>
                       <p className="ml-2 text-[16px] font-light text-white">
-                        dev.jirumaa@gmail.com
+                        {data?.user?.email}
                       </p>
                       <div className="ml-2 flex items-center justify-center rounded-2xl bg-[#07A46022] px-[7px] py-[4px] text-[12px] font-medium leading-none text-[#47C97E]">
                         Creator
