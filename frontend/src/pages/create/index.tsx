@@ -1,5 +1,6 @@
 import { NextPage } from "next";
 import { useState } from "react";
+import axios from "axios";
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
 
@@ -51,21 +52,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileDialog } from "@/components/ui/file-dialog";
 
-export enum EventType {
-  PUBLIC = 0,
-  PRIVATE = 1,
-}
-
-export enum EventStatus {
-  HIDDEN = 0,
-  SHOWN = 1,
-}
-
-export enum EventRequiredApproval {
-  NOT_REQUIRED = 0,
-  REQUIRED = 1,
-}
-
 const formSchema = z.object({
   name: z.string().min(1),
   slug: z.string(),
@@ -100,6 +86,13 @@ const Create: NextPage = () => {
   const [startAt, setStartAt] = useState("");
   const [endAt, setEndAt] = useState("");
 
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
+
+  // const handleFileChange = (event) => {
+  //   setSelectedFile(event.target.files[0]);
+  // };
+
   const dialogClose = () => {
     document.getElementById("closeDialog")?.click();
   };
@@ -115,13 +108,41 @@ const Create: NextPage = () => {
       location: "",
       required_approval: false,
       capacity: "",
-      banner: null,
+      banner: "",
       description: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      const handleUpload = async () => {
+        // @ts-ignore
+        if (!values.banner[0]) return;
+
+        const formData = new FormData();
+        // @ts-ignore
+        formData.append("image", values.banner[0]);
+
+        try {
+          const response = await axios.post(
+            "https://api.imgur.com/3/image",
+            formData,
+            {
+              headers: {
+                Authorization: process.env.NEXT_PUBLIC_CLIENTID,
+                "Content-Type": "multipart/form-data",
+              },
+            },
+          );
+
+          setImageUrl(response.data.data.link);
+        } catch (error) {
+          console.error("Error uploading the image:", error);
+        }
+      };
+
+      handleUpload();
+
       const slug = slugify(values.name);
       const locationData = {
         type: values.location_type,
@@ -131,7 +152,7 @@ const Create: NextPage = () => {
 
       const data = {
         type: Number(type),
-        banner: values.banner,
+        banner: imageUrl,
         name: values.name,
         slug: slug,
         start_at: Number(new Date(startAt).getTime()),
