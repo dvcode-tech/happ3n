@@ -67,7 +67,7 @@ const Home: NextPage = () => {
                   You have no upcoming events. Why not host one?
                 </div>
                 <a
-                  href=""
+                  href="/create"
                   className="mt-[40px] inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[#FFFFFF14] px-4 py-2 text-sm font-medium text-[#FFFFFFA3] ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950  dark:focus-visible:ring-slate-300"
                 >
                   <LuPlus /> Create Event
