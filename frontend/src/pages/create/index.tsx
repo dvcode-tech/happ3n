@@ -3,6 +3,7 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
 import path from "path";
+
 import {
   LuMapPin,
   LuUserCheck2,
@@ -229,9 +230,9 @@ const Create: NextPage = () => {
                   >
                     <Button
                       variant="outline"
-                      className="relative flex aspect-[1/1] h-[358px] flex-col items-center justify-center rounded-xl bg-[url('/assets/placeholder/placeholder-event.png')] bg-cover bg-no-repeat md:h-[280px] lg:h-[330px]"
+                      className="relative flex aspect-[1/1] h-[358px] flex-col items-center justify-center rounded-xl bg-[url('/assets/placeholder/placeholder_banner.png')] bg-cover bg-no-repeat md:h-[280px] lg:h-[330px]"
                     >
-                      <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white">
+                      <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
                         <LuImage className="h-5 w-5" />
                       </div>
                     </Button>
@@ -301,7 +302,7 @@ const Create: NextPage = () => {
                     <FormItem>
                       <FormControl>
                         <Input
-                          className="flex h-10 w-full rounded-md border border-none bg-transparent px-0 py-2 text-[40px] font-semibold text-[#FFFFFFA3] ring-offset-transparent file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-transparent focus-visible:ring-offset-transparent disabled:cursor-not-allowed disabled:opacity-50 dark:border-none dark:bg-transparent dark:ring-offset-transparent dark:placeholder:text-[#939597] dark:focus-visible:ring-transparent"
+                          className="flex h-10 w-full rounded-md border border-none bg-transparent px-0 py-2 text-[40px] font-semibold text-[#FFFFFFA3] ring-offset-transparent file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-transparent focus-visible:ring-offset-transparent active:bg-transparent disabled:cursor-not-allowed disabled:opacity-50 dark:border-none dark:bg-transparent dark:ring-offset-transparent dark:placeholder:text-[#939597] dark:focus-visible:ring-transparent"
                           placeholder="Event Name"
                           {...field}
                         />
@@ -322,51 +323,56 @@ const Create: NextPage = () => {
                       <div>Start</div>
                       <div>End</div>
                     </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="flex gap-1">
+                    <div className="flex w-full flex-col gap-1 md:w-[221px]">
+                      <div className="grid w-full grid-cols-1 gap-1">
                         <FormField
                           control={form.control}
                           name="start_at"
                           render={({ field }) => (
                             <FormItem>
-                              <FormControl>
-                                <input
-                                  defaultValue={new Date().toISOString()}
-                                  type="datetime-local"
-                                  className="rounded-sm px-1 py-1 dark:bg-[#FFFFFF14] dark:text-[#FFFFFFA3]"
-                                  {...field}
-                                  onChange={(e) => {
-                                    field.onChange(e.target.value);
-                                    setStartAt(e.target.value);
-                                    console.log(
-                                      new Date(e.target.value).getTime(),
-                                    );
-                                  }}
-                                />
-                              </FormControl>
+                              <div className="flex items-center justify-between gap-4">
+                                <div className="block text-[#FFFFFFA3] md:hidden">
+                                  Start
+                                </div>
+                                <FormControl>
+                                  <input
+                                    defaultValue={new Date().toISOString()}
+                                    type="datetime-local"
+                                    className="w-[267px] rounded-lg px-4 py-1 md:rounded-sm dark:bg-[#FFFFFF14] dark:text-[#FFFFFF]"
+                                    {...field}
+                                    onChange={(e) => {
+                                      field.onChange(e.target.value);
+                                      setStartAt(e.target.value);
+                                    }}
+                                  />
+                                </FormControl>
+                              </div>
                             </FormItem>
                           )}
                         />
-                      </div>
 
-                      <div className="flex gap-1">
                         <FormField
                           control={form.control}
                           name="end_at"
                           render={({ field }) => (
                             <FormItem>
-                              <FormControl>
-                                <input
-                                  defaultValue={new Date().toISOString()}
-                                  type="datetime-local"
-                                  className="rounded-sm px-1 py-1 dark:bg-[#FFFFFF14] dark:text-[#FFFFFFA3]"
-                                  {...field}
-                                  onChange={(e) => {
-                                    field.onChange(e.target.value);
-                                    setEndAt(e.target.value);
-                                  }}
-                                />
-                              </FormControl>
+                              <div className="flex items-center justify-between gap-4">
+                                <div className="block text-[#FFFFFFA3] md:hidden">
+                                  End
+                                </div>
+                                <FormControl>
+                                  <input
+                                    defaultValue={new Date().toISOString()}
+                                    type="datetime-local"
+                                    className="w-[267px] rounded-lg px-4 py-1 md:rounded-sm dark:bg-[#FFFFFF14] dark:text-[#FFFFFF]"
+                                    {...field}
+                                    onChange={(e) => {
+                                      field.onChange(e.target.value);
+                                      setEndAt(e.target.value);
+                                    }}
+                                  />
+                                </FormControl>
+                              </div>
                             </FormItem>
                           )}
                         />
@@ -462,7 +468,7 @@ const Create: NextPage = () => {
                   <FormItem>
                     <FormControl>
                       <Dialog>
-                        <div className="flex flex-col gap-1 rounded-md  border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
+                        <div className="flex flex-col gap-1 border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
                           <DialogTrigger>
                             <div className="flex gap-2 text-gray-300">
                               <LuMapPin className="min-w-[25px]" />
@@ -474,7 +480,7 @@ const Create: NextPage = () => {
                               </div>
                             </div>
                           </DialogTrigger>
-                          <DialogContent className="rounded-3xl border border-[#333537]/30 p-0">
+                          <DialogContent className="border border-[#333537]/30 bg-transparent p-0">
                             <DialogHeader className="space-y-0">
                               <DialogTitle className="rounded-t-lg bg-[#333537] p-4 text-[17px] text-white">
                                 Event Description
