@@ -41,6 +41,9 @@ Route.post('/event/:eventId/guests/:guestId/checkedin', isAuth, GuestsController
 Route.get('/health', ApisController.health);
 Route.get('/config', ApisController.config);
 
+Route.get('/uploads/:filename', ApisController.readupload);
+Route.post('/upload', isAuth, ApisController.testupload);
+
 // EVENT
 Route.get('/event/slug/:slug', EventsController.view_by_slug);
 
