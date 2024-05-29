@@ -4,8 +4,125 @@ import Navbar from "@/components/Navbar";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { toast } from "@/components/ui/use-toast";
+import { useAuth, useRestActor } from "@bundly/ares-react";
+import { useRouter } from "next/router";
 
 const Signin: NextPage = () => {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
+  const backend = useRestActor("backend");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [data, setData] = useState({
+    email: null,
+    username: null,
+    name: null,
+  });
+
+  const updateData = (e: any) => {
+    setData({
+      ...data,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const onSubmit = async (e: any) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+
+    if (!data.username) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Username is required!",
+        duration: 1000,
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (!data.email) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Email is required!",
+        duration: 1000,
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (!data.name) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Name is required!",
+        duration: 1000,
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await backend.post("/user/register", data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      toast({
+        variant: "default",
+        title: "Success",
+        description: (response.data as any)?.message,
+        duration: 2000,
+      });
+
+      console.log(response.data);
+      setIsLoading(false);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error?.message,
+        duration: 1000,
+      });
+      console.error({ error });
+      setIsLoading(false);
+    }
+
+    console.log(data);
+  };
+
+  const fetchUserInfo = async () => {
+    try {
+      const userInfo = await backend.get("/user/me");
+      console.log("userInfo", userInfo);
+      return true;
+    } catch (error) {
+      console.error({ error });
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    const checkAuthUser = async () => {
+      if (!isAuthenticated) {
+        router.push("/");
+        return;
+      }
+      if (await fetchUserInfo()) {
+        router.push("/home");
+      } else {
+        router.push("/register");
+      }
+    };
+
+    checkAuthUser();
+  }, [isAuthenticated]);
+
   return (
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">
       <Header />
@@ -21,22 +138,39 @@ const Signin: NextPage = () => {
                 Please sign in or sign up below.
               </p>
             </div>
-            <div className="flex flex-col gap-2 px-[24px] pb-[20px] text-white">
-              <Input type="text" placeholder="Name" />
-              <Input type="text" placeholder="Username" />
-              <Input type="email" placeholder="Email" />
-              <Button type="submit">Register</Button>
-            </div>
-            <div className="border-t border-t-gray-600 py-[20px]">
-              <div className="px-[24px]">
-                <a
-                  href="/signin"
-                  className="inline-flex w-full items-center justify-center whitespace-nowrap rounded-md bg-[#404953] py-2.5 text-sm font-medium text-white ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950  dark:focus-visible:ring-slate-300"
-                >
-                  Sign In
-                </a>
-              </div>
-            </div>
+            <form
+              onSubmit={onSubmit}
+              className="flex flex-col gap-2 px-[24px] pb-[20px] text-white"
+            >
+              <Input
+                type="text"
+                placeholder="Name"
+                id="name"
+                name="name"
+                disabled={isLoading}
+                onChange={updateData}
+                required
+              />
+              <Input
+                type="text"
+                placeholder="Username"
+                id="username"
+                name="username"
+                disabled={isLoading}
+                onChange={updateData}
+              />
+              <Input
+                type="email"
+                placeholder="Email"
+                id="email"
+                name="email"
+                disabled={isLoading}
+                onChange={updateData}
+              />
+              <Button className="mt-4" type="submit">
+                Register
+              </Button>
+            </form>
           </div>
         </div>
       </section>
