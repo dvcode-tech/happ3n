@@ -566,7 +566,8 @@ const Create: NextPage = () => {
                                 </div>
                               </div>
                               <div className="flex items-center gap-2 text-gray-400">
-                                {capacity} <LuPenLine />
+                                {Number(capacity) <= 0 ? "Unlimited" : capacity}{" "}
+                                <LuPenLine />
                               </div>
                             </div>
                           </DialogTrigger>
