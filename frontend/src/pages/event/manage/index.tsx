@@ -123,8 +123,8 @@ const ManageEvent: NextPage = () => {
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">
       <Header />
       <Navbar />
-      <section className="pb-[14px] pt-[48px]">
-        <div className="mx-auto flex max-w-[788px] items-center justify-between">
+      <section className="pb-[14px] pt-[28px] md:pt-[48px]">
+        <div className="mx-auto flex max-w-[788px] items-center justify-between px-4 lg:px-0">
           <div className="flex items-center justify-center gap-2">
             <img
               className="h-5 rounded-full"
@@ -145,7 +145,7 @@ const ManageEvent: NextPage = () => {
 
         <div>
           <Tabs defaultValue="overview" className="pt-[8px]">
-            <TabsList className="mx-auto flex max-w-[788px] items-start justify-start px-0 dark:bg-transparent dark:text-[#818384]">
+            <TabsList className="mx-auto flex max-w-[788px] items-start justify-start px-4 lg:px-0 dark:bg-transparent dark:text-[#818384]">
               <TabsTrigger
                 value="overview"
                 className="mr-3 items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
@@ -170,7 +170,7 @@ const ManageEvent: NextPage = () => {
               value="overview"
               className="border-t border-gray-600/30"
             >
-              <div className="mx-auto mt-[28px] flex max-w-[788px] flex-col gap-[20px]">
+              <div className="mx-auto mt-[28px] flex max-w-[788px] flex-col gap-[20px] px-4 lg:px-0">
                 <div>
                   <a
                     href="#"
@@ -180,10 +180,10 @@ const ManageEvent: NextPage = () => {
                   </a>
                 </div>
 
-                <div className="flex gap-x-[20px] rounded-lg border border-gray-600/30 bg-gray-800/40 p-[12px] text-white backdrop-blur-sm">
+                <div className="flex flex-col gap-x-[20px] rounded-lg border border-gray-600/30 bg-gray-800/40 p-[12px] text-white backdrop-blur-sm md:flex-row">
                   <div className="flex flex-1">
                     {/* TODO: Overview Banner */}
-                    <div className="relative h-[280px] w-[371px] overflow-hidden rounded-lg bg-blue-950">
+                    <div className="relative h-[257px] w-[332px] overflow-hidden rounded-lg bg-blue-950 md:h-[280px] md:w-[371px]">
                       <div className="absolute bottom-2 left-1/2 mx-auto flex w-[355px] -translate-x-1/2 justify-between rounded-md bg-[#13151752] py-2 backdrop-blur-md">
                         <div className="flex items-center gap-1 pl-4 text-[14px] text-[#FFFFFFCC]">
                           {`happ3n/${slug}`} <LuArrowUpRight />
@@ -293,7 +293,7 @@ const ManageEvent: NextPage = () => {
             </TabsContent>
 
             <TabsContent value="guest" className="border-t border-gray-600/30">
-              <div className="mx-auto mt-[28px] flex max-w-[788px] flex-col gap-[20px]">
+              <div className="mx-auto mt-[28px] flex max-w-[788px] flex-col gap-[20px] px-4 lg:px-0">
                 <div className="flex text-[20px] font-semibold text-white">
                   At a Glance
                 </div>
@@ -394,7 +394,7 @@ const ManageEvent: NextPage = () => {
               value="registration"
               className="border-t border-gray-600/30"
             >
-              <div className="mx-auto mt-[28px] flex max-w-[788px] text-white">
+              <div className="mx-auto mt-[28px] flex max-w-[788px] px-4 text-white lg:px-0">
                 Registration
               </div>
             </TabsContent>
