@@ -3,6 +3,7 @@ import { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { useAuth } from "@bundly/ares-react";
 import { LoginButton, LogoutButton } from "../AuthButton";
+import Link from "next/link";
 
 const formatTime = (date: Date) => {
   return date.toLocaleTimeString("en-US", {
@@ -32,15 +33,15 @@ const Navbar: NextPage = () => {
 
   return (
     <section className="sticky top-0 z-[98] flex flex-1 items-center justify-between bg-[#131517]/50 px-[16px] py-[12px]">
-      <a href="/">
+      <Link href="/">
         <img className="h-5" src="/assets/logo/icon.png" alt="" />
-      </a>
+      </Link>
       <div className="flex items-center gap-4 text-[14px] font-medium text-[#FFFFFFA3]">
         <div className="hidden md:block">{formatTime(currentTime)} GMT+8</div>
         {/* <button>Explore Events</button> */}
-        <a href="/create" className="text-[14px]">
+        <Link href="/create" className="text-[14px]">
           Create Event
-        </a>
+        </Link>
         {isAuthenticated ? (
           <LogoutButton className="rounded-3xl bg-gray-500/50 px-4 py-1 text-[14px] text-[#FFFFFFA3] hover:bg-gray-400" />
         ) : (

@@ -22,6 +22,7 @@ import { useHappenContext } from "@/context/HappenContext";
 import { formatDate, urlify } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 const timelineData = [
   {
@@ -82,12 +83,12 @@ const Home: NextPage = () => {
                   <div className="text-[16px] font-semibold text-[#FFFFFF80]">
                     You have no upcoming events. Why not host one?
                   </div>
-                  <a
+                  <Link
                     href="/create"
                     className="mt-[40px] inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[#FFFFFF14] px-4 py-2 text-sm font-medium text-[#FFFFFFA3] ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950  dark:focus-visible:ring-slate-300"
                   >
                     <LuPlus /> Create Event
-                  </a>
+                  </Link>
                 </div>
               )}
               {eventState?.upcomingEvent?.length > 0 && (
@@ -111,7 +112,7 @@ const Home: NextPage = () => {
                               </h3>
                             </div>
                             <SheetTrigger className="w-full">
-                              <a className="ml-6 flex flex-row justify-between gap-1 rounded-md border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
+                              <div className="ml-6 flex flex-row justify-between gap-1 rounded-md border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
                                 <div className="flex flex-col items-start text-left">
                                   <h3 className="text-[16px] font-semibold text-[#88898A] md:text-[18px]">
                                     {formatDate(event?.start_at).time}
@@ -197,7 +198,7 @@ const Home: NextPage = () => {
                                   src={urlify(event?.banner)}
                                   alt=""
                                 />
-                              </a>
+                              </div>
                             </SheetTrigger>
                             <SheetContent className="z-[999] w-full md:w-[550px]">
                               <SheetHeader className="sticky">
@@ -209,13 +210,13 @@ const Home: NextPage = () => {
                                     >
                                       Copy Link
                                     </a> */}
-                                    <a
+                                    <Link
                                       href={`/event?q=${event?.slug}`}
                                       target="_blank"
                                       className="rounded-md bg-gray-500/50 px-4 py-1 text-[14px] text-[#FFFFFFA3] hover:bg-gray-400"
                                     >
                                       Event Page
-                                    </a>
+                                    </Link>
                                   </div>
                                 </SheetTitle>
                                 <SheetDescription>
@@ -284,7 +285,7 @@ const Home: NextPage = () => {
                                               <LuMapPin className="text-xl text-gray-300" />
                                             )}
                                           </div>
-                                          <a
+                                          <Link
                                             href="#"
                                             className="ml-4 flex flex-col justify-center gap-0.5 text-white"
                                           >
@@ -303,7 +304,7 @@ const Home: NextPage = () => {
                                                 )?.location
                                               }
                                             </div>
-                                          </a>
+                                          </Link>
                                         </div>
                                       </div>
 
@@ -405,12 +406,12 @@ const Home: NextPage = () => {
                   <div className="text-[16px] font-semibold text-[#FFFFFF80]">
                     You have no past events. Why not host one?
                   </div>
-                  <a
+                  <Link
                     href="/create"
                     className="mt-[40px] inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[#FFFFFF14] px-4 py-2 text-sm font-medium text-[#FFFFFFA3] ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950  dark:focus-visible:ring-slate-300"
                   >
                     <LuPlus /> Create Event
-                  </a>
+                  </Link>
                 </div>
               )}
               {eventState?.pastEvent?.length > 0 && (
@@ -430,7 +431,7 @@ const Home: NextPage = () => {
                             </h3>
                           </div>
                           <SheetTrigger className="w-full">
-                            <a className="ml-6 flex flex-row justify-between gap-1 rounded-md border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
+                            <div className="ml-6 flex flex-row justify-between gap-1 rounded-md border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
                               <div className="flex flex-col items-start text-left">
                                 <h3 className="text-[16px] font-semibold text-[#88898A] md:text-[18px]">
                                   {formatDate(event?.start_at).time}
@@ -516,7 +517,7 @@ const Home: NextPage = () => {
                                 src={urlify(event?.banner)}
                                 alt=""
                               />
-                            </a>
+                            </div>
                           </SheetTrigger>
                           <SheetContent className="z-[999] w-full md:w-[550px]">
                             <SheetHeader className="sticky">
@@ -528,13 +529,13 @@ const Home: NextPage = () => {
                                   >
                                     Copy Link
                                   </a> */}
-                                  <a
+                                  <Link
                                     href={`/event?q=${event?.slug}`}
                                     target="_blank"
                                     className="rounded-md bg-gray-500/50 px-4 py-1 text-[14px] text-[#FFFFFFA3] hover:bg-gray-400"
                                   >
                                     Event Page
-                                  </a>
+                                  </Link>
                                 </div>
                               </SheetTitle>
                               <SheetDescription>
@@ -602,7 +603,7 @@ const Home: NextPage = () => {
                                             <LuMapPin className="text-xl text-gray-300" />
                                           )}
                                         </div>
-                                        <a
+                                        <Link
                                           href="#"
                                           className="ml-4 flex flex-col justify-center gap-0.5 text-white"
                                         >
@@ -621,7 +622,7 @@ const Home: NextPage = () => {
                                               )?.location
                                             }
                                           </div>
-                                        </a>
+                                        </Link>
                                       </div>
                                     </div>
 

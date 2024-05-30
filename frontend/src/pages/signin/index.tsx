@@ -1,6 +1,7 @@
 import { NextPage } from "next";
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
+import Link from "next/link";
 
 const Signin: NextPage = () => {
   return (
@@ -17,22 +18,22 @@ const Signin: NextPage = () => {
               <p className="pb-[12px] pt-[1px] text-[14px] text-slate-200">
                 Please sign in or sign up below.
               </p>
-              <a
+              <Link
                 href="#"
                 className="w-f rounded-md bg-gray-200 px-4 py-2 text-center text-[14px] font-medium text-black hover:bg-gray-400"
               >
                 Sign In with Identity
-              </a>
+              </Link>
             </div>
 
             <div className="border-t border-t-gray-600 py-[20px]">
               <div className="px-[24px]">
-                <a
+                <Link
                   href="/register"
                   className="inline-flex w-full items-center justify-center whitespace-nowrap rounded-md bg-gray-500 py-2 text-sm font-medium text-white ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950  dark:focus-visible:ring-slate-300"
                 >
                   Sign Up
-                </a>
+                </Link>
               </div>
             </div>
           </div>
