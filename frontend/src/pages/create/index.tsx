@@ -223,7 +223,7 @@ const Create: NextPage = () => {
                     setValue={form.setValue}
                     name="banner"
                     maxFiles={1}
-                    maxSize={1024 * 1024 * 10}
+                    maxSize={1024 * 1024 * 0.8}
                     accept={{ "image/*": [] }}
                     isUploading={false}
                     disabled={false}
