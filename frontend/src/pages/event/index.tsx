@@ -242,7 +242,7 @@ const EventPage = () => {
             />
             <div className="flex flex-col gap-8 text-left">
               <div className="flex flex-col gap-4 pt-2">
-                <h3 className="text-[38px] font-semibold leading-8 text-white">
+                <h3 className="text-[38px] font-semibold leading-10 text-white md:leading-8">
                   {data?.name}
                 </h3>
               </div>

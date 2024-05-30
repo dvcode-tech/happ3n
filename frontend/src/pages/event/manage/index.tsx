@@ -476,7 +476,6 @@ const ManageEvent: NextPage = () => {
 
                 <div className="flex flex-col gap-x-[20px] rounded-lg border border-gray-600/30 bg-gray-800/40 p-[12px] text-white backdrop-blur-sm md:flex-row">
                   <div className="flex flex-1">
-                    {/* TODO: Overview Banner */}
                     <div
                       className="relative aspect-[1/1] h-[257px] w-[332px] overflow-hidden rounded-lg bg-gray-800/40 bg-contain bg-center bg-no-repeat md:h-[280px] md:w-[371px]"
                       style={{

@@ -1,6 +1,3 @@
-//TODO:Mobile View
-//TODO:Scanner
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { NextPage } from "next";
@@ -133,6 +130,7 @@ const Scan: NextPage = () => {
             onResult={(result, error) => {
               if (!!result) {
                 setQrData(result["text"]);
+                console.log(result["text"]);
               }
 
               if (!!error) {

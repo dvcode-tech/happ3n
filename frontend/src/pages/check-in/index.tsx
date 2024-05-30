@@ -1,5 +1,3 @@
-//TODO:Mobile View
-
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import Header from "@/components/Header";
@@ -118,7 +116,7 @@ const CheckIn: NextPage = () => {
       <Header />
 
       <section className="flex flex-col">
-        <div className="mx-auto flex w-full max-w-[788px] items-center justify-between py-[10px]">
+        <div className="mx-auto flex w-full max-w-[788px] items-center justify-between px-[16px] py-[10px]">
           <div className="flex items-center justify-center gap-2">
             <img
               onClick={() => router.push("/home")}
