@@ -33,7 +33,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/router";
 import { useHappenContext } from "@/context/HappenContext";
-import { formatDate, urlify } from "@/lib/utils";
+import { PLUS8HOURS, formatDate, removeNullValues, urlify } from "@/lib/utils";
 import {
   Sheet,
   SheetClose,
@@ -217,14 +217,24 @@ const ManageEvent: NextPage = () => {
       location: "",
       banner: "",
       description: "",
+
+      // description: "asasasd",
+      // end_at: "2024-06-07T23:46",
+      // banner: "",
+      // location: "Tier One Entertainment HQ",
+      // name: "ICP Hackaton 2024",
+      // start_at: "2024-06-06T23:46",
+      // type: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      let banner_url = null;
+      console.log("values: ", values);
       const handleUpload = async () => {
         //@ts-ignore
-        if (!values.banner[0]) return;
+        if (!values.banner?.[0]) return null;
 
         const file = (values.banner as unknown as any)[0];
         const reference = (
@@ -248,15 +258,18 @@ const ManageEvent: NextPage = () => {
 
       const bannerRessult = await handleUpload();
 
-      const imagePost = await backend.post(
-        "/upload",
-        { file: bannerRessult },
-        {
-          headers: {
-            "Content-Type": "application/json",
+      if (bannerRessult) {
+        const imagePost = await backend.post(
+          "/upload",
+          { file: bannerRessult },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
           },
-        },
-      );
+        );
+        banner_url = (imagePost.data as any)?.data;
+      }
 
       const locationData = {
         type: locationType,
@@ -264,32 +277,37 @@ const ManageEvent: NextPage = () => {
       };
 
       const locationJson = JSON.stringify(locationData);
-      console.log(locationJson);
 
-      const data = {
+      const dataSubmit = {
         type: Number(type),
-        banner: (imagePost.data as any)?.data,
+        banner: banner_url,
         name: values.name,
-        start_at: Number(new Date(startAt).getTime()),
-        end_at: Number(new Date(endAt).getTime()),
+        start_at: new Date(values.start_at).getTime(),
+        end_at: new Date(values.end_at).getTime(),
         location: locationJson,
         description: values.description,
       };
 
-      console.log(data);
+      console.log(dataSubmit);
 
-      // const eventPost = await backend.post("/event/create", data, {
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      // });
+      const eventPost = await backend.post(
+        `/event/update/${data?.id}`,
+        removeNullValues(dataSubmit),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
 
-      // toast({
-      //   variant: "default",
-      //   title: "Success",
-      //   description: (eventPost.data as any)?.message,
-      //   duration: 2000,
-      // });
+      dialogClose();
+
+      toast({
+        variant: "default",
+        title: "Success",
+        description: (eventPost.data as any)?.message,
+        duration: 2000,
+      });
     } catch (e: any) {
       console.error(e);
       toast({
@@ -312,27 +330,26 @@ const ManageEvent: NextPage = () => {
       const saveData = data?.data;
       setData(saveData);
 
-      const saveDatas = {
-        type: saveData?.type,
+      setType(`${saveData?.type}`);
+      setLocationType(JSON.parse(saveData?.location)?.type);
+
+      console.log(JSON.parse(saveData?.location)?.type);
+
+      const formresetData = {
         name: saveData?.name,
-        start_at: saveData?.start_at,
-        end_at: saveData?.end_at,
-        location: saveData?.location,
-        banner: saveData?.banner,
+        start_at: new Date(saveData?.start_at + PLUS8HOURS)
+          .toISOString()
+          .slice(0, 16),
+        end_at: new Date(saveData?.end_at + PLUS8HOURS)
+          .toISOString()
+          .slice(0, 16),
+        location: JSON.parse(saveData?.location)?.location,
         description: saveData?.description,
+        type: "",
       };
 
-      console.log("saveDatas: ", saveDatas);
-
-      // form.reset({
-      //   type: saveData?.type,
-      //   name: saveData?.name,
-      //   start_at: saveData?.start_at,
-      //   end_at: saveData?.end_at,
-      //   location: saveData?.location,
-      //   banner: saveData?.banner,
-      //   description: saveData?.description,
-      // });
+      console.log(formresetData);
+      form.reset(formresetData);
     } catch (error) {
       console.error({ error });
     }
@@ -583,7 +600,10 @@ const ManageEvent: NextPage = () => {
                                             >
                                               <Button
                                                 variant="outline"
-                                                className="relative flex aspect-[1/1] h-[358px] flex-col items-center justify-center rounded-xl bg-[url('/assets/placeholder/placeholder_banner.png')] bg-cover bg-no-repeat md:h-[280px] lg:h-[330px]"
+                                                style={{
+                                                  backgroundImage: `url(${urlify(data?.banner)})`,
+                                                }}
+                                                className="relative flex aspect-[1/1] h-[358px] flex-col items-center justify-center rounded-xl bg-cover bg-no-repeat md:h-[280px] lg:h-[330px]"
                                               >
                                                 <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
                                                   <LuImage className="h-5 w-5" />

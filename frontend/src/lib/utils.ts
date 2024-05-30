@@ -103,3 +103,22 @@ export function timeAgo(date: any) {
     return diffInDays + " day" + (diffInDays !== 1 ? "s" : "") + " ago";
   }
 }
+
+export const PLUS8HOURS = 8 * 60 * 60 * 1000;
+
+export function removeNullValues(obj: any) {
+  // Create a new object to store the result
+  let result = {} as any;
+
+  // Iterate over the keys of the input object
+  for (let key in obj) {
+    // Check if the value is not null
+    if (obj[key] !== null) {
+      // If the value is not null, add it to the result object
+      result[key] = obj[key];
+    }
+  }
+
+  // Return the result object
+  return result;
+}
