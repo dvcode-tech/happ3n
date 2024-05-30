@@ -83,3 +83,23 @@ export function urlify(str: string) {
     ? str
     : `${process.env.NEXT_PUBLIC_API_REST_URL}/uploads/v2/` + `${str}`;
 }
+
+export function timeAgo(date: any) {
+  const now = new Date().getTime();
+  const past = new Date(date);
+  const diffInMs = now - date;
+
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInMinutes < 60) {
+    return (
+      diffInMinutes + " minute" + (diffInMinutes !== 1 ? "s" : "") + " ago"
+    );
+  } else if (diffInHours < 24) {
+    return diffInHours + " hour" + (diffInHours !== 1 ? "s" : "") + " ago";
+  } else {
+    return diffInDays + " day" + (diffInDays !== 1 ? "s" : "") + " ago";
+  }
+}

@@ -4,7 +4,9 @@ import {
   useCurrentProvider,
   useProviders,
 } from "@bundly/ares-react";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/router";
+import { DropdownMenuShortcut } from "../ui/dropdown-menu";
 
 function selectProvider(providers: IdentityProvider[]): IdentityProvider {
   if (providers.length === 0) {
@@ -72,7 +74,10 @@ function LogoutButton({ children = null, className = "", ...props }) {
 
   return (
     <button onClick={() => logout()} className={className} {...props}>
-      {children || "Sign Out"}
+      <div className="flex items-center">
+        <LogOut className="mr-2 h-4 w-4" />
+        <span>Log out</span>
+      </div>
     </button>
   );
 }

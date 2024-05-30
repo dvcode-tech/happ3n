@@ -75,6 +75,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { FileDialog } from "@/components/ui/file-dialog";
+import Link from "next/link";
 
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 
@@ -168,6 +169,7 @@ const ManageEvent: NextPage = () => {
   const [data, setData] = useState<any>(null);
   const [guest, setGuest] = useState(45);
   const [guestList, setGuestList] = useState<any[]>([]);
+  const [searchList, setSearchList] = useState<any[]>([]);
 
   const [type, setType] = useState("0");
   const [startAt, setStartAt] = useState("");
@@ -183,6 +185,7 @@ const ManageEvent: NextPage = () => {
       ).data;
 
       setGuestList(response.data);
+      setSearchList(response.data);
 
       console.log(response);
     } catch (e: any) {
@@ -305,8 +308,31 @@ const ManageEvent: NextPage = () => {
   const fetchEvent = async (q: any) => {
     try {
       const data: any = (await backend.get(`/event/slug/${q}`)).data;
-      console.log(data?.data);
-      setData(data?.data);
+      console.log("Data: ", data?.data);
+      const saveData = data?.data;
+      setData(saveData);
+
+      const saveDatas = {
+        type: saveData?.type,
+        name: saveData?.name,
+        start_at: saveData?.start_at,
+        end_at: saveData?.end_at,
+        location: saveData?.location,
+        banner: saveData?.banner,
+        description: saveData?.description,
+      };
+
+      console.log("saveDatas: ", saveDatas);
+
+      // form.reset({
+      //   type: saveData?.type,
+      //   name: saveData?.name,
+      //   start_at: saveData?.start_at,
+      //   end_at: saveData?.end_at,
+      //   location: saveData?.location,
+      //   banner: saveData?.banner,
+      //   description: saveData?.description,
+      // });
     } catch (error) {
       console.error({ error });
     }
@@ -343,6 +369,22 @@ const ManageEvent: NextPage = () => {
     }
   };
 
+  const onHandleSearch = (search: string) => {
+    if (search.length < 1) {
+      setSearchList(guestList);
+      return;
+    }
+
+    setSearchList(
+      guestList.filter(
+        (item) =>
+          item?.user?.name.includes(search) ||
+          item?.user?.email.includes(search) ||
+          item?.user?.username.includes(search),
+      ),
+    );
+  };
+
   useEffect(() => {
     if (!slug) return;
     fetchEvent(slug);
@@ -368,13 +410,14 @@ const ManageEvent: NextPage = () => {
               {data?.name}
             </div>
           </div>
-          <a
-            href={`/${slug}`}
+          <Link
+            target="_blank"
+            href={`/event?q=${slug}`}
             className="flex h-9 items-center justify-center gap-1 rounded-md bg-[#FFFFFF14] px-[12px] py-[11px] text-[14px] font-medium leading-none text-[#FFFFFFA3] hover:bg-gray-400"
           >
             <p className="hidden md:block">Event Page</p>
             <LuArrowUpRight />
-          </a>
+          </Link>
         </div>
 
         <div>
@@ -492,12 +535,13 @@ const ManageEvent: NextPage = () => {
                         <div className="text-[13px] text-[#FFFFFFC9]">
                           The Address is shown publicly on the event page.
                         </div>
-                        <a
-                          href={`/check-in/${slug}`}
+                        <Link
+                          target="_blank"
+                          href={`/check-in?q=${slug}`}
                           className="mt-[16px] flex items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]"
                         >
                           <LuScanLine /> Check In Guests
-                        </a>
+                        </Link>
                       </div>
 
                       <div className="flex  flex-1 gap-2">
@@ -926,6 +970,9 @@ const ManageEvent: NextPage = () => {
                   </div>
                   <div className="relative">
                     <Input
+                      onChange={(event) => {
+                        onHandleSearch(event.target.value);
+                      }}
                       className="pl-10 text-[18px] font-semibold text-[#939597] dark:bg-transparent placeholder:dark:text-[#939597]"
                       placeholder="Search..."
                     />
@@ -935,7 +982,7 @@ const ManageEvent: NextPage = () => {
 
                 <Table className="border-gray-600/30">
                   <TableBody className="rounded-lg border-gray-600/30">
-                    {guestList?.map((guest, index) => (
+                    {searchList?.map((guest, index) => (
                       <TableRow
                         key={index}
                         className="border-gray-600/30 bg-gray-800/40"
