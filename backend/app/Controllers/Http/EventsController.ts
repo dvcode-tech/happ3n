@@ -214,6 +214,41 @@ export default class EventsController {
     }
   }
 
+  static async view_all_joined_by_user(request: Request, response: Response) {
+    try {
+      const findUser = await User.findOneBy({ principal_id: ic.caller().toText() });
+
+      if (!findUser) {
+        response.status(400);
+        return response.json({
+          status: 0,
+          message: 'User not found.',
+        });
+      }
+
+      const findGuestEvents = await Guest.find({
+        where: { user: findUser },
+        relations: {
+          user: true,
+          event: {
+            user: true,
+          },
+        },
+      });
+
+      return response.json({
+        status: 1,
+        data: findGuestEvents,
+      });
+    } catch (error: any) {
+      response.status(400);
+      return response.json({
+        status: 0,
+        message: error.message,
+      });
+    }
+  }
+
   static async view_by_slug(request: Request, response: Response) {
     try {
       const { slug } = request.params;

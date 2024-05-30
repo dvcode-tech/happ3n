@@ -6,11 +6,13 @@ import { useRouter } from "next/router";
 import { NextPage } from "next";
 import Header from "@/components/Header";
 import { LuUsers, LuArrowUpRight } from "react-icons/lu";
+import { QrReader } from "react-qr-reader";
 
 const Scan: NextPage = () => {
   const router = useRouter();
   const { slug } = router.query;
   const [checkedIn, setCheckedIn] = useState(45);
+  const [data, setData] = useState("No result");
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#131517] from-10% via-[#00071C] via-50% to-[#00071C] to-90% bg-fixed">
@@ -40,10 +42,22 @@ const Scan: NextPage = () => {
           </a>
         </div>
         <div className="border-t border-gray-600/30"></div>
-        <div className="mx-auto max-w-[788px] space-y-6 p-[16px]">
-          <div className="aspect-square h-[666px] w-[750px] rounded-lg bg-blue-900"></div>
-          <div className="flex flex-row justify-between rounded-md border border-gray-600/30 bg-gray-500/20 p-4 backdrop-blur-md">
-            <div className="flex w-full flex-col">
+        <div className="mx-auto flex w-full flex-1 flex-col justify-center overflow-hidden p-[16px] md:max-w-[788px] ">
+          <QrReader
+            constraints={{ facingMode: "environment" }}
+            onResult={(result, error) => {
+              if (!!result) {
+                setData(result["text"]);
+              }
+
+              if (!!error) {
+                console.info(error);
+              }
+            }}
+            className="w-full"
+          />
+          <div className="flex w-full flex-col rounded-md border border-gray-600/30 bg-gray-500/20 p-4 backdrop-blur-md">
+            <div className="flex w-full flex-1 flex-col">
               <div className="flex w-full justify-between pb-[8px]">
                 <div className="text-[20px] text-[#939597]">
                   {checkedIn} <span className="text-[14px]">Checked In</span>

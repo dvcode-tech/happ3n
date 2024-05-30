@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { toast, useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/router";
 import { useRestActor } from "@bundly/ares-react";
 import { formatDate, urlify } from "@/lib/utils";
@@ -53,6 +53,7 @@ const EventPage = () => {
   const { isAuthenticated, ctxAccount, backend } = useHappenContext();
   const router = useRouter();
   const [data, setData] = useState<any>(null);
+  const [status, setStatus] = useState<any>("");
   const slug = router?.query?.q;
 
   const fetchEvent = async (q: any) => {
@@ -87,6 +88,73 @@ const EventPage = () => {
 
     // await onRequest(data);
   }
+
+  const handleJoinEvent = async () => {
+    try {
+      const joinEventPost = await backend.post(
+        `/event/${data?.id}/register`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      toast({
+        variant: "default",
+        title: "Success",
+        description: (joinEventPost.data as any)?.message,
+        duration: 2000,
+      });
+    } catch (e: any) {
+      console.error(e);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: e?.message || e?.data?.message,
+        duration: 1000,
+      });
+    } finally {
+      checkJoinEvent();
+    }
+  };
+
+  const checkJoinEvent = async () => {
+    try {
+      const checkEventPost = await backend.post(
+        `/event/${data?.id}/register/status`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      const _status = (checkEventPost?.data as any)?.data?.status;
+
+      if (_status === 0) {
+        setStatus("PENDING");
+      } else if (_status === 1) {
+        setStatus("APPROVED");
+      } else if (_status === 2) {
+        setStatus("REJECTED");
+      } else {
+        setStatus("NONE");
+      }
+
+      console.log(_status);
+    } catch (e: any) {
+      console.error(e);
+      setStatus("NONE");
+    }
+  };
+
+  useEffect(() => {
+    if (!ctxAccount || !data) return;
+    checkJoinEvent();
+  }, [ctxAccount, data]);
 
   if (!data) {
     return (
@@ -273,88 +341,112 @@ const EventPage = () => {
                         Register
                       </LoginButton>
                     )}
-                    {isAuthenticated && (
-                      <Dialog>
-                        <DialogTrigger className="w-full">
-                          <Button className="w-full text-[16px]">
-                            Request to Join
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="overflow-hidden rounded-md border bg-gray-500/40 p-0 py-8 backdrop-blur-md md:rounded-3xl">
-                          <DialogHeader className="">
-                            <DialogDescription className="flex w-full flex-1 flex-col px-4">
-                              <div className="p-4 text-left text-[17px] text-white">
-                                Your Info
-                              </div>
-                              <Form {...form}>
-                                <form
-                                  onSubmit={form.handleSubmit(onSubmit)}
-                                  className="flex max-h-[87vh] flex-col gap-4 overflow-y-auto md:max-h-[100vh]"
-                                >
-                                  <FormField
-                                    control={form.control}
-                                    name="fullname"
-                                    render={({ field }) => (
-                                      <FormItem className="px-4">
-                                        <div className="grid grid-cols-1 gap-2 text-left">
-                                          <Label>
-                                            Fullname{" "}
-                                            <span className="text-red-500">
-                                              *
-                                            </span>
-                                          </Label>
-                                          <FormControl>
-                                            <Input
-                                              placeholder="Fullname"
-                                              className="col-span-3"
-                                              {...field}
-                                            />
-                                          </FormControl>
-                                        </div>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
+                    {isAuthenticated && status === "NONE" && (
+                      <Button
+                        onClick={handleJoinEvent}
+                        className="w-full text-[16px]"
+                      >
+                        Request to Join
+                      </Button>
+                      // <Dialog>
+                      //   <DialogTrigger className="w-full">
+                      //     <Button className="w-full text-[16px]">
+                      //       Request to Join
+                      //     </Button>
+                      //   </DialogTrigger>
+                      //   <DialogContent className="overflow-hidden rounded-md border bg-gray-500/40 p-0 py-8 backdrop-blur-md md:rounded-3xl">
+                      //     <DialogHeader className="">
+                      //       <DialogDescription className="flex w-full flex-1 flex-col px-4">
+                      //         <div className="p-4 text-left text-[17px] text-white">
+                      //           Your Info
+                      //         </div>
+                      //         <Form {...form}>
+                      //           <form
+                      //             onSubmit={form.handleSubmit(onSubmit)}
+                      //             className="flex max-h-[87vh] flex-col gap-4 overflow-y-auto md:max-h-[100vh]"
+                      //           >
+                      //             <FormField
+                      //               control={form.control}
+                      //               name="fullname"
+                      //               render={({ field }) => (
+                      //                 <FormItem className="px-4">
+                      //                   <div className="grid grid-cols-1 gap-2 text-left">
+                      //                     <Label>
+                      //                       Fullname{" "}
+                      //                       <span className="text-red-500">
+                      //                         *
+                      //                       </span>
+                      //                     </Label>
+                      //                     <FormControl>
+                      //                       <Input
+                      //                         placeholder="Fullname"
+                      //                         className="col-span-3"
+                      //                         {...field}
+                      //                       />
+                      //                     </FormControl>
+                      //                   </div>
+                      //                   <FormMessage />
+                      //                 </FormItem>
+                      //               )}
+                      //             />
 
-                                  <FormField
-                                    control={form.control}
-                                    name="email"
-                                    render={({ field }) => (
-                                      <FormItem className="px-4">
-                                        <div className="grid grid-cols-1 gap-2 text-left">
-                                          <Label>
-                                            Email{" "}
-                                            <span className="text-red-500">
-                                              *
-                                            </span>
-                                          </Label>
-                                          <FormControl>
-                                            <Input
-                                              placeholder="Email"
-                                              className="col-span-3"
-                                              {...field}
-                                            />
-                                          </FormControl>
-                                        </div>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
+                      //             <FormField
+                      //               control={form.control}
+                      //               name="email"
+                      //               render={({ field }) => (
+                      //                 <FormItem className="px-4">
+                      //                   <div className="grid grid-cols-1 gap-2 text-left">
+                      //                     <Label>
+                      //                       Email{" "}
+                      //                       <span className="text-red-500">
+                      //                         *
+                      //                       </span>
+                      //                     </Label>
+                      //                     <FormControl>
+                      //                       <Input
+                      //                         placeholder="Email"
+                      //                         className="col-span-3"
+                      //                         {...field}
+                      //                       />
+                      //                     </FormControl>
+                      //                   </div>
+                      //                   <FormMessage />
+                      //                 </FormItem>
+                      //               )}
+                      //             />
 
-                                  <div className="px-4">
-                                    <Button
-                                      type="submit"
-                                      className="w-full hover:bg-[#2F3136] hover:text-[#2F3136] active:bg-[#141414] dark:text-black"
-                                    >
-                                      Request to Join
-                                    </Button>
-                                  </div>
-                                </form>
-                              </Form>
-                            </DialogDescription>
-                          </DialogHeader>
-                        </DialogContent>
-                      </Dialog>
+                      //             <div className="px-4">
+                      //               <Button
+                      //                 type="submit"
+                      //                 className="w-full hover:bg-[#2F3136] hover:text-[#2F3136] active:bg-[#141414] dark:text-black"
+                      //               >
+                      //                 Request to Join
+                      //               </Button>
+                      //             </div>
+                      //           </form>
+                      //         </Form>
+                      //       </DialogDescription>
+                      //     </DialogHeader>
+                      //   </DialogContent>
+                      // </Dialog>
+                    )}
+
+                    {status === "REJECTED" && (
+                      <Button className="w-full text-[16px] !text-red-500">
+                        Request Rejected
+                      </Button>
+                    )}
+
+                    {status === "APPROVED" && (
+                      <Button className="w-full text-[16px] !text-green-500">
+                        Approved
+                      </Button>
+                    )}
+
+                    {status === "PENDING" && (
+                      <Button className="w-full text-[16px] !text-yellow-500">
+                        Request Pending
+                      </Button>
                     )}
                   </div>
                 </div>
