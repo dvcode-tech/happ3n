@@ -1,7 +1,7 @@
 import CreateEventValidator from 'App/Validators/CreateEventValidator';
 import UpdateEventValidator from 'App/Validators/UpdateEventValidator';
 import { Event, EventRequiredApproval, EventStatus, EventType } from 'Database/entities/event';
-import { Guest } from 'Database/entities/guest';
+import { Guest, GuestStatus } from 'Database/entities/guest';
 import { User } from 'Database/entities/user';
 import { ic } from 'azle';
 import { Response, Request } from 'express';
@@ -268,7 +268,7 @@ export default class EventsController {
         });
       }
 
-      const findGuests = await Guest.findBy({ event: findEvent });
+      const findGuests = await Guest.findBy({ event: findEvent, status: GuestStatus.APPROVED });
 
       return response.json({
         status: 1,
