@@ -32,6 +32,62 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/router";
 import { useHappenContext } from "@/context/HappenContext";
 import { formatDate, urlify } from "@/lib/utils";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { toast } from "@/components/ui/use-toast";
+import slugify from "react-slugify";
+import path from "path";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
+import React from "react";
+
+type Checked = DropdownMenuCheckboxItemProps["checked"];
+
+const formSchema = z.object({
+  name: z.string().min(1),
+  slug: z.string(),
+  start_at: z.string(),
+  end_at: z.string(),
+  location_type: z.string().min(1),
+  location: z.string().min(1),
+  // required_approval: z.boolean(),
+  // capacity: z.string(),
+  // banner: z
+  //   .unknown()
+  //   .refine((val) => {
+  //     if (!Array.isArray(val)) return false;
+  //     if (val.some((file) => !(file instanceof File))) return false;
+  //     return true;
+  //   }, "Must be an array of File")
+  //   .optional()
+  //   .nullable()
+  //   .default(null),
+  type: z.string(),
+  description: z.string().min(1),
+});
 
 const GuestList = [
   {
@@ -103,6 +159,139 @@ const ManageEvent: NextPage = () => {
 
   const [data, setData] = useState<any>(null);
   const [guest, setGuest] = useState(45);
+
+  const [showPublic, setPublic] = React.useState<Checked>(true);
+  const [showPrivate, setPrivate] = React.useState<Checked>(false);
+
+  const getGuestList = async () => {
+    try {
+      const response: any = (
+        await backend.post(`/event/${data?.id}/guests/list`)
+      ).data;
+
+      console.log(response);
+    } catch (e: any) {
+      const error = e?.data?.message || e.message;
+
+      console.error(error);
+
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error,
+        duration: 1000,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!ctxAccount || !data) return;
+    getGuestList();
+  }, [ctxAccount, data]);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      type: "",
+      name: "",
+      slug: "",
+      start_at: "",
+      end_at: "",
+      location: "",
+      // required_approval: false,
+      // capacity: "",
+      // banner: "",
+      description: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const handleUpload = async () => {
+        // @ts-ignore
+        // if (!values.banner[0]) return;
+        // const file = (values.banner as unknown as any)[0];
+        // const reference = (
+        //   new Date().getTime().toString(36) +
+        //   Math.random().toString(36).slice(2)
+        // ).toLowerCase();
+        // return new Promise((resolve, reject) => {
+        //   const reader = new FileReader();
+        //   reader.onloadend = () => {
+        //     resolve({
+        //       filename: `${reference}${path.extname(file.name)}`,
+        //       contents: (reader.result as any)?.split(",")[1],
+        //     });
+        //   };
+        //   reader.onerror = (error) => {
+        //     reject(error);
+        //   };
+        //   reader.readAsDataURL(file);
+        // });
+      };
+
+      const bannerRessult = await handleUpload();
+
+      const imagePost = await backend.post(
+        "/upload",
+        { file: bannerRessult },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      const slug = slugify(values.name);
+
+      const locationData = {
+        type: values.location_type,
+        location: values.location,
+      };
+
+      const locationJson = JSON.stringify(locationData);
+
+      // const data = {
+      //   type: Number(type),
+      //   banner: (imagePost.data as any)?.data,
+      //   name: values.name,
+      //   slug: slug,
+      //   start_at: Number(new Date(startAt).getTime()),
+      //   end_at: Number(new Date(endAt).getTime()),
+      //   location: locationJson,
+      //   required_approval: approvalStatus,
+      //   capacity: Number(capacity),
+      //   description: descriptionValue,
+      // };
+
+      console.log(data);
+
+      const eventPost = await backend.post("/event/create", data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      toast({
+        variant: "default",
+        title: "Success",
+        description: (eventPost.data as any)?.message,
+        duration: 2000,
+      });
+    } catch (e: any) {
+      console.error(e);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: e?.message || e?.data?.message,
+        duration: 1000,
+      });
+    }
+  }
+
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    await onSubmit(values);
+  };
 
   const fetchEvent = async (q: any) => {
     try {
@@ -258,6 +447,156 @@ const ManageEvent: NextPage = () => {
                         >
                           <LuScanLine /> Check In Guests
                         </a>
+                      </div>
+
+                      <div className="flex flex-1 gap-2">
+                        <Sheet>
+                          <SheetTrigger asChild>
+                            <Button>Edit Event</Button>
+                          </SheetTrigger>
+
+                          <SheetContent className="z-[998] w-full bg-[#1C1E20] md:w-[550px]">
+                            <SheetHeader className="sticky">
+                              <SheetTitle className="border-b border-gray-600/30">
+                                <div className="flex flex-row gap-3 p-[16px] pb-4">
+                                  <p className="text-[16px]">Edit Event</p>
+                                </div>
+                              </SheetTitle>
+                              <SheetDescription>
+                                <div className="p-[16px]">
+                                  <div className="mb-[16px] text-[18px] font-bold text-white">
+                                    Basic Info
+                                  </div>
+
+                                  <div className="flex flex-col gap-8">
+                                    <Input
+                                      type="text"
+                                      className="py-[8px] text-[18px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#FFFFFFC9]"
+                                      placeholder="Event Name"
+                                    />
+
+                                    <div className="grid grid-cols-1 gap-2">
+                                      <div className="text-[14px] font-semibold text-[#FFFFFFc8]">
+                                        Description
+                                      </div>
+                                      <div className="">
+                                        <Textarea
+                                          // className="h-[200px] resize-none bg-[#131517] text-[16px] outline-none placeholder:font-semibold placeholder:text-[#4c4d4f]"
+                                          className="h-[100px] resize-none text-[16px] text-white outline-none placeholder:text-[14px] dark:border-white/30 dark:bg-[#131517]  placeholder:dark:text-[#FFFFFFC9]"
+                                          placeholder="Who should come? What's the event about?"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="w-full">
+                                      <DropdownMenu>
+                                        <DropdownMenuTrigger
+                                          asChild
+                                          className="flex w-full flex-1"
+                                        >
+                                          <Button
+                                            variant="outline"
+                                            className="flex justify-between gap-2 dark:border-[#FFFFFF14] dark:bg-[#FFFFFF14]"
+                                          >
+                                            <div className="text-[16px] text-[#FFFFFFC9]">
+                                              Visibility
+                                            </div>
+                                            <div className="text-[16px] text-[#FFFFFF80]">
+                                              {"Private"}
+                                            </div>
+                                          </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className="z-[999] w-56 dark:border-[#FFFFFF14] dark:bg-[#1C1E20]">
+                                          <DropdownMenuCheckboxItem
+                                            checked={showPublic}
+                                            onCheckedChange={(e) => {
+                                              setPublic(e);
+                                              setPrivate(e);
+                                              console.log(
+                                                "Public: ",
+                                                showPublic,
+                                              );
+                                              console.log(
+                                                "Private: ",
+                                                showPrivate,
+                                              );
+                                            }}
+                                            className="flex flex-col items-start justify-start gap-1"
+                                          >
+                                            Public
+                                            <p className="text-[#FFFFFF80]">
+                                              Shown on your calendar and
+                                              eligible to be featured.
+                                            </p>
+                                          </DropdownMenuCheckboxItem>
+                                          <DropdownMenuCheckboxItem
+                                            checked={showPrivate}
+                                            onCheckedChange={(e) => {
+                                              setPrivate(e);
+                                              setPublic(e);
+                                              console.log(
+                                                "Public: ",
+                                                showPublic,
+                                              );
+                                              console.log(
+                                                "Private: ",
+                                                showPrivate,
+                                              );
+                                            }}
+                                            className="flex flex-col items-start justify-start gap-1"
+                                          >
+                                            Private
+                                            <p className="text-[#FFFFFF80]">
+                                              Unlisted. Only people with the
+                                              link can register.
+                                            </p>
+                                          </DropdownMenuCheckboxItem>
+                                        </DropdownMenuContent>
+                                      </DropdownMenu>
+                                    </div>
+                                  </div>
+                                </div>
+                              </SheetDescription>
+                            </SheetHeader>
+                            {/* <div className="grid gap-4 py-4">
+                              <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="name" className="text-right">
+                                  Name
+                                </Label>
+                                <Input
+                                  id="name"
+                                  value="Pedro Duarte"
+                                  className="col-span-3"
+                                />
+                              </div>
+                              <div className="grid grid-cols-4 items-center gap-4">
+                                <Label
+                                  htmlFor="username"
+                                  className="text-right"
+                                >
+                                  Username
+                                </Label>
+                                <Input
+                                  id="username"
+                                  value="@peduarte"
+                                  className="col-span-3"
+                                />
+                              </div>
+                            </div> */}
+                            <SheetFooter className="p-[16px]">
+                              <SheetClose asChild>
+                                <Button type="submit">Update Event</Button>
+                              </SheetClose>
+                            </SheetFooter>
+                          </SheetContent>
+                        </Sheet>
+
+                        {/* <a
+                          href={"#"}
+                          className="mt-[16px] flex flex-1 items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]"
+                        >
+                          Change Photo
+                        </a> */}
                       </div>
                     </div>
                   </div>

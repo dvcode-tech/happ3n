@@ -44,6 +44,7 @@ Route.get('/config', ApisController.config);
 
 Route.get('/uploads/:filename', ApisController.readupload);
 Route.post('/upload', isAuth, ApisController.testupload);
+Route.get('/uploads/v2/:filename', ApisController.readupload_v2);
 
 // EVENT
 Route.get('/event/slug/:slug', EventsController.view_by_slug);

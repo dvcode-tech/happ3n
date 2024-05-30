@@ -1,6 +1,6 @@
 import { Configuration } from 'Database/entities/configuration';
 import { Response, Request } from 'express';
-import { writeFileSync } from 'fs';
+import { createReadStream, writeFileSync } from 'fs';
 import { readFile } from 'fs/promises';
 import mime from 'mime';
 
@@ -57,6 +57,25 @@ export default class ApisController {
 
       response.setHeader('Content-Type', mimeType);
       response.send(contents);
+    } catch (error: any) {
+      response.status(400);
+      return response.json({
+        status: 0,
+        message: error.message,
+      });
+    }
+  }
+
+  static async readupload_v2(request: Request, response: Response) {
+    try {
+      const { filename } = request.params;
+      const fileStream = createReadStream(filename);
+
+      for await (const data of fileStream) {
+        response.write(data);
+      }
+
+      response.end();
     } catch (error: any) {
       response.status(400);
       return response.json({

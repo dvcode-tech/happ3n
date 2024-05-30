@@ -141,8 +141,13 @@ export default class GuestsController {
         });
       }
 
-      const findGuestList = await Guest.findBy({
-        event: findEvent,
+      const findGuestList = await Guest.find({
+        where: {
+          event: findEvent,
+        },
+        relations: {
+          user: true,
+        },
       });
 
       return response.json({
