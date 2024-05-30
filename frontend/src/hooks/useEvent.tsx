@@ -13,14 +13,25 @@ export default function useEvent() {
     setLoading(true);
     try {
       const data: any = (await backend.get("/event/list")).data;
+      const joinedList: any = (await backend.get("/event/joined/list")).data;
 
-      const allEvent = data?.data;
+      const allEvent = data?.data?.map((item: any) => ({
+        ...item,
+        isOwned: true,
+      }));
 
-      const filterUpcoming = allEvent
+      const allJoinedEvent = joinedList?.data?.map((item: any) => ({
+        ...item.event,
+        isOwned: false,
+        guestStatus: item.status,
+        guestGoingStatus: item.going_status,
+      }));
+
+      const filterUpcoming = [...allEvent, ...allJoinedEvent]
         ?.filter((event: any) => event.start_at >= Date.now())
         .sort((a: any, b: any) => a.start_at - b.start_at);
 
-      const filterPast = allEvent
+      const filterPast = [...allEvent, ...allJoinedEvent]
         ?.filter((event: any) => event.start_at < Date.now())
         .sort((a: any, b: any) => a.start_at - b.start_at);
 

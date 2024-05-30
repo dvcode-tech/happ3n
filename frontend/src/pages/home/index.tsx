@@ -20,6 +20,8 @@ import useEvent from "@/hooks/useEvent";
 import { useEffect } from "react";
 import { useHappenContext } from "@/context/HappenContext";
 import { formatDate, urlify } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/router";
 
 const timelineData = [
   {
@@ -43,6 +45,7 @@ const timelineData = [
 ];
 
 const Home: NextPage = () => {
+  const router = useRouter();
   const { ctxAccount, isAuthenticated } = useHappenContext();
   const [eventState, eventFunction] = useEvent();
 
@@ -57,7 +60,7 @@ const Home: NextPage = () => {
       <Navbar />
       <section className="mx-auto max-w-[1080px] p-[16px] md:px-[14px] md:pb-[14px] md:pt-[48px]">
         <div className="mx-auto max-w-[820px]">
-          <Tabs defaultValue="past">
+          <Tabs defaultValue="upcoming">
             <div className="mb-[8px] flex w-full items-center justify-between">
               <div className="text-[32px] font-semibold text-white">Events</div>
               <TabsList className="grid grid-cols-2 bg-[#252F3A]">
@@ -116,6 +119,20 @@ const Home: NextPage = () => {
                                   <h3 className="text-[18px] font-semibold text-white md:text-[18px]">
                                     {event?.name}
                                   </h3>
+                                  <div className="my-1 flex items-center gap-2">
+                                    By
+                                    <img
+                                      className="h-4 rounded-full"
+                                      src={
+                                        urlify(event?.user?.profile_photo) ||
+                                        "assets/logo/icon.png"
+                                      }
+                                      alt=""
+                                    />
+                                    <p className="text-[#FFFFFF]">
+                                      {event?.user?.name}
+                                    </p>
+                                  </div>
                                   <div className="flex items-center gap-1">
                                     {JSON.parse(event?.location || "{}")
                                       ?.type === "VIRTUAL" ? (
@@ -130,6 +147,50 @@ const Home: NextPage = () => {
                                       }
                                     </h3>
                                   </div>
+                                  {event?.isOwned === true && (
+                                    <div className="flex items-center pt-1">
+                                      <Button
+                                        onClick={() => {
+                                          router.push(
+                                            `/event/manage?q=${event?.slug}`,
+                                          );
+                                        }}
+                                        size={"sm"}
+                                        className="h-8"
+                                      >
+                                        Manage Event
+                                      </Button>
+                                    </div>
+                                  )}
+                                  {event?.isOwned === false && (
+                                    <div className="flex items-center pt-1">
+                                      {event?.guestStatus === 1 &&
+                                        event?.guestGoingStatus === 1 && (
+                                          <p className="rounded-md bg-green-500/25 px-1 py-0.5 text-xs text-green-500 ">
+                                            Going
+                                          </p>
+                                        )}
+
+                                      {event?.guestStatus === 0 && (
+                                        <p className="rounded-md bg-yellow-500/25 px-1 py-0.5 text-xs text-yellow-500 ">
+                                          Pending
+                                        </p>
+                                      )}
+
+                                      {event?.guestStatus === 1 &&
+                                        event?.guestGoingStatus === 2 && (
+                                          <p className="rounded-md bg-gray-500/25 px-1 py-0.5 text-xs text-gray-500 ">
+                                            Not Going
+                                          </p>
+                                        )}
+
+                                      {event?.guestStatus === 2 && (
+                                        <p className="rounded-md bg-red-500/25 px-1 py-0.5 text-xs text-red-500 ">
+                                          Declined
+                                        </p>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
                                 <img
                                   className="aspect-[1/1] h-[90px] rounded-md md:h-[120px]"
@@ -142,14 +203,15 @@ const Home: NextPage = () => {
                               <SheetHeader className="sticky">
                                 <SheetTitle className="border-b border-gray-600/30">
                                   <div className="flex flex-row gap-3 p-[16px] pb-4">
-                                    <a
+                                    {/* <a
                                       href="#"
                                       className="rounded-md bg-gray-500/50 px-4 py-1 text-[14px] text-[#FFFFFFA3] hover:bg-gray-400"
                                     >
                                       Copy Link
-                                    </a>
+                                    </a> */}
                                     <a
-                                      href="#"
+                                      href={`/event?q=${event?.slug}`}
+                                      target="_blank"
                                       className="rounded-md bg-gray-500/50 px-4 py-1 text-[14px] text-[#FFFFFFA3] hover:bg-gray-400"
                                     >
                                       Event Page
@@ -245,19 +307,21 @@ const Home: NextPage = () => {
                                         </div>
                                       </div>
 
-                                      <div className="container flex flex-col gap-2 rounded-md border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
-                                        <img
-                                          className="h-10 w-10 rounded-full"
-                                          src="/assets/logo/icon.png"
-                                          alt=""
-                                        />
-                                        <h3 className="text-[22px] font-medium text-white">
-                                          Thank You for joining
-                                        </h3>
-                                        <p className="text-[16px] text-[#FFFFFFC9]">
-                                          We hope you enjoy the event!
-                                        </p>
-                                      </div>
+                                      {event.start_at < Date.now() && (
+                                        <div className="container flex flex-col gap-2 rounded-md border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
+                                          <img
+                                            className="h-10 w-10 rounded-full"
+                                            src="/assets/logo/icon.png"
+                                            alt=""
+                                          />
+                                          <h3 className="text-[22px] font-medium text-white">
+                                            Thank You for joining
+                                          </h3>
+                                          <p className="text-[16px] text-[#FFFFFFC9]">
+                                            We hope you enjoy the event!
+                                          </p>
+                                        </div>
+                                      )}
 
                                       <div>
                                         <h3 className="mb-[16px] border-b border-gray-600/30 pb-[8px] text-[14px] font-medium text-[#818384]">
@@ -287,7 +351,7 @@ const Home: NextPage = () => {
                                               ?.location
                                           }
                                         </p>
-                                        {JSON.parse(event?.location || "{}")
+                                        {/* {JSON.parse(event?.location || "{}")
                                           ?.type !== "VIRTUAL" && (
                                           <iframe
                                             className="mt-[16px] aspect-[2/1] w-full rounded-md bg-gray-400 invert-[90%] filter"
@@ -296,7 +360,7 @@ const Home: NextPage = () => {
                                             aria-hidden="false"
                                             tabIndex={0}
                                           ></iframe>
-                                        )}
+                                        )} */}
                                       </div>
 
                                       <div>
@@ -332,7 +396,7 @@ const Home: NextPage = () => {
               )}
             </TabsContent>
 
-            <TabsContent className="text-white md:pt-[16px]" value="past">
+            <TabsContent className="pt-[32px] text-white" value="past">
               {eventState?.pastEvent?.length === 0 && (
                 <div className="mb-[48px] mt-[64px] flex h-[348px] flex-col items-center justify-center">
                   <div className="text-[24px] font-semibold text-[#FFFFFFC9]">
@@ -374,6 +438,20 @@ const Home: NextPage = () => {
                                 <h3 className="text-[18px] font-semibold text-white md:text-[18px]">
                                   {event?.name}
                                 </h3>
+                                <div className="my-1 flex items-center gap-2">
+                                  By
+                                  <img
+                                    className="h-4 rounded-full"
+                                    src={
+                                      urlify(event?.user?.profile_photo) ||
+                                      "assets/logo/icon.png"
+                                    }
+                                    alt=""
+                                  />
+                                  <p className="text-[#FFFFFF]">
+                                    {event?.user?.name}
+                                  </p>
+                                </div>
                                 <div className="flex items-center gap-1">
                                   {JSON.parse(event?.location || "{}")?.type ===
                                   "VIRTUAL" ? (
@@ -388,6 +466,50 @@ const Home: NextPage = () => {
                                     }
                                   </h3>
                                 </div>
+                                {event?.isOwned === true && (
+                                  <div className="flex items-center pt-1">
+                                    <Button
+                                      onClick={() => {
+                                        router.push(
+                                          `/event/manage?q=${event?.slug}`,
+                                        );
+                                      }}
+                                      size={"sm"}
+                                      className="h-8"
+                                    >
+                                      Manage Event
+                                    </Button>
+                                  </div>
+                                )}
+                                {event?.isOwned === false && (
+                                  <div className="flex items-center pt-1">
+                                    {event?.guestStatus === 1 &&
+                                      event?.guestGoingStatus === 1 && (
+                                        <p className="rounded-md bg-green-500/25 px-1 py-0.5 text-xs text-green-500 ">
+                                          Going
+                                        </p>
+                                      )}
+
+                                    {event?.guestStatus === 0 && (
+                                      <p className="rounded-md bg-yellow-500/25 px-1 py-0.5 text-xs text-yellow-500 ">
+                                        Pending
+                                      </p>
+                                    )}
+
+                                    {event?.guestStatus === 1 &&
+                                      event?.guestGoingStatus === 2 && (
+                                        <p className="rounded-md bg-gray-500/25 px-1 py-0.5 text-xs text-gray-500 ">
+                                          Not Going
+                                        </p>
+                                      )}
+
+                                    {event?.guestStatus === 2 && (
+                                      <p className="rounded-md bg-red-500/25 px-1 py-0.5 text-xs text-red-500 ">
+                                        Declined
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                               <img
                                 className="aspect-[1/1] h-[90px] rounded-md md:h-[120px]"
@@ -400,14 +522,15 @@ const Home: NextPage = () => {
                             <SheetHeader className="sticky">
                               <SheetTitle className="border-b border-gray-600/30">
                                 <div className="flex flex-row gap-3 p-[16px] pb-4">
-                                  <a
+                                  {/* <a
                                     href="#"
                                     className="rounded-md bg-gray-500/50 px-4 py-1 text-[14px] text-[#FFFFFFA3] hover:bg-gray-400"
                                   >
                                     Copy Link
-                                  </a>
+                                  </a> */}
                                   <a
-                                    href="#"
+                                    href={`/event?q=${event?.slug}`}
+                                    target="_blank"
                                     className="rounded-md bg-gray-500/50 px-4 py-1 text-[14px] text-[#FFFFFFA3] hover:bg-gray-400"
                                   >
                                     Event Page
@@ -502,19 +625,21 @@ const Home: NextPage = () => {
                                       </div>
                                     </div>
 
-                                    <div className="container flex flex-col gap-2 rounded-md border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
-                                      <img
-                                        className="h-10 w-10 rounded-full"
-                                        src="/assets/logo/icon.png"
-                                        alt=""
-                                      />
-                                      <h3 className="text-[22px] font-medium text-white">
-                                        Thank You for joining
-                                      </h3>
-                                      <p className="text-[16px] text-[#FFFFFFC9]">
-                                        We hope you enjoy the event!
-                                      </p>
-                                    </div>
+                                    {event.start_at < Date.now() && (
+                                      <div className="container flex flex-col gap-2 rounded-md border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
+                                        <img
+                                          className="h-10 w-10 rounded-full"
+                                          src="/assets/logo/icon.png"
+                                          alt=""
+                                        />
+                                        <h3 className="text-[22px] font-medium text-white">
+                                          Thank You for joining
+                                        </h3>
+                                        <p className="text-[16px] text-[#FFFFFFC9]">
+                                          We hope you enjoy the event!
+                                        </p>
+                                      </div>
+                                    )}
 
                                     <div>
                                       <h3 className="mb-[16px] border-b border-gray-600/30 pb-[8px] text-[14px] font-medium text-[#818384]">
@@ -544,7 +669,7 @@ const Home: NextPage = () => {
                                             ?.location
                                         }
                                       </p>
-                                      {JSON.parse(event?.location || "{}")
+                                      {/* {JSON.parse(event?.location || "{}")
                                         ?.type !== "VIRTUAL" && (
                                         <iframe
                                           className="mt-[16px] aspect-[2/1] w-full rounded-md bg-gray-400 invert-[90%] filter"
@@ -553,7 +678,7 @@ const Home: NextPage = () => {
                                           aria-hidden="false"
                                           tabIndex={0}
                                         ></iframe>
-                                      )}
+                                      )} */}
                                     </div>
 
                                     <div>

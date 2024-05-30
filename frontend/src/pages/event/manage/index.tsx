@@ -16,6 +16,9 @@ import {
   LuUsers,
   LuSearch,
   LuVideo,
+  LuChevronsUpDown,
+  LuCheck,
+  LuX,
 } from "react-icons/lu";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -159,6 +162,7 @@ const ManageEvent: NextPage = () => {
 
   const [data, setData] = useState<any>(null);
   const [guest, setGuest] = useState(45);
+  const [guestList, setGuestList] = useState<any[]>([]);
 
   const [showPublic, setPublic] = React.useState<Checked>(true);
   const [showPrivate, setPrivate] = React.useState<Checked>(false);
@@ -168,6 +172,8 @@ const ManageEvent: NextPage = () => {
       const response: any = (
         await backend.post(`/event/${data?.id}/guests/list`)
       ).data;
+
+      setGuestList(response.data);
 
       console.log(response);
     } catch (e: any) {
@@ -303,6 +309,37 @@ const ManageEvent: NextPage = () => {
     }
   };
 
+  const manageGuestStatus = async (status: number, guestId: number) => {
+    try {
+      const response: any = await backend.post(
+        `/event/${data?.id}/guests/${guestId}/manage`,
+        { status },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      toast({
+        variant: "default",
+        title: "Success",
+        description: (response?.data as any)?.message,
+        duration: 2000,
+      });
+    } catch (error: any) {
+      console.error({ error });
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error?.message || error?.data?.message,
+        duration: 1000,
+      });
+    } finally {
+      getGuestList();
+    }
+  };
+
   useEffect(() => {
     if (!slug) return;
     fetchEvent(slug);
@@ -320,15 +357,16 @@ const ManageEvent: NextPage = () => {
               src="/assets/logo/icon.png"
               alt=""
             />
-            <div className="text-[32px] font-medium text-[#FFFFFFC8]">
+            <div className="text-[32px] font-medium leading-8 text-[#FFFFFFC8]">
               {data?.name}
             </div>
           </div>
           <a
             href={`/${slug}`}
-            className="flex h-7 items-center justify-center gap-1 rounded-md bg-[#FFFFFF14] px-[12px] py-[11px] text-[14px] font-medium leading-none text-[#FFFFFFA3] hover:bg-gray-400"
+            className="flex h-9 items-center justify-center gap-1 rounded-md bg-[#FFFFFF14] px-[12px] py-[11px] text-[14px] font-medium leading-none text-[#FFFFFFA3] hover:bg-gray-400"
           >
-            Event Page <LuArrowUpRight />
+            <p className="hidden md:block">Event Page</p>
+            <LuArrowUpRight />
           </a>
         </div>
 
@@ -347,12 +385,12 @@ const ManageEvent: NextPage = () => {
               >
                 Guests
               </TabsTrigger>
-              <TabsTrigger
+              {/* <TabsTrigger
                 value="registration"
                 className="mr-3 items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
               >
                 Registration
-              </TabsTrigger>
+              </TabsTrigger> */}
             </TabsList>
 
             <TabsContent
@@ -449,10 +487,12 @@ const ManageEvent: NextPage = () => {
                         </a>
                       </div>
 
-                      <div className="flex flex-1 gap-2">
+                      <div className="flex  flex-1 gap-2">
                         <Sheet>
                           <SheetTrigger asChild>
-                            <Button>Edit Event</Button>
+                            <div className="mt-[16px] flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]">
+                              Edit Event
+                            </div>
                           </SheetTrigger>
 
                           <SheetContent className="z-[998] w-full bg-[#1C1E20] md:w-[550px]">
@@ -462,7 +502,7 @@ const ManageEvent: NextPage = () => {
                                   <p className="text-[16px]">Edit Event</p>
                                 </div>
                               </SheetTitle>
-                              <SheetDescription>
+                              <SheetDescription className="h-[80vh] overflow-y-auto">
                                 <div className="p-[16px]">
                                   <div className="mb-[16px] text-[18px] font-bold text-white">
                                     Basic Info
@@ -501,8 +541,11 @@ const ManageEvent: NextPage = () => {
                                             <div className="text-[16px] text-[#FFFFFFC9]">
                                               Visibility
                                             </div>
-                                            <div className="text-[16px] text-[#FFFFFF80]">
-                                              {"Private"}
+                                            <div className="flex items-center text-[16px] text-[#FFFFFF80]">
+                                              {showPublic
+                                                ? "Public"
+                                                : "Private"}{" "}
+                                              <LuChevronsUpDown className="ml-2" />
                                             </div>
                                           </Button>
                                         </DropdownMenuTrigger>
@@ -511,7 +554,7 @@ const ManageEvent: NextPage = () => {
                                             checked={showPublic}
                                             onCheckedChange={(e) => {
                                               setPublic(e);
-                                              setPrivate(e);
+                                              setPrivate(false);
                                               console.log(
                                                 "Public: ",
                                                 showPublic,
@@ -521,6 +564,7 @@ const ManageEvent: NextPage = () => {
                                                 showPrivate,
                                               );
                                             }}
+                                            disabled={Boolean(showPublic)}
                                             className="flex flex-col items-start justify-start gap-1"
                                           >
                                             Public
@@ -533,7 +577,7 @@ const ManageEvent: NextPage = () => {
                                             checked={showPrivate}
                                             onCheckedChange={(e) => {
                                               setPrivate(e);
-                                              setPublic(e);
+                                              setPublic(false);
                                               console.log(
                                                 "Public: ",
                                                 showPublic,
@@ -543,6 +587,7 @@ const ManageEvent: NextPage = () => {
                                                 showPrivate,
                                               );
                                             }}
+                                            disabled={Boolean(showPrivate)}
                                             className="flex flex-col items-start justify-start gap-1"
                                           >
                                             Private
@@ -554,49 +599,102 @@ const ManageEvent: NextPage = () => {
                                         </DropdownMenuContent>
                                       </DropdownMenu>
                                     </div>
+
+                                    <div className="grid grid-cols-1 gap-2">
+                                      <div className="text-[14px] font-semibold text-[#FFFFFFc8]">
+                                        Time
+                                      </div>
+                                      <div className="bg-[#131517]/ flex flex-row justify-between gap-1 rounded-md border border-gray-600/30 px-5 py-3 backdrop-blur-md">
+                                        <div className="relative w-full">
+                                          <div className="absolute top-5 hidden h-8 border-l-[1px] border-dashed border-[#5F6062] md:block"></div>
+                                          <div className="absolute -left-[5.8px] top-[5px] hidden h-3 w-3 rounded-full bg-[#5F6062] md:block"></div>
+                                          <div className="absolute -left-[5.8px] bottom-[5px] hidden h-3 w-3 rounded-full border border-[#5F6062] md:block"></div>
+
+                                          <div className="flex w-full flex-1 justify-between">
+                                            <div className="ml-6 hidden flex-col justify-between gap-1 md:flex dark:text-[#FFFFFFA3]">
+                                              <div>Start</div>
+                                              <div>End</div>
+                                            </div>
+                                            <div className="flex w-full flex-col gap-1 md:w-[221px]">
+                                              <div className="grid w-full grid-cols-1 gap-1">
+                                                <div className="flex items-center justify-between gap-4">
+                                                  <div className="block text-[#FFFFFFA3] md:hidden">
+                                                    Start
+                                                  </div>
+
+                                                  <input
+                                                    defaultValue={new Date().toISOString()}
+                                                    type="datetime-local"
+                                                    className="w-[267px] rounded-lg px-4 py-1 md:rounded-sm dark:bg-[#FFFFFF14] dark:text-[#FFFFFF]"
+                                                  />
+                                                </div>
+
+                                                <div className="flex items-center justify-between gap-4">
+                                                  <div className="block text-[#FFFFFFA3] md:hidden">
+                                                    End
+                                                  </div>
+
+                                                  <input
+                                                    defaultValue={new Date().toISOString()}
+                                                    type="datetime-local"
+                                                    className="w-[267px] rounded-lg px-4 py-1 md:rounded-sm dark:bg-[#FFFFFF14] dark:text-[#FFFFFF]"
+                                                  />
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-2">
+                                      <div className="text-[14px] font-semibold text-[#FFFFFFc8]">
+                                        Location
+                                      </div>
+                                      <div className="flex flex-1 gap-2">
+                                        <a className="flex h-[56px] w-full items-center justify-start gap-2 rounded-md border border-white/30 bg-slate-900 p-2 font-semibold hover:bg-transparent dark:border-white/30 dark:bg-transparent dark:text-[#FFFFFF] dark:hover:bg-transparent">
+                                          <div className="flex items-center justify-center rounded-lg border border-gray-600/30 bg-[#29804e]/25 p-3 text-center">
+                                            <LuMapPin className="text-xl text-[#50bd7d]" />
+                                          </div>
+                                          In Person
+                                        </a>
+                                        <a className="flex h-[56px] w-full items-center justify-start gap-2 rounded-md border border-white/30 bg-slate-900 p-2 font-semibold hover:bg-transparent dark:border-white/30 dark:bg-transparent dark:text-[#FFFFFF] dark:hover:bg-transparent">
+                                          <div className="flex items-center justify-center rounded-lg border border-gray-600/30 bg-[#3787ff]/25 p-3 text-center">
+                                            <LuVideo className="text-xl text-[#3787ff]" />
+                                          </div>
+                                          Virtual
+                                        </a>
+                                      </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-2">
+                                      <div className="text-[14px] font-semibold text-[#FFFFFFc8]">
+                                        Event Location
+                                      </div>
+                                      <Input
+                                        type="text"
+                                        className="py-[8px] text-[15px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#ffffff86]"
+                                        placeholder="Whats the address"
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               </SheetDescription>
+                              <SheetFooter className="flex items-start px-[16px] sm:justify-start">
+                                <SheetClose asChild>
+                                  <Button type="submit">Update Event</Button>
+                                </SheetClose>
+                              </SheetFooter>
                             </SheetHeader>
-                            {/* <div className="grid gap-4 py-4">
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="name" className="text-right">
-                                  Name
-                                </Label>
-                                <Input
-                                  id="name"
-                                  value="Pedro Duarte"
-                                  className="col-span-3"
-                                />
-                              </div>
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                <Label
-                                  htmlFor="username"
-                                  className="text-right"
-                                >
-                                  Username
-                                </Label>
-                                <Input
-                                  id="username"
-                                  value="@peduarte"
-                                  className="col-span-3"
-                                />
-                              </div>
-                            </div> */}
-                            <SheetFooter className="p-[16px]">
-                              <SheetClose asChild>
-                                <Button type="submit">Update Event</Button>
-                              </SheetClose>
-                            </SheetFooter>
                           </SheetContent>
                         </Sheet>
 
-                        {/* <a
+                        <a
                           href={"#"}
                           className="mt-[16px] flex flex-1 items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]"
                         >
                           Change Photo
-                        </a> */}
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -616,12 +714,10 @@ const ManageEvent: NextPage = () => {
                         }
                         alt=""
                       />
-                      <h1 className="ml-2 text-[16px] font-medium text-white">
-                        {data?.user?.name}
+                      <h1 className="ml-2 line-clamp-1 text-[14px] font-medium text-white md:text-[16px]">
+                        {data?.user?.name} {data?.user?.email}
                       </h1>
-                      <p className="ml-2 text-[16px] font-light text-white">
-                        {data?.user?.email}
-                      </p>
+
                       <div className="ml-2 flex items-center justify-center rounded-2xl bg-[#07A46022] px-[7px] py-[4px] text-[12px] font-medium leading-none text-[#47C97E]">
                         Creator
                       </div>
@@ -639,16 +735,17 @@ const ManageEvent: NextPage = () => {
                 <div className="flex flex-col">
                   <div className="flex w-full justify-between pb-[8px]">
                     <div className="text-[24px] text-[#939597]">
-                      {guest} <span className="text-[16px]">guests</span>
+                      {guestList.length}{" "}
+                      <span className="text-[16px]">guests</span>
                     </div>
                     <div className="text-[24px] text-[#939597]">
-                      <span className="text-[16px]">cap</span> 50
+                      <span className="text-[16px]">cap</span> {data?.capacity}
                     </div>
                   </div>
 
                   <progress
-                    value={guest}
-                    max={50}
+                    value={guestList.length}
+                    max={data?.capacity}
                     className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
                   />
                 </div>
@@ -663,7 +760,7 @@ const ManageEvent: NextPage = () => {
                     </div>
                     Check In Guests
                   </a>
-                  <a
+                  {/* <a
                     href="#"
                     className="flex w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-gray-800/40 py-[9px] pl-[10px] pr-[40px] text-[18px] font-semibold text-white backdrop-blur-sm"
                   >
@@ -676,7 +773,7 @@ const ManageEvent: NextPage = () => {
                         Shown to guests
                       </span>
                     </div>
-                  </a>
+                  </a> */}
                 </div>
 
                 <div>
@@ -694,7 +791,7 @@ const ManageEvent: NextPage = () => {
 
                 <Table className="border-gray-600/30">
                   <TableBody className="rounded-lg border-gray-600/30">
-                    {GuestList.map((guest, index) => (
+                    {guestList?.map((guest, index) => (
                       <TableRow
                         key={index}
                         className="border-gray-600/30 bg-gray-800/40"
@@ -702,26 +799,59 @@ const ManageEvent: NextPage = () => {
                         <TableCell className="flex gap-2 ">
                           <img
                             className="h-5 rounded-full"
-                            src="/assets/logo/icon.png"
+                            src={
+                              urlify(guest?.user?.profile_photo) ||
+                              "/assets/logo/icon.png"
+                            }
                             alt=""
                           />
                           <p className="text-[16px] font-medium text-[#FFFFFF]">
-                            {guest.name}{" "}
+                            {guest?.user?.name}{" "}
                             <span className="ml-2 text-[15px] text-[#FFFFFF80]">
-                              {guest.email}
+                              {guest?.user?.email}
                             </span>
                           </p>
                         </TableCell>
-                        {/* <TableCell className="text-[16px] text-[#FFFFFF80]">
-                          
-                        </TableCell> */}
                         <TableCell className="text-right">
-                          <div className="rounded-md bg-[#29804e]/25 text-center text-[12px] font-medium text-[#29804e] ">
-                            Going
-                          </div>
+                          {guest?.going_status === 1 && guest?.status === 1 && (
+                            <div className="rounded-md bg-[#29804e]/25 text-center text-[12px] font-medium text-[#29804e] ">
+                              Going
+                            </div>
+                          )}
+                          {guest?.status === 2 && (
+                            <div className="rounded-md bg-red-500/25 text-center text-[12px] font-medium text-red-500">
+                              Rejected
+                            </div>
+                          )}
+                          {guest?.status === 0 && (
+                            <div className="flex items-center">
+                              <Button
+                                onClick={() => {
+                                  manageGuestStatus(1, guest?.id);
+                                }}
+                                variant="ghost"
+                                size="sm"
+                                className="h-fit text-green-500"
+                              >
+                                <LuCheck className="mr-2 h-4 w-4 text-green-500" />
+                                Approve
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  manageGuestStatus(2, guest?.id);
+                                }}
+                                variant="ghost"
+                                size="sm"
+                                className="h-fit text-red-500"
+                              >
+                                <LuX className="mr-2 h-4 w-4 text-red-500" />
+                                Decline
+                              </Button>
+                            </div>
+                          )}
                         </TableCell>
                         <TableCell className="text-right text-[14px] font-medium text-[#FFFFFF80]">
-                          {guest.date}
+                          {new Date(guest?.created_at).toDateString()}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -729,14 +859,14 @@ const ManageEvent: NextPage = () => {
                 </Table>
               </div>
             </TabsContent>
-            <TabsContent
+            {/* <TabsContent
               value="registration"
               className="border-t border-gray-600/30"
             >
               <div className="mx-auto mt-[28px] flex max-w-[788px] px-4 text-white lg:px-0">
                 Registration
               </div>
-            </TabsContent>
+            </TabsContent> */}
           </Tabs>
         </div>
       </section>

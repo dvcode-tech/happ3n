@@ -472,7 +472,7 @@ const EventPage = () => {
                 <p className="text-[14px] leading-6 text-[#FFFFFFC9]">
                   {JSON.parse(data?.location || "{}")?.location}
                 </p>
-                {JSON.parse(data?.location || "{}")?.type !== "VIRTUAL" && (
+                {/* {JSON.parse(data?.location || "{}")?.type !== "VIRTUAL" && (
                   <iframe
                     className="mt-[16px] aspect-[2/1] w-full rounded-md bg-gray-400 invert-[90%] filter"
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3859.093497007274!2d120.98312537533448!3d14.707304374454834!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b3e239aafdd7%3A0x9f7ee6ff84f9adfd!2sV.%20Matias%2C%20Valenzuela%2C%20Metro%20Manila!5e0!3m2!1sen!2sph!4v1699341419611!5m2!1sen!2sph"
@@ -480,7 +480,7 @@ const EventPage = () => {
                     aria-hidden="false"
                     tabIndex={0}
                   ></iframe>
-                )}
+                )} */}
               </div>
 
               {/* <div>
