@@ -1,6 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-//TODO:Mobile View
-//TODO:Registration Tab
 
 import { NextPage } from "next";
 import { useEffect, useState } from "react";
@@ -13,12 +11,13 @@ import {
   LuShare,
   LuScanLine,
   LuQrCode,
-  LuUsers,
+  LuChevronsRight,
   LuSearch,
   LuVideo,
   LuChevronsUpDown,
   LuCheck,
   LuX,
+  LuImage,
 } from "react-icons/lu";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -66,29 +65,35 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
 import React from "react";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { FileDialog } from "@/components/ui/file-dialog";
 
 type Checked = DropdownMenuCheckboxItemProps["checked"];
 
 const formSchema = z.object({
   name: z.string().min(1),
-  slug: z.string(),
   start_at: z.string(),
   end_at: z.string(),
-  location_type: z.string().min(1),
   location: z.string().min(1),
-  // required_approval: z.boolean(),
-  // capacity: z.string(),
-  // banner: z
-  //   .unknown()
-  //   .refine((val) => {
-  //     if (!Array.isArray(val)) return false;
-  //     if (val.some((file) => !(file instanceof File))) return false;
-  //     return true;
-  //   }, "Must be an array of File")
-  //   .optional()
-  //   .nullable()
-  //   .default(null),
   type: z.string(),
+  banner: z
+    .unknown()
+    .refine((val) => {
+      if (!Array.isArray(val)) return false;
+      if (val.some((file) => !(file instanceof File))) return false;
+      return true;
+    }, "Must be an array of File")
+    .optional()
+    .nullable()
+    .default(null),
   description: z.string().min(1),
 });
 
@@ -164,8 +169,12 @@ const ManageEvent: NextPage = () => {
   const [guest, setGuest] = useState(45);
   const [guestList, setGuestList] = useState<any[]>([]);
 
+  const [type, setType] = useState("0");
+  const [startAt, setStartAt] = useState("");
+  const [endAt, setEndAt] = useState("");
   const [showPublic, setPublic] = React.useState<Checked>(true);
   const [showPrivate, setPrivate] = React.useState<Checked>(false);
+  const [locationType, setLocationType] = useState("OFFLINE");
 
   const getGuestList = async () => {
     try {
@@ -200,13 +209,10 @@ const ManageEvent: NextPage = () => {
     defaultValues: {
       type: "",
       name: "",
-      slug: "",
       start_at: "",
       end_at: "",
       location: "",
-      // required_approval: false,
-      // capacity: "",
-      // banner: "",
+      banner: "",
       description: "",
     },
   });
@@ -214,26 +220,27 @@ const ManageEvent: NextPage = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const handleUpload = async () => {
-        // @ts-ignore
-        // if (!values.banner[0]) return;
-        // const file = (values.banner as unknown as any)[0];
-        // const reference = (
-        //   new Date().getTime().toString(36) +
-        //   Math.random().toString(36).slice(2)
-        // ).toLowerCase();
-        // return new Promise((resolve, reject) => {
-        //   const reader = new FileReader();
-        //   reader.onloadend = () => {
-        //     resolve({
-        //       filename: `${reference}${path.extname(file.name)}`,
-        //       contents: (reader.result as any)?.split(",")[1],
-        //     });
-        //   };
-        //   reader.onerror = (error) => {
-        //     reject(error);
-        //   };
-        //   reader.readAsDataURL(file);
-        // });
+        //@ts-ignore
+        if (!values.banner[0]) return;
+
+        const file = (values.banner as unknown as any)[0];
+        const reference = (
+          new Date().getTime().toString(36) +
+          Math.random().toString(36).slice(2)
+        ).toLowerCase();
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve({
+              filename: `${reference}${path.extname(file.name)}`,
+              contents: (reader.result as any)?.split(",")[1],
+            });
+          };
+          reader.onerror = (error) => {
+            reject(error);
+          };
+          reader.readAsDataURL(file);
+        });
       };
 
       const bannerRessult = await handleUpload();
@@ -248,42 +255,38 @@ const ManageEvent: NextPage = () => {
         },
       );
 
-      const slug = slugify(values.name);
-
       const locationData = {
-        type: values.location_type,
+        type: locationType,
         location: values.location,
       };
 
       const locationJson = JSON.stringify(locationData);
+      console.log(locationJson);
 
-      // const data = {
-      //   type: Number(type),
-      //   banner: (imagePost.data as any)?.data,
-      //   name: values.name,
-      //   slug: slug,
-      //   start_at: Number(new Date(startAt).getTime()),
-      //   end_at: Number(new Date(endAt).getTime()),
-      //   location: locationJson,
-      //   required_approval: approvalStatus,
-      //   capacity: Number(capacity),
-      //   description: descriptionValue,
-      // };
+      const data = {
+        type: Number(type),
+        banner: (imagePost.data as any)?.data,
+        name: values.name,
+        start_at: Number(new Date(startAt).getTime()),
+        end_at: Number(new Date(endAt).getTime()),
+        location: locationJson,
+        description: values.description,
+      };
 
       console.log(data);
 
-      const eventPost = await backend.post("/event/create", data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      // const eventPost = await backend.post("/event/create", data, {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      // });
 
-      toast({
-        variant: "default",
-        title: "Success",
-        description: (eventPost.data as any)?.message,
-        duration: 2000,
-      });
+      // toast({
+      //   variant: "default",
+      //   title: "Success",
+      //   description: (eventPost.data as any)?.message,
+      //   duration: 2000,
+      // });
     } catch (e: any) {
       console.error(e);
       toast({
@@ -344,6 +347,10 @@ const ManageEvent: NextPage = () => {
     if (!slug) return;
     fetchEvent(slug);
   }, [slug]);
+
+  const dialogClose = () => {
+    document.getElementById("closeDialog")?.click();
+  };
 
   return (
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">
@@ -410,7 +417,13 @@ const ManageEvent: NextPage = () => {
                 <div className="flex flex-col gap-x-[20px] rounded-lg border border-gray-600/30 bg-gray-800/40 p-[12px] text-white backdrop-blur-sm md:flex-row">
                   <div className="flex flex-1">
                     {/* TODO: Overview Banner */}
-                    <div className="relative h-[257px] w-[332px] overflow-hidden rounded-lg bg-blue-950 md:h-[280px] md:w-[371px]">
+                    <div
+                      className="relative aspect-[1/1] h-[257px] w-[332px] overflow-hidden rounded-lg bg-gray-800/40 bg-contain bg-center bg-no-repeat md:h-[280px] md:w-[371px]"
+                      style={{
+                        // background: `${urlify(data?.banner)}`,
+                        backgroundImage: `url(${urlify(data?.banner)})`,
+                      }}
+                    >
                       <div className="absolute bottom-2 left-1/2 mx-auto flex w-[355px] -translate-x-1/2 justify-between rounded-md bg-[#13151752] py-2 backdrop-blur-md">
                         <div className="flex items-center gap-1 pl-4 text-[14px] text-[#FFFFFFCC]">
                           {`happ3n/${slug}`} <LuArrowUpRight />
@@ -495,206 +508,337 @@ const ManageEvent: NextPage = () => {
                             </div>
                           </SheetTrigger>
 
-                          <SheetContent className="z-[998] w-full bg-[#1C1E20] md:w-[550px]">
+                          <SheetContent className="z-[900] w-full bg-[#1C1E20] md:w-[550px]">
                             <SheetHeader className="sticky">
                               <SheetTitle className="border-b border-gray-600/30">
-                                <div className="flex flex-row gap-3 p-[16px] pb-4">
+                                <div className="flex flex-row items-center gap-3 p-[16px] pb-4">
+                                  <LuChevronsRight
+                                    onClick={() => dialogClose()}
+                                  />
                                   <p className="text-[16px]">Edit Event</p>
                                 </div>
                               </SheetTitle>
-                              <SheetDescription className="h-[80vh] overflow-y-auto">
-                                <div className="p-[16px]">
-                                  <div className="mb-[16px] text-[18px] font-bold text-white">
-                                    Basic Info
-                                  </div>
-
-                                  <div className="flex flex-col gap-8">
-                                    <Input
-                                      type="text"
-                                      className="py-[8px] text-[18px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#FFFFFFC9]"
-                                      placeholder="Event Name"
-                                    />
-
-                                    <div className="grid grid-cols-1 gap-2">
-                                      <div className="text-[14px] font-semibold text-[#FFFFFFc8]">
-                                        Description
-                                      </div>
-                                      <div className="">
-                                        <Textarea
-                                          // className="h-[200px] resize-none bg-[#131517] text-[16px] outline-none placeholder:font-semibold placeholder:text-[#4c4d4f]"
-                                          className="h-[100px] resize-none text-[16px] text-white outline-none placeholder:text-[14px] dark:border-white/30 dark:bg-[#131517]  placeholder:dark:text-[#FFFFFFC9]"
-                                          placeholder="Who should come? What's the event about?"
-                                        />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full">
-                                      <DropdownMenu>
-                                        <DropdownMenuTrigger
-                                          asChild
-                                          className="flex w-full flex-1"
-                                        >
-                                          <Button
-                                            variant="outline"
-                                            className="flex justify-between gap-2 dark:border-[#FFFFFF14] dark:bg-[#FFFFFF14]"
-                                          >
-                                            <div className="text-[16px] text-[#FFFFFFC9]">
-                                              Visibility
-                                            </div>
-                                            <div className="flex items-center text-[16px] text-[#FFFFFF80]">
-                                              {showPublic
-                                                ? "Public"
-                                                : "Private"}{" "}
-                                              <LuChevronsUpDown className="ml-2" />
-                                            </div>
-                                          </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="z-[999] w-56 dark:border-[#FFFFFF14] dark:bg-[#1C1E20]">
-                                          <DropdownMenuCheckboxItem
-                                            checked={showPublic}
-                                            onCheckedChange={(e) => {
-                                              setPublic(e);
-                                              setPrivate(false);
-                                              console.log(
-                                                "Public: ",
-                                                showPublic,
-                                              );
-                                              console.log(
-                                                "Private: ",
-                                                showPrivate,
-                                              );
-                                            }}
-                                            disabled={Boolean(showPublic)}
-                                            className="flex flex-col items-start justify-start gap-1"
-                                          >
-                                            Public
-                                            <p className="text-[#FFFFFF80]">
-                                              Shown on your calendar and
-                                              eligible to be featured.
-                                            </p>
-                                          </DropdownMenuCheckboxItem>
-                                          <DropdownMenuCheckboxItem
-                                            checked={showPrivate}
-                                            onCheckedChange={(e) => {
-                                              setPrivate(e);
-                                              setPublic(false);
-                                              console.log(
-                                                "Public: ",
-                                                showPublic,
-                                              );
-                                              console.log(
-                                                "Private: ",
-                                                showPrivate,
-                                              );
-                                            }}
-                                            disabled={Boolean(showPrivate)}
-                                            className="flex flex-col items-start justify-start gap-1"
-                                          >
-                                            Private
-                                            <p className="text-[#FFFFFF80]">
-                                              Unlisted. Only people with the
-                                              link can register.
-                                            </p>
-                                          </DropdownMenuCheckboxItem>
-                                        </DropdownMenuContent>
-                                      </DropdownMenu>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 gap-2">
-                                      <div className="text-[14px] font-semibold text-[#FFFFFFc8]">
-                                        Time
-                                      </div>
-                                      <div className="bg-[#131517]/ flex flex-row justify-between gap-1 rounded-md border border-gray-600/30 px-5 py-3 backdrop-blur-md">
-                                        <div className="relative w-full">
-                                          <div className="absolute top-5 hidden h-8 border-l-[1px] border-dashed border-[#5F6062] md:block"></div>
-                                          <div className="absolute -left-[5.8px] top-[5px] hidden h-3 w-3 rounded-full bg-[#5F6062] md:block"></div>
-                                          <div className="absolute -left-[5.8px] bottom-[5px] hidden h-3 w-3 rounded-full border border-[#5F6062] md:block"></div>
-
-                                          <div className="flex w-full flex-1 justify-between">
-                                            <div className="ml-6 hidden flex-col justify-between gap-1 md:flex dark:text-[#FFFFFFA3]">
-                                              <div>Start</div>
-                                              <div>End</div>
-                                            </div>
-                                            <div className="flex w-full flex-col gap-1 md:w-[221px]">
-                                              <div className="grid w-full grid-cols-1 gap-1">
-                                                <div className="flex items-center justify-between gap-4">
-                                                  <div className="block text-[#FFFFFFA3] md:hidden">
-                                                    Start
-                                                  </div>
-
-                                                  <input
-                                                    defaultValue={new Date().toISOString()}
-                                                    type="datetime-local"
-                                                    className="w-[267px] rounded-lg px-4 py-1 md:rounded-sm dark:bg-[#FFFFFF14] dark:text-[#FFFFFF]"
-                                                  />
+                              <SheetDescription className="h-[90vh] overflow-y-auto">
+                                <Form {...form}>
+                                  <form
+                                    onSubmit={form.handleSubmit(handleSubmit)}
+                                    className="space-y-8 p-[16px]"
+                                  >
+                                    <div className="">
+                                      <div className="flex flex-1 items-center justify-center">
+                                        <FormItem>
+                                          <FormControl>
+                                            <FileDialog
+                                              setValue={form.setValue}
+                                              name="banner"
+                                              maxFiles={1}
+                                              maxSize={1024 * 1024 * 1}
+                                              accept={{ "image/*": [] }}
+                                              isUploading={false}
+                                              disabled={false}
+                                            >
+                                              <Button
+                                                variant="outline"
+                                                className="relative flex aspect-[1/1] h-[358px] flex-col items-center justify-center rounded-xl bg-[url('/assets/placeholder/placeholder_banner.png')] bg-cover bg-no-repeat md:h-[280px] lg:h-[330px]"
+                                              >
+                                                <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
+                                                  <LuImage className="h-5 w-5" />
                                                 </div>
+                                              </Button>
+                                            </FileDialog>
+                                          </FormControl>
+                                        </FormItem>
+                                      </div>
 
-                                                <div className="flex items-center justify-between gap-4">
-                                                  <div className="block text-[#FFFFFFA3] md:hidden">
-                                                    End
-                                                  </div>
+                                      <div className="my-[16px] text-left text-[18px] font-bold text-white">
+                                        Basic Info
+                                      </div>
 
-                                                  <input
-                                                    defaultValue={new Date().toISOString()}
-                                                    type="datetime-local"
-                                                    className="w-[267px] rounded-lg px-4 py-1 md:rounded-sm dark:bg-[#FFFFFF14] dark:text-[#FFFFFF]"
+                                      <div className="flex flex-col gap-8">
+                                        <FormField
+                                          control={form.control}
+                                          name="name"
+                                          render={({ field }) => (
+                                            <FormItem>
+                                              <FormControl>
+                                                <Input
+                                                  type="text"
+                                                  className="py-[8px] text-[18px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#FFFFFFC9]"
+                                                  placeholder="Event Name"
+                                                  {...field}
+                                                />
+                                              </FormControl>
+                                            </FormItem>
+                                          )}
+                                        />
+
+                                        <div className="grid grid-cols-1 gap-2">
+                                          <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
+                                            Description
+                                          </div>
+                                          <FormField
+                                            control={form.control}
+                                            name="description"
+                                            render={({ field }) => (
+                                              <FormItem>
+                                                <FormControl>
+                                                  <Textarea
+                                                    className="h-[100px] resize-none text-[16px] text-white outline-none placeholder:text-[14px] dark:border-white/30 dark:bg-[#131517]  placeholder:dark:text-[#FFFFFFC9]"
+                                                    placeholder="Who should come? What's the event about?"
+                                                    {...field}
                                                   />
+                                                </FormControl>
+                                              </FormItem>
+                                            )}
+                                          />
+                                        </div>
+
+                                        <div className="w-full">
+                                          <DropdownMenu>
+                                            <DropdownMenuTrigger
+                                              asChild
+                                              className="flex w-full flex-1"
+                                            >
+                                              <Button
+                                                variant="outline"
+                                                className="flex justify-between gap-2 dark:border-[#FFFFFF14] dark:bg-[#FFFFFF14]"
+                                              >
+                                                <div className="text-[16px] text-[#FFFFFFC9]">
+                                                  Visibility
+                                                </div>
+                                                <div className="flex items-center text-[16px] text-[#FFFFFF80]">
+                                                  {showPublic
+                                                    ? "Public"
+                                                    : "Private"}{" "}
+                                                  <LuChevronsUpDown className="ml-2" />
+                                                </div>
+                                              </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent className="z-[999] w-56 dark:border-[#FFFFFF14] dark:bg-[#1C1E20]">
+                                              <DropdownMenuCheckboxItem
+                                                checked={showPublic}
+                                                onCheckedChange={(e) => {
+                                                  setPublic(e);
+                                                  setType("0");
+                                                  setPrivate(false);
+                                                }}
+                                                disabled={Boolean(showPublic)}
+                                                className="flex flex-col items-start justify-start gap-1"
+                                              >
+                                                Public
+                                                <p className="text-[#FFFFFF80]">
+                                                  Shown on your calendar and
+                                                  eligible to be featured.
+                                                </p>
+                                              </DropdownMenuCheckboxItem>
+                                              <DropdownMenuCheckboxItem
+                                                checked={showPrivate}
+                                                onCheckedChange={(e) => {
+                                                  setPrivate(e);
+                                                  setType("1");
+                                                  setPublic(false);
+                                                }}
+                                                disabled={Boolean(showPrivate)}
+                                                className="flex flex-col items-start justify-start gap-1"
+                                              >
+                                                Private
+                                                <p className="text-[#FFFFFF80]">
+                                                  Unlisted. Only people with the
+                                                  link can register.
+                                                </p>
+                                              </DropdownMenuCheckboxItem>
+                                            </DropdownMenuContent>
+                                          </DropdownMenu>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 gap-2">
+                                          <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
+                                            Time
+                                          </div>
+                                          <div className="bg-[#131517]/ flex flex-row justify-between gap-1 rounded-md border border-gray-600/30 px-5 py-3 backdrop-blur-md">
+                                            <div className="relative w-full">
+                                              <div className="absolute top-5 hidden h-8 border-l-[1px] border-dashed border-[#5F6062] md:block"></div>
+                                              <div className="absolute -left-[5.8px] top-[5px] hidden h-3 w-3 rounded-full bg-[#5F6062] md:block"></div>
+                                              <div className="absolute -left-[5.8px] bottom-[5px] hidden h-3 w-3 rounded-full border border-[#5F6062] md:block"></div>
+
+                                              <div className="flex w-full flex-1 justify-between">
+                                                <div className="ml-6 hidden flex-col justify-between gap-1 md:flex dark:text-[#FFFFFFA3]">
+                                                  <div>Start</div>
+                                                  <div>End</div>
+                                                </div>
+                                                <div className="flex w-full flex-col gap-1 md:w-[221px]">
+                                                  <div className="grid w-full grid-cols-1 gap-1">
+                                                    <div className="flex items-center justify-between gap-4">
+                                                      <div className="block text-[#FFFFFFA3] md:hidden">
+                                                        Start
+                                                      </div>
+                                                      <FormField
+                                                        control={form.control}
+                                                        name="start_at"
+                                                        render={({ field }) => (
+                                                          <FormItem>
+                                                            <FormControl>
+                                                              <input
+                                                                defaultValue={new Date().toISOString()}
+                                                                type="datetime-local"
+                                                                className="w-[230px] rounded-lg px-4 py-1 md:rounded-sm dark:bg-[#FFFFFF14] dark:text-[#FFFFFF]"
+                                                                {...field}
+                                                                onChange={(
+                                                                  e,
+                                                                ) => {
+                                                                  field.onChange(
+                                                                    e.target
+                                                                      .value,
+                                                                  );
+                                                                  setStartAt(
+                                                                    e.target
+                                                                      .value,
+                                                                  );
+                                                                }}
+                                                              />
+                                                            </FormControl>
+                                                          </FormItem>
+                                                        )}
+                                                      />
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between gap-4">
+                                                      <div className="block text-[#FFFFFFA3] md:hidden">
+                                                        End
+                                                      </div>
+                                                      <FormField
+                                                        control={form.control}
+                                                        name="end_at"
+                                                        render={({ field }) => (
+                                                          <FormItem>
+                                                            <FormControl>
+                                                              <input
+                                                                defaultValue={new Date().toISOString()}
+                                                                type="datetime-local"
+                                                                className="w-[230px] rounded-lg px-4 py-1 md:rounded-sm dark:bg-[#FFFFFF14] dark:text-[#FFFFFF]"
+                                                                {...field}
+                                                                onChange={(
+                                                                  e,
+                                                                ) => {
+                                                                  field.onChange(
+                                                                    e.target
+                                                                      .value,
+                                                                  );
+                                                                  setEndAt(
+                                                                    e.target
+                                                                      .value,
+                                                                  );
+                                                                }}
+                                                              />
+                                                            </FormControl>
+                                                          </FormItem>
+                                                        )}
+                                                      />
+                                                    </div>
+                                                  </div>
                                                 </div>
                                               </div>
                                             </div>
                                           </div>
                                         </div>
-                                      </div>
-                                    </div>
 
-                                    <div className="grid grid-cols-1 gap-2">
-                                      <div className="text-[14px] font-semibold text-[#FFFFFFc8]">
-                                        Location
-                                      </div>
-                                      <div className="flex flex-1 gap-2">
-                                        <a className="flex h-[56px] w-full items-center justify-start gap-2 rounded-md border border-white/30 bg-slate-900 p-2 font-semibold hover:bg-transparent dark:border-white/30 dark:bg-transparent dark:text-[#FFFFFF] dark:hover:bg-transparent">
-                                          <div className="flex items-center justify-center rounded-lg border border-gray-600/30 bg-[#29804e]/25 p-3 text-center">
-                                            <LuMapPin className="text-xl text-[#50bd7d]" />
+                                        <div className="grid grid-cols-1 gap-2">
+                                          <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
+                                            Location
                                           </div>
-                                          In Person
-                                        </a>
-                                        <a className="flex h-[56px] w-full items-center justify-start gap-2 rounded-md border border-white/30 bg-slate-900 p-2 font-semibold hover:bg-transparent dark:border-white/30 dark:bg-transparent dark:text-[#FFFFFF] dark:hover:bg-transparent">
-                                          <div className="flex items-center justify-center rounded-lg border border-gray-600/30 bg-[#3787ff]/25 p-3 text-center">
-                                            <LuVideo className="text-xl text-[#3787ff]" />
-                                          </div>
-                                          Virtual
-                                        </a>
-                                      </div>
-                                    </div>
+                                          <div className="flex flex-1 gap-2">
+                                            <div
+                                              onClick={() =>
+                                                setLocationType("OFFLINE")
+                                              }
+                                              className="relative flex h-[45px] w-full cursor-pointer items-center justify-start gap-2 rounded-md border border-white/30 bg-slate-900 p-2 font-semibold hover:bg-transparent md:h-[56px] dark:border-white/30 dark:bg-transparent dark:text-[#FFFFFF] dark:hover:bg-transparent"
+                                            >
+                                              <div className="flex items-center justify-center rounded-lg border border-gray-600/30 bg-[#29804e]/25 p-1 text-center md:p-3">
+                                                <LuMapPin className="text-xl text-[#50bd7d]" />
+                                              </div>
+                                              In Person
+                                              {locationType === "OFFLINE" && (
+                                                <div className="absolute right-2 rounded-full bg-[#50bd7d] p-1 md:right-4">
+                                                  <LuCheck className="text-sm text-gray-950" />
+                                                </div>
+                                              )}
+                                            </div>
 
-                                    <div className="grid grid-cols-1 gap-2">
-                                      <div className="text-[14px] font-semibold text-[#FFFFFFc8]">
-                                        Event Location
+                                            <div
+                                              onClick={() =>
+                                                setLocationType("VIRTUAL")
+                                              }
+                                              className="relative flex h-[45px] w-full items-center justify-start gap-2 rounded-md border border-white/30 bg-slate-900 p-2 font-semibold hover:bg-transparent md:h-[56px] dark:border-white/30 dark:bg-transparent dark:text-[#FFFFFF] dark:hover:bg-transparent"
+                                            >
+                                              <div className="flex items-center justify-center rounded-lg border border-gray-600/30 bg-[#3787ff]/25 p-1 text-center md:p-3">
+                                                <LuVideo className="text-xl text-[#3787ff] md:text-base" />
+                                              </div>
+                                              Virtual
+                                              {locationType === "VIRTUAL" && (
+                                                <div className="absolute right-2 rounded-full bg-[#3787ff] p-1 md:right-4">
+                                                  <LuCheck className="text-sm text-gray-950 md:text-xl" />
+                                                </div>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        {locationType === "OFFLINE" && (
+                                          <div className="grid grid-cols-1 gap-2">
+                                            <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
+                                              Event Location
+                                            </div>
+                                            <FormField
+                                              control={form.control}
+                                              name="location"
+                                              render={({ field }) => (
+                                                <FormItem>
+                                                  <FormControl>
+                                                    <Input
+                                                      type="text"
+                                                      className="py-[8px] text-[15px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#ffffff86]"
+                                                      placeholder="Whats the address?"
+                                                      {...field}
+                                                    />
+                                                  </FormControl>
+                                                </FormItem>
+                                              )}
+                                            />
+                                          </div>
+                                        )}
+
+                                        {locationType === "VIRTUAL" && (
+                                          <div className="grid grid-cols-1 gap-2">
+                                            <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
+                                              Join URL
+                                            </div>
+                                            <FormField
+                                              control={form.control}
+                                              name="location"
+                                              render={({ field }) => (
+                                                <FormItem>
+                                                  <FormControl>
+                                                    <Input
+                                                      type="text"
+                                                      className="py-[8px] text-[15px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#ffffff86]"
+                                                      placeholder="https://meet.google.com/abc-defg-hij"
+                                                      {...field}
+                                                    />
+                                                  </FormControl>
+                                                </FormItem>
+                                              )}
+                                            />
+                                          </div>
+                                        )}
                                       </div>
-                                      <Input
-                                        type="text"
-                                        className="py-[8px] text-[15px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#ffffff86]"
-                                        placeholder="Whats the address"
-                                      />
                                     </div>
-                                  </div>
-                                </div>
+                                    <Button type="submit">Update Event</Button>
+                                  </form>
+                                </Form>
                               </SheetDescription>
-                              <SheetFooter className="flex items-start px-[16px] sm:justify-start">
-                                <SheetClose asChild>
-                                  <Button type="submit">Update Event</Button>
-                                </SheetClose>
-                              </SheetFooter>
                             </SheetHeader>
                           </SheetContent>
                         </Sheet>
-
-                        <a
-                          href={"#"}
-                          className="mt-[16px] flex flex-1 items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]"
-                        >
-                          Change Photo
-                        </a>
                       </div>
                     </div>
                   </div>

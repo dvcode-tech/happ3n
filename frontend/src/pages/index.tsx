@@ -32,10 +32,10 @@ const Home: NextPage = () => {
                 alt=""
               />
               <h1 className="text-center text-[40px] font-semibold leading-none text-white md:text-left md:text-[64px]">
-                Delightful events <br />
+                Where Great <br />
                 <span className="via-19% bg-gradient-to-r from-[#099ef1] from-0% via-[#6863f8] to-[#d84ffa] to-90% bg-clip-text text-transparent">
                   {" "}
-                  starts here.
+                  Events Begin!
                 </span>
               </h1>
               <p className="mt-[24px] text-center text-[16px] text-white md:text-left md:text-[20px]">

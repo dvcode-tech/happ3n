@@ -6,10 +6,61 @@ import Header from "@/components/Header";
 
 import { LuCamera, LuSearch, LuUsers } from "react-icons/lu";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useHappenContext } from "@/context/HappenContext";
+import { toast } from "@/components/ui/use-toast";
 
 const CheckIn: NextPage = () => {
   const router = useRouter();
-  const { slug } = router.query;
+  const { isAuthenticated, ctxAccount, backend } = useHappenContext();
+  const { q } = router?.query;
+  const [data, setData] = useState<any>(null);
+  const [guestList, setGuestList] = useState<any[]>([]);
+
+  const getGuestList = async () => {
+    try {
+      const response: any = (
+        await backend.post(`/event/${data?.id}/guests/list`)
+      ).data;
+
+      setGuestList(response.data);
+
+      console.log(response);
+    } catch (e: any) {
+      const error = e?.data?.message || e.message;
+
+      console.error(error);
+
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error,
+        duration: 1000,
+      });
+    }
+  };
+
+  const fetchEvent = async (q: any) => {
+    try {
+      const data: any = (await backend.get(`/event/slug/${q}`)).data;
+      console.log(data?.data);
+      setData(data?.data);
+    } catch (error) {
+      console.error({ error });
+    }
+  };
+
+  useEffect(() => {
+    if (!ctxAccount || !data) return;
+    getGuestList();
+  }, [ctxAccount, data]);
+
+  useEffect(() => {
+    if (!q) return;
+    fetchEvent(q);
+  }, [q]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#131517] from-10% via-[#00071C] via-50% to-[#00071C] to-90% bg-fixed">
       <Header />
@@ -25,19 +76,19 @@ const CheckIn: NextPage = () => {
             />
             <div>
               <div className="text-[16px] font-medium text-[#FFFFFF]">
-                DvCode General Assembly
+                {data?.name}
               </div>
               <p className="text-[13px] text-[#FFFFFFCC]">
                 Started 7 hours ago
               </p>
             </div>
           </div>
-          <a
-            href={`/check-in/${slug}/scan`}
+          <Link
+            href={`/check-in/scan?q=${q}`}
             className="flex h-fit w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-[#FFFFFF14] px-[10px] py-[7px] text-[14px] font-semibold leading-none text-[#FFFFFFA3] backdrop-blur-sm"
           >
             <LuCamera /> Scan
-          </a>
+          </Link>
         </div>
 
         <div className="w-full bg-[#212325]">

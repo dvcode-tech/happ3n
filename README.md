@@ -24,13 +24,13 @@ This boilerplate is designed to easily build 100% descentralized fullstack web a
 Clone the project
 
 ```bash
-  git clone https://gitlab.com/dvcode.tech/icp-hub/happ3n-hackathon.git
+  git clone https://github.com/happ3n-philippines/happ3n.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd happ3n-hackathon
+  cd happ3n
 ```
 
 Install dependencies
@@ -104,8 +104,3 @@ Run the following script:
 
 `npm run dev`
 
-## Known Issues
-
-- TypeORM migrations not working
-- TypeORM logger not working
-- Images can't be uploaded (Azle and Ares issue)

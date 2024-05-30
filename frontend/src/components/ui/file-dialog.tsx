@@ -49,7 +49,7 @@ export function FileDialog<TFieldValues extends FieldValues>({
     "image/*": [],
     "file/*": [],
   },
-  maxSize = 1024 * 1024 * 0.8,
+  maxSize = 1024 * 1024 * 1,
   maxFiles = 1,
   isUploading = false,
   disabled = false,
@@ -147,7 +147,7 @@ export function FileDialog<TFieldValues extends FieldValues>({
         {(files === null || files.length < maxFiles) && (
           <DialogTrigger asChild>{children}</DialogTrigger>
         )}
-        <DialogContent className="bg-[#1F1E21]/60 px-5 py-3 backdrop-blur-md sm:max-w-[480px]">
+        <DialogContent className="z-[999] bg-[#1F1E21]/60 px-5 py-3 backdrop-blur-md sm:max-w-[480px]">
           <p className="text-muted-foreground absolute left-1/2 top-4 -translate-x-1/2 text-base font-medium text-white">
             Choose Image
           </p>
