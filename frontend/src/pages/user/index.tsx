@@ -21,7 +21,9 @@ import {
   LuLoader,
   LuMapPin,
   LuPlus,
+  LuX,
   LuVideo,
+  LuChevronsRight,
 } from "react-icons/lu";
 import { useHappenContext } from "@/context/HappenContext";
 import useUserEvent from "@/hooks/useUserEvent";
@@ -40,6 +42,10 @@ const User: NextPage = () => {
     eventFunction.fetchEvents?.(slug);
   }, [slug]);
 
+  const dialogClose = () => {
+    document.getElementById("closeDialog")?.click();
+  };
+
   return (
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">
       <Header />
@@ -51,10 +57,10 @@ const User: NextPage = () => {
       )}
       {!eventState?.loading && (
         <>
-          <section className="mb-[24px] border-t-white md:px-[14px] md:py-[8px]">
+          <section className="mb-[24px] border-t-white lg:px-[14px] lg:py-[8px]">
             <div className="relative mx-auto max-w-[1008px]">
               <img
-                className="md:rounded-xl"
+                className="lg:rounded-xl"
                 src={
                   urlify(eventState?.userInfo?.banner_photo) ||
                   "/assets/placeholder/cover.png"
@@ -67,9 +73,9 @@ const User: NextPage = () => {
               />
               <div className="absolute flex w-full flex-1 translate-y-[-40%] px-[14px] md:px-[35px]">
                 <div className="flex w-full justify-between">
-                  <div className="rounded-lg bg-[#070419]  p-0.5 md:left-[35px] md:rounded-[18px] md:p-1.5">
+                  <div className="rounded-lg bg-[#070419] p-0.5 md:left-[35px] md:rounded-[12px] md:p-[4px] lg:rounded-[20px] lg:p-1.5">
                     <img
-                      className="aspect-[1/1] w-[64px] rounded-lg md:w-[96px] md:rounded-2xl"
+                      className="aspect-[1/1] w-[64px] rounded-lg md:w-[96px] lg:rounded-2xl"
                       src={
                         urlify(eventState?.userInfo?.profile_photo) ||
                         "/assets/placeholder/placeholder_banner.png"
@@ -219,13 +225,17 @@ const User: NextPage = () => {
                               <SheetContent className="z-[999] w-full md:w-[550px]">
                                 <SheetHeader className="sticky">
                                   <SheetTitle className="border-b border-gray-600/30">
-                                    <div className="flex flex-row gap-3 p-[16px] pb-4">
+                                    <div className="flex flex-row items-center gap-3 p-[16px] pb-4">
                                       {/* <a
                                       href="#"
                                       className="rounded-md bg-gray-500/50 px-4 py-1 text-[14px] text-[#FFFFFFA3] hover:bg-gray-400"
                                     >
                                       Copy Link
                                     </a> */}
+                                      <LuChevronsRight
+                                        className="text-xl"
+                                        onClick={() => dialogClose()}
+                                      />
                                       <Link
                                         href={`/event?q=${event?.slug}`}
                                         target="_blank"
@@ -233,6 +243,7 @@ const User: NextPage = () => {
                                       >
                                         Event Page
                                       </Link>
+                                      <div className="flex flex-row items-center gap-3 p-[16px] pb-4"></div>
                                     </div>
                                   </SheetTitle>
                                   <SheetDescription>
