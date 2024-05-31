@@ -23,30 +23,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { formatDate, urlify } from "@/lib/utils";
 
-const timelineData = [
-  {
-    date: "May 29",
-    day: "Friday",
-    time: "3:00 PM",
-    title: "Happ3n Development Week",
-    location: "San Jose Delmonte Bulacan",
-  },
-  {
-    date: "March 25",
-    day: "Sunday",
-    time: "3:00 PM",
-    title: "Bridging Web2 and Web3 for Philippine Innovation",
-    location: "San Jose Delmonte Bulacan",
-  },
-  {
-    date: "May 1",
-    day: "Friday",
-    time: "3:00 PM",
-    title: "Bridging Web2 and Web3 for Philippine Innovation",
-    location: "San Jose Delmonte Bulacan",
-  },
-];
-
 const User: NextPage = () => {
   const router = useRouter();
   const { ctxAccount, isAuthenticated } = useHappenContext();

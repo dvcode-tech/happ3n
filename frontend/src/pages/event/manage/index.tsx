@@ -344,6 +344,12 @@ const ManageEvent: NextPage = () => {
     fetchEvent(slug);
   }, [slug]);
 
+  useEffect(() => {
+    if (!ctxAccount) {
+      router.push("/");
+    }
+  }, [ctxAccount]);
+
   const dialogClose = () => {
     document.getElementById("closeDialog")?.click();
   };

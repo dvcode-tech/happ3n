@@ -112,6 +112,12 @@ const CheckIn: NextPage = () => {
     fetchEvent(q);
   }, [q]);
 
+  useEffect(() => {
+    if (!ctxAccount) {
+      router.push("/");
+    }
+  }, [ctxAccount]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#131517] from-10% via-[#00071C] via-50% to-[#00071C] to-90% bg-fixed">
       <Header />

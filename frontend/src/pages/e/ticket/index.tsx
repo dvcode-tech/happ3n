@@ -64,6 +64,7 @@ const Ticket: NextPage = () => {
     } catch (e: any) {
       console.error(e);
       setStatus("NONE");
+      setGuestDataLoading(false);
     }
   };
 
@@ -76,6 +77,12 @@ const Ticket: NextPage = () => {
     if (!slug) return;
     fetchEvent(slug);
   }, [slug]);
+
+  useEffect(() => {
+    if (!ctxAccount) {
+      router.push("/");
+    }
+  }, [ctxAccount]);
 
   return (
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">

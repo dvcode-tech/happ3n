@@ -24,27 +24,6 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
-const timelineData = [
-  {
-    date: "May 1",
-    time: "3:00 PM",
-    title: "Bridging Web2 and Web3 for Philippine Innovation",
-    location: "San Jose Delmonte Bulacan",
-  },
-  {
-    date: "March 25",
-    time: "3:00 PM",
-    title: "Bridging Web2 and Web3 for Philippine Innovation",
-    location: "San Jose Delmonte Bulacan",
-  },
-  {
-    date: "May 1",
-    time: "3:00 PM",
-    title: "Bridging Web2 and Web3 for Philippine Innovation",
-    location: "San Jose Delmonte Bulacan",
-  },
-];
-
 const Home: NextPage = () => {
   const router = useRouter();
   const { ctxAccount, isAuthenticated } = useHappenContext();
@@ -53,6 +32,12 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (!ctxAccount) return;
     eventFunction.fetchEvents?.();
+  }, [ctxAccount]);
+
+  useEffect(() => {
+    if (!ctxAccount) {
+      router.push("/");
+    }
   }, [ctxAccount]);
 
   return (
