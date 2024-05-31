@@ -11,6 +11,7 @@ import {
   LuPenLine,
   LuUploadCloud,
   LuImage,
+  LuLoader,
 } from "react-icons/lu";
 
 import slugify from "react-slugify";
@@ -93,6 +94,7 @@ const Create: NextPage = () => {
   const [endAt, setEndAt] = useState("");
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const [submittingLoading, setSubmittingLoading] = useState(false);
 
   // const handleFileChange = (event) => {
   //   setSelectedFile(event.target.files[0]);
@@ -120,6 +122,7 @@ const Create: NextPage = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setSubmittingLoading(true);
       const handleUpload = async () => {
         // @ts-ignore
         if (!values.banner[0]) return;
@@ -193,6 +196,8 @@ const Create: NextPage = () => {
         description: (eventPost.data as any)?.message,
         duration: 2000,
       });
+
+      router.push(`/event/manage?q=${slug}`);
     } catch (e: any) {
       console.error(e);
       toast({
@@ -201,6 +206,8 @@ const Create: NextPage = () => {
         description: e?.message || e?.data?.message,
         duration: 1000,
       });
+    } finally {
+      setSubmittingLoading(false);
     }
   }
 
@@ -623,9 +630,14 @@ const Create: NextPage = () => {
                 </div>
               </div>
 
-              <Button type="submit" className="flex w-full flex-1">
-                Create Event
-              </Button>
+              {!submittingLoading && (
+                <Button type="submit" className="flex w-full flex-1">
+                  Create Event
+                </Button>
+              )}
+              {submittingLoading && (
+                <LuLoader className="mx-auto mt-4 h-6 w-6 animate-spin text-white" />
+              )}
             </div>
           </form>
         </Form>
