@@ -1,13 +1,15 @@
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { NextPage } from "next";
 import Header from "@/components/Header";
-import { LuUsers, LuArrowUpRight } from "react-icons/lu";
+import { LuUsers, LuArrowUpRight, LuCheck, LuX } from "react-icons/lu";
 import { QrReader } from "react-qr-reader";
 import { useHappenContext } from "@/context/HappenContext";
 import { toast } from "@/components/ui/use-toast";
-import { timeAgo } from "@/lib/utils";
+import { formatDate, timeAgo, urlify } from "@/lib/utils";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const Scan: NextPage = () => {
   const [checkedIn, setCheckedIn] = useState(45);
@@ -18,7 +20,6 @@ const Scan: NextPage = () => {
   const [data, setData] = useState<any>(null);
   const [qrData, setQrData] = useState<any>(null);
   const [guestList, setGuestList] = useState<any[]>([]);
-  const [searchList, setSearchList] = useState<any[]>([]);
 
   const fetchEvent = async (q: any) => {
     try {
@@ -53,10 +54,10 @@ const Scan: NextPage = () => {
     }
   };
 
-  const manageCheckinStatus = async (guestId: number) => {
+  const manageCheckinStatus = async (eventId: number, guestId: number) => {
     try {
       const response: any = await backend.post(
-        `/event/${data?.id}/guests/${guestId}/checkedin`,
+        `/event/${eventId}/guests/${guestId}/checkedin`,
         {},
         {
           headers: {
@@ -81,6 +82,7 @@ const Scan: NextPage = () => {
       });
     } finally {
       getGuestList();
+      setQrData(null);
     }
   };
 
@@ -102,7 +104,7 @@ const Scan: NextPage = () => {
           <div className="flex items-center justify-center gap-2">
             <img
               className="h-5 rounded-full"
-              src="/assets/logo/icon.png"
+              src={urlify(data?.banner) || "/assets/logo/icon.png"}
               alt=""
             />
             <div>
@@ -125,20 +127,101 @@ const Scan: NextPage = () => {
         </div>
         <div className="border-t border-gray-600/30"></div>
         <div className="mx-auto flex w-full flex-1 flex-col justify-center overflow-hidden p-[16px] md:max-w-[788px] ">
-          <QrReader
-            constraints={{ facingMode: "environment" }}
-            onResult={(result, error) => {
-              if (!!result) {
-                setQrData(result["text"]);
-                console.log(result["text"]);
-              }
+          {!qrData && (
+            <QrReader
+              constraints={{ facingMode: "environment" }}
+              onResult={(result, error) => {
+                if (!!result) {
+                  try {
+                    const resultData = JSON.parse(result["text"]);
 
-              if (!!error) {
-                console.info(error);
-              }
-            }}
-            className="w-full"
-          />
+                    if (!resultData?.eventId || !resultData?.guestId) {
+                      toast({
+                        variant: "destructive",
+                        title: "Uh oh! Something went wrong.",
+                        description: "Invalid Ticket QR",
+                        duration: 1000,
+                      });
+                      setQrData(null);
+                      return;
+                    }
+
+                    setQrData(resultData);
+                    console.log(result["text"]);
+                  } catch (error) {
+                    toast({
+                      variant: "destructive",
+                      title: "Uh oh! Something went wrong.",
+                      description: "Invalid Ticket QR",
+                      duration: 1000,
+                    });
+                  }
+                }
+
+                // if (!!error) {
+                //   console.info(error);
+                // }
+              }}
+              className="w-full"
+            />
+          )}
+          {qrData && (
+            <div className="mb-8 flex w-full flex-col rounded-md border border-gray-600/30 bg-gray-500/20 backdrop-blur-md">
+              <div className="flex w-full items-center gap-4 bg-black/20 p-4">
+                <img
+                  className="h-7 rounded-full"
+                  src={urlify(qrData?.guestProfile) || "/assets/logo/icon.png"}
+                  alt=""
+                />
+                <div className="flex flex-col">
+                  <p className="text-white">{qrData?.guestName}</p>
+                  <p className="text-sm text-gray-400">{qrData?.guestEmail}</p>
+                </div>
+              </div>
+              {qrData?.eventId === data?.id && (
+                <div className="flex w-full flex-col p-4">
+                  <p className="text-xs text-gray-400">Registered</p>
+                  <p className="text-white">
+                    {formatDate(qrData?.guestRegisteredDate).day}{" "}
+                    {formatDate(qrData?.guestRegisteredDate).monthLongName}
+                    {", "}
+                    {formatDate(qrData?.guestRegisteredDate).time}
+                  </p>
+                </div>
+              )}
+              {qrData?.eventId !== data?.id && (
+                <div className="flex w-full flex-col bg-red-500/20 p-4">
+                  <p className="text-xs text-red-500">Mismatch Event Ticket</p>
+                </div>
+              )}
+              <div className="flex w-full items-center justify-end bg-black/20 p-4">
+                {qrData?.eventId === data?.id && (
+                  <Button
+                    onClick={() => {
+                      manageCheckinStatus(qrData?.eventId, qrData?.guestId);
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    className="h-fit text-green-500"
+                  >
+                    <LuCheck className="mr-2 h-4 w-4 text-green-500" />
+                    Check In
+                  </Button>
+                )}
+                <Button
+                  onClick={() => {
+                    setQrData(null);
+                  }}
+                  variant="ghost"
+                  size="sm"
+                  className="h-fit text-gray-500"
+                >
+                  <LuX className="mr-2 h-4 w-4 text-gray-500" />
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
           <div className="flex w-full flex-col rounded-md border border-gray-600/30 bg-gray-500/20 p-4 backdrop-blur-md">
             <div className="flex w-full flex-1 flex-col">
               <div className="flex w-full justify-between pb-[8px]">

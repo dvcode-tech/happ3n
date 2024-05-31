@@ -15,6 +15,7 @@ const Ticket: NextPage = () => {
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [guestData, setGuestData] = useState<any>(null);
+  const [guestDataLoading, setGuestDataLoading] = useState(true);
   const [status, setStatus] = useState<any>("");
   const slug = router?.query?.q;
 
@@ -30,6 +31,7 @@ const Ticket: NextPage = () => {
 
   const checkJoinEvent = async () => {
     try {
+      setGuestDataLoading(true);
       const checkEventPost = await backend.post(
         `/event/${data?.id}/register/status`,
         {},
@@ -39,6 +41,8 @@ const Ticket: NextPage = () => {
           },
         },
       );
+
+      console.log(checkEventPost?.data);
 
       setGuestData((checkEventPost?.data as any)?.data);
 
@@ -53,6 +57,8 @@ const Ticket: NextPage = () => {
       } else {
         setStatus("NONE");
       }
+
+      setGuestDataLoading(false);
 
       console.log(_status);
     } catch (e: any) {
@@ -104,7 +110,7 @@ const Ticket: NextPage = () => {
           <div className="w-full border-t border-dashed border-gray-400/30"></div>
 
           <div className="my-[24px] flex justify-center">
-            {guestData && ctxAccount && data ? (
+            {!guestDataLoading && guestData && ctxAccount && data ? (
               <QRCode
                 id="QRCode"
                 size={256}
@@ -115,34 +121,49 @@ const Ticket: NextPage = () => {
                   guestName: ctxAccount?.name,
                   eventId: data?.id,
                   eventName: data?.name,
+                  guestEmail: ctxAccount?.email,
+                  guestProfile: ctxAccount?.profile_photo,
+                  guestRegisteredDate: guestData?.created_at,
                 })}
                 viewBox="0 0 250 250"
               />
             ) : (
-              <LuLoader className="h-10 w-10 animate-spin" />
+              <>
+                {guestDataLoading && (
+                  <LuLoader className="h-10 w-10 animate-spin" />
+                )}
+
+                {!guestDataLoading && !guestData && <p>Ticket not found!</p>}
+              </>
             )}
           </div>
 
-          <div className="w-full border-t border-dashed border-gray-400/30"></div>
-
-          <div className="my-[24px] flex justify-between px-[24px]">
-            <div className="flex flex-1 flex-col">
-              <p className="text-[13px] text-[#1315175C]">Guest</p>
-              <p className="font-medium text-[#131517]">{ctxAccount?.name}</p>
-            </div>
-            <div className="flex flex-1 flex-col">
-              <p className="text-[13px] text-[#1315175C]">Status</p>
-              {status === "APPROVED" && (
-                <p className="font-medium text-[#07A460]">{status}</p>
-              )}
-              {status === "PENDING" && (
-                <p className="font-medium text-yellow-500">{status}</p>
-              )}
-              {status === "REJECTED" && (
-                <p className="font-medium text-red-500">{status}</p>
-              )}
-            </div>
-          </div>
+          {!guestDataLoading && guestData && ctxAccount && data && (
+            <>
+              {" "}
+              <div className="w-full border-t border-dashed border-gray-400/30"></div>
+              <div className="my-[24px] flex justify-between px-[24px]">
+                <div className="flex flex-1 flex-col">
+                  <p className="text-[13px] text-[#1315175C]">Guest</p>
+                  <p className="font-medium text-[#131517]">
+                    {ctxAccount?.name}
+                  </p>
+                </div>
+                <div className="flex flex-1 flex-col">
+                  <p className="text-[13px] text-[#1315175C]">Status</p>
+                  {status === "APPROVED" && (
+                    <p className="font-medium text-[#07A460]">{status}</p>
+                  )}
+                  {status === "PENDING" && (
+                    <p className="font-medium text-yellow-500">{status}</p>
+                  )}
+                  {status === "REJECTED" && (
+                    <p className="font-medium text-red-500">{status}</p>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </section>
     </div>

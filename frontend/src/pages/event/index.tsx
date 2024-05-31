@@ -335,7 +335,7 @@ const EventPage = () => {
                       </p>
                     </div>
                   )}
-                  <div className="px-4">
+                  <div className="flex flex-col items-center gap-4 px-4 md:flex-row">
                     {!isAuthenticated && (
                       <LoginButton className="mt-4 inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md bg-slate-900 px-4 py-2 text-[16px] font-medium text-slate-50 ring-offset-white transition-colors hover:bg-slate-900/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:bg-slate-50 dark:text-slate-900 dark:ring-offset-slate-950 dark:hover:bg-slate-50/90 dark:focus-visible:ring-slate-300">
                         Register
@@ -438,9 +438,19 @@ const EventPage = () => {
                     )}
 
                     {status === "APPROVED" && (
-                      <Button className="w-full text-[16px] !text-green-500">
-                        Approved
-                      </Button>
+                      <>
+                        <Button className="w-full text-[16px] !text-green-500">
+                          Approved
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            router.push(`/e/ticket?q=${slug}`);
+                          }}
+                          className="w-full text-[16px] !text-gray-500 md:w-2/5"
+                        >
+                          My Ticket
+                        </Button>
+                      </>
                     )}
 
                     {status === "PENDING" && (
