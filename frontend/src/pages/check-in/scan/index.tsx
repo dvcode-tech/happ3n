@@ -105,6 +105,11 @@ const Scan: NextPage = () => {
             <img
               className="h-5 rounded-full"
               src={urlify(data?.banner) || "/assets/logo/icon.png"}
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src =
+                  "/assets/placeholder/placeholder_banner.png";
+              }}
               alt=""
             />
             <div>

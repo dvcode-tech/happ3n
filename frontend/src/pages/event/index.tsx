@@ -175,6 +175,10 @@ const EventPage = () => {
           <img
             className="hidden aspect-[1/1] h-[358px] flex-col items-center justify-center rounded-xl md:flex md:h-[280px] lg:h-[330px]"
             src={urlify(data?.banner)}
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null;
+              currentTarget.src = "/assets/placeholder/placeholder_banner.png";
+            }}
             alt=""
           />
 
@@ -238,6 +242,11 @@ const EventPage = () => {
             <img
               className="flex aspect-[1/1] h-[358px] flex-col items-center justify-center rounded-xl md:hidden md:h-[280px] lg:h-[330px]"
               src={urlify(data?.banner)}
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src =
+                  "/assets/placeholder/placeholder_banner.png";
+              }}
               alt=""
             />
             <div className="flex flex-col gap-8 text-left">

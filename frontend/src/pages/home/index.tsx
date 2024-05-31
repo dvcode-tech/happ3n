@@ -196,6 +196,11 @@ const Home: NextPage = () => {
                                 <img
                                   className="aspect-[1/1] h-[90px] rounded-md md:h-[120px]"
                                   src={urlify(event?.banner)}
+                                  onError={({ currentTarget }) => {
+                                    currentTarget.onerror = null;
+                                    currentTarget.src =
+                                      "/assets/placeholder/placeholder_banner.png";
+                                  }}
                                   alt=""
                                 />
                               </div>
@@ -225,6 +230,11 @@ const Home: NextPage = () => {
                                       <img
                                         className="h-[358px] rounded-lg md:h-[280px]"
                                         src={urlify(event?.banner)}
+                                        onError={({ currentTarget }) => {
+                                          currentTarget.onerror = null;
+                                          currentTarget.src =
+                                            "/assets/placeholder/placeholder_banner.png";
+                                        }}
                                         alt=""
                                       />
                                     </div>
@@ -515,6 +525,11 @@ const Home: NextPage = () => {
                               <img
                                 className="aspect-[1/1] h-[90px] rounded-md md:h-[120px]"
                                 src={urlify(event?.banner)}
+                                onError={({ currentTarget }) => {
+                                  currentTarget.onerror = null;
+                                  currentTarget.src =
+                                    "/assets/placeholder/placeholder_banner.png";
+                                }}
                                 alt=""
                               />
                             </div>
@@ -544,6 +559,11 @@ const Home: NextPage = () => {
                                     <img
                                       className="h-[358px] rounded-lg md:h-[280px]"
                                       src={urlify(event?.banner)}
+                                      onError={({ currentTarget }) => {
+                                        currentTarget.onerror = null;
+                                        currentTarget.src =
+                                          "/assets/placeholder/placeholder_banner.png";
+                                      }}
                                       alt=""
                                     />
                                   </div>
