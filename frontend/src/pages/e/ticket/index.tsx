@@ -79,10 +79,10 @@ const Ticket: NextPage = () => {
   }, [slug]);
 
   useEffect(() => {
-    if (!ctxAccount) {
+    if (!isAuthenticated) {
       router.push("/");
     }
-  }, [ctxAccount]);
+  }, [isAuthenticated]);
 
   return (
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">

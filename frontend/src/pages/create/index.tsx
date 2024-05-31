@@ -81,7 +81,7 @@ const formSchema = z.object({
 
 const Create: NextPage = () => {
   const router = useRouter();
-  const { backend, ctxAccount } = useHappenContext();
+  const { backend, ctxAccount, isAuthenticated } = useHappenContext();
   const [locationValue, setLocationValue] = useState(
     "Offline Location or Virtual Link",
   );
@@ -209,10 +209,10 @@ const Create: NextPage = () => {
   };
 
   useEffect(() => {
-    if (!ctxAccount) {
+    if (!isAuthenticated) {
       router.push("/");
     }
-  }, [ctxAccount]);
+  }, [isAuthenticated]);
 
   return (
     <div className="min-h-screen overflow-hidden bg-gradient-to-b from-[#131517] from-10% via-[#00071C] via-50% to-[#00071C] to-90% bg-fixed">

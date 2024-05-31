@@ -18,6 +18,7 @@ import {
   LuCheck,
   LuX,
   LuImage,
+  LuLoader,
 } from "react-icons/lu";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -345,10 +346,10 @@ const ManageEvent: NextPage = () => {
   }, [slug]);
 
   useEffect(() => {
-    if (!ctxAccount) {
+    if (!isAuthenticated) {
       router.push("/");
     }
-  }, [ctxAccount]);
+  }, [isAuthenticated]);
 
   const dialogClose = () => {
     document.getElementById("closeDialog")?.click();
@@ -358,559 +359,579 @@ const ManageEvent: NextPage = () => {
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">
       <Header />
       <Navbar />
-      <section className="pb-[14px] pt-[28px] md:pt-[48px]">
-        <div className="mx-auto flex max-w-[788px] items-center justify-between px-4 lg:px-0">
-          <div className="flex items-center justify-center gap-2">
-            <img
-              className="h-5 rounded-full"
-              src="/assets/logo/icon.png"
-              alt=""
-            />
-            <div className="text-[32px] font-medium leading-8 text-[#FFFFFFC8]">
-              {data?.name}
-            </div>
-          </div>
-          <Link
-            target="_blank"
-            href={`/event?q=${slug}`}
-            className="flex h-9 items-center justify-center gap-1 rounded-md bg-[#FFFFFF14] px-[12px] py-[11px] text-[14px] font-medium leading-none text-[#FFFFFFA3] hover:bg-gray-400"
-          >
-            <p className="hidden md:block">Event Page</p>
-            <LuArrowUpRight />
-          </Link>
+      {!data && (
+        <div className="mb-[48px] mt-[64px] flex h-[348px] flex-col items-center justify-center">
+          <LuLoader className="h-10 w-10 animate-spin text-white" />
         </div>
+      )}
+      {data && (
+        <section className="pb-[14px] pt-[28px] md:pt-[48px]">
+          <div className="mx-auto flex max-w-[788px] items-center justify-between px-4 lg:px-0">
+            <div className="flex items-center justify-center gap-2">
+              <img
+                className="h-5 rounded-full"
+                src="/assets/logo/icon.png"
+                alt=""
+              />
+              <div className="text-[32px] font-medium leading-8 text-[#FFFFFFC8]">
+                {data?.name}
+              </div>
+            </div>
+            <Link
+              target="_blank"
+              href={`/event?q=${slug}`}
+              className="flex h-9 items-center justify-center gap-1 rounded-md bg-[#FFFFFF14] px-[12px] py-[11px] text-[14px] font-medium leading-none text-[#FFFFFFA3] hover:bg-gray-400"
+            >
+              <p className="hidden md:block">Event Page</p>
+              <LuArrowUpRight />
+            </Link>
+          </div>
 
-        <div>
-          <Tabs defaultValue="overview" className="pt-[8px]">
-            <TabsList className="mx-auto flex max-w-[788px] items-start justify-start px-4 lg:px-0 dark:bg-transparent dark:text-[#818384]">
-              <TabsTrigger
-                value="overview"
-                className="mr-3 items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
-              >
-                Overview
-              </TabsTrigger>
-              <TabsTrigger
-                value="guest"
-                className="mr-3 items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
-              >
-                Guests
-              </TabsTrigger>
-              {/* <TabsTrigger
+          <div>
+            <Tabs defaultValue="overview" className="pt-[8px]">
+              <TabsList className="mx-auto flex max-w-[788px] items-start justify-start px-4 lg:px-0 dark:bg-transparent dark:text-[#818384]">
+                <TabsTrigger
+                  value="overview"
+                  className="mr-3 items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
+                >
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger
+                  value="guest"
+                  className="mr-3 items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
+                >
+                  Guests
+                </TabsTrigger>
+                {/* <TabsTrigger
                 value="registration"
                 className="mr-3 items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
               >
                 Registration
               </TabsTrigger> */}
-            </TabsList>
+              </TabsList>
 
-            <TabsContent
-              value="overview"
-              className="border-t border-gray-600/30"
-            >
-              <div className="mx-auto mt-[28px] flex max-w-[788px] flex-col gap-[20px] px-4 lg:px-0">
-                <div>
-                  <a
-                    href="#"
-                    className="flex w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-gray-800/40 px-[22px] py-[9px] text-[18px] font-semibold text-white backdrop-blur-sm"
-                  >
-                    <LuShare /> Share Event
-                  </a>
-                </div>
-
-                <div className="flex flex-col gap-x-[20px] rounded-lg border border-gray-600/30 bg-gray-800/40 p-[12px] text-white backdrop-blur-sm md:flex-row">
-                  <div className="flex flex-1">
-                    <div
-                      className="relative aspect-[1/1] h-[257px] w-[332px] overflow-hidden rounded-lg bg-gray-800/40 bg-contain bg-center bg-no-repeat md:h-[280px] md:w-[371px]"
-                      style={{
-                        // background: `${urlify(data?.banner)}`,
-                        backgroundImage: `url(${urlify(data?.banner)})`,
-                      }}
+              <TabsContent
+                value="overview"
+                className="border-t border-gray-600/30"
+              >
+                <div className="mx-auto mt-[28px] flex max-w-[788px] flex-col gap-[20px] px-4 lg:px-0">
+                  <div>
+                    <a
+                      href="#"
+                      className="flex w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-gray-800/40 px-[22px] py-[9px] text-[18px] font-semibold text-white backdrop-blur-sm"
                     >
-                      <div className="absolute bottom-2 left-1/2 mx-auto flex w-[355px] -translate-x-1/2 justify-between rounded-md bg-[#13151752] py-2 backdrop-blur-md">
-                        <div className="flex items-center gap-1 pl-4 text-[14px] text-[#FFFFFFCC]">
-                          {`happ3n/${slug}`} <LuArrowUpRight />
-                        </div>
-                        <div className="pr-4 text-[14px] uppercase text-[#FFFFFF7A]">
-                          Copy
-                        </div>
-                      </div>
-                    </div>
+                      <LuShare /> Share Event
+                    </a>
                   </div>
-                  <div className="flex flex-1 flex-col gap-1">
-                    <div className="mb-[16px] mt-[8px]">
-                      <h3 className="text-[18px] font-medium">When & Where</h3>
+
+                  <div className="flex flex-col gap-x-[20px] rounded-lg border border-gray-600/30 bg-gray-800/40 p-[12px] text-white backdrop-blur-sm md:flex-row">
+                    <div className="flex flex-1">
+                      <div
+                        className="relative aspect-[1/1] h-[257px] w-[332px] overflow-hidden rounded-lg bg-gray-800/40 bg-contain bg-center bg-no-repeat md:h-[280px] md:w-[371px]"
+                        style={{
+                          // background: `${urlify(data?.banner)}`,
+                          backgroundImage: `url(${urlify(data?.banner)})`,
+                        }}
+                      >
+                        <div className="absolute bottom-2 left-1/2 mx-auto flex w-[355px] -translate-x-1/2 justify-between rounded-md bg-[#13151752] py-2 backdrop-blur-md">
+                          <div className="flex items-center gap-1 pl-4 text-[14px] text-[#FFFFFFCC]">
+                            {`happ3n/${slug}`} <LuArrowUpRight />
+                          </div>
+                          <div className="pr-4 text-[14px] uppercase text-[#FFFFFF7A]">
+                            Copy
+                          </div>
+                        </div>
+                      </div>
                     </div>
-
-                    <div className="flex flex-col gap-[20px]">
-                      <div className="flex gap-4">
-                        <div className="h-[50px] w-[50px] rounded-lg border border-gray-600/30 text-center">
-                          <div className="rounded-t-md bg-[#FFFFFF14] py-1 text-[9px] font-medium uppercase text-gray-300">
-                            {formatDate(data?.start_at).monthLongName}
-                          </div>
-                          <div className="flex flex-1 items-center justify-center rounded-b-md p-0.5 text-[16px] font-medium uppercase text-gray-300">
-                            {formatDate(data?.start_at).day}
-                          </div>
-                        </div>
-                        <div className="flex flex-col">
-                          <div className="text-[16px] font-medium">
-                            {formatDate(data?.start_at).dayName},{" "}
-                            {formatDate(data?.start_at).monthLongName}{" "}
-                            {formatDate(data?.start_at).day}
-                          </div>
-                          <div className="text-[14px] text-[#FFFFFFC9]">
-                            {formatDate(data?.start_at).time}
-                            {" - "}
-                            {data?.end_at - data?.start_at >= 24 * 60 * 60
-                              ? `${formatDate(data?.end_at).monthLongName} ${formatDate(data?.end_at).day}, `
-                              : ""}
-                            {formatDate(data?.end_at).time} GMT+8
-                          </div>
-                        </div>
+                    <div className="flex flex-1 flex-col gap-1">
+                      <div className="mb-[16px] mt-[8px]">
+                        <h3 className="text-[18px] font-medium">
+                          When & Where
+                        </h3>
                       </div>
 
-                      <div className="flex">
-                        <div className="flex h-[50px] w-[50px] items-center justify-center rounded-lg border border-gray-600/30 text-center">
-                          {JSON.parse(data?.location || "{}")?.type ===
-                          "VIRTUAL" ? (
-                            <LuVideo className="text-xl text-gray-300" />
-                          ) : (
-                            <LuMapPin className="text-xl text-gray-300" />
-                          )}
-                        </div>
-                        <a
-                          href="#"
-                          className="ml-4 flex flex-col justify-center gap-0.5 text-white"
-                        >
-                          <div className="flex gap-1 text-[16px] font-medium">
-                            {JSON.parse(data?.location || "{}")?.type}{" "}
-                          </div>
-                          <div className="text-[14px] font-medium text-[#FFFFFFC9]">
-                            {JSON.parse(data?.location || "{}")?.location}
-                          </div>
-                        </a>
-                      </div>
-
-                      <div className="flex flex-col">
-                        <div className="text-[13px] text-[#FFFFFFC9]">
-                          The Address is shown publicly on the event page.
-                        </div>
-                        <Link
-                          target="_blank"
-                          href={`/check-in?q=${slug}`}
-                          className="mt-[16px] flex items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]"
-                        >
-                          <LuScanLine /> Check In Guests
-                        </Link>
-                      </div>
-
-                      <div className="flex  flex-1 gap-2">
-                        <Sheet>
-                          <SheetTrigger asChild>
-                            <div className="mt-[16px] flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]">
-                              Edit Event
+                      <div className="flex flex-col gap-[20px]">
+                        <div className="flex gap-4">
+                          <div className="h-[50px] w-[50px] rounded-lg border border-gray-600/30 text-center">
+                            <div className="rounded-t-md bg-[#FFFFFF14] py-1 text-[9px] font-medium uppercase text-gray-300">
+                              {formatDate(data?.start_at).monthLongName}
                             </div>
-                          </SheetTrigger>
+                            <div className="flex flex-1 items-center justify-center rounded-b-md p-0.5 text-[16px] font-medium uppercase text-gray-300">
+                              {formatDate(data?.start_at).day}
+                            </div>
+                          </div>
+                          <div className="flex flex-col">
+                            <div className="text-[16px] font-medium">
+                              {formatDate(data?.start_at).dayName},{" "}
+                              {formatDate(data?.start_at).monthLongName}{" "}
+                              {formatDate(data?.start_at).day}
+                            </div>
+                            <div className="text-[14px] text-[#FFFFFFC9]">
+                              {formatDate(data?.start_at).time}
+                              {" - "}
+                              {data?.end_at - data?.start_at >= 24 * 60 * 60
+                                ? `${formatDate(data?.end_at).monthLongName} ${formatDate(data?.end_at).day}, `
+                                : ""}
+                              {formatDate(data?.end_at).time} GMT+8
+                            </div>
+                          </div>
+                        </div>
 
-                          <SheetContent className="z-[900] w-full bg-[#1C1E20] md:w-[550px]">
-                            <SheetHeader className="sticky">
-                              <SheetTitle className="border-b border-gray-600/30">
-                                <div className="flex flex-row items-center gap-3 p-[16px] pb-4">
-                                  <LuChevronsRight
-                                    onClick={() => dialogClose()}
-                                  />
-                                  <p className="text-[16px]">Edit Event</p>
-                                </div>
-                              </SheetTitle>
-                              <SheetDescription className="h-[90vh] overflow-y-auto">
-                                <Form {...form}>
-                                  <form
-                                    onSubmit={form.handleSubmit(handleSubmit)}
-                                    className="space-y-8 p-[16px]"
-                                  >
-                                    <div className="">
-                                      <div className="flex flex-1 items-center justify-center">
-                                        <FormItem>
-                                          <FormControl>
-                                            <FileDialog
-                                              setValue={form.setValue}
-                                              name="banner"
-                                              maxFiles={1}
-                                              maxSize={1024 * 1024 * 1}
-                                              accept={{ "image/*": [] }}
-                                              isUploading={false}
-                                              disabled={false}
-                                            >
-                                              <Button
-                                                variant="outline"
-                                                style={{
-                                                  backgroundImage: `url(${urlify(data?.banner)})`,
-                                                }}
-                                                className="relative flex aspect-[1/1] h-[358px] flex-col items-center justify-center rounded-xl bg-cover bg-no-repeat md:h-[280px] lg:h-[330px]"
+                        <div className="flex">
+                          <div className="flex h-[50px] w-[50px] items-center justify-center rounded-lg border border-gray-600/30 text-center">
+                            {JSON.parse(data?.location || "{}")?.type ===
+                            "VIRTUAL" ? (
+                              <LuVideo className="text-xl text-gray-300" />
+                            ) : (
+                              <LuMapPin className="text-xl text-gray-300" />
+                            )}
+                          </div>
+                          <a
+                            href="#"
+                            className="ml-4 flex flex-col justify-center gap-0.5 text-white"
+                          >
+                            <div className="flex gap-1 text-[16px] font-medium">
+                              {JSON.parse(data?.location || "{}")?.type}{" "}
+                            </div>
+                            <div className="text-[14px] font-medium text-[#FFFFFFC9]">
+                              {JSON.parse(data?.location || "{}")?.location}
+                            </div>
+                          </a>
+                        </div>
+
+                        <div className="flex flex-col">
+                          <div className="text-[13px] text-[#FFFFFFC9]">
+                            The Address is shown publicly on the event page.
+                          </div>
+                          <Link
+                            // target="_blank"
+                            href={`/check-in?q=${slug}`}
+                            className="mt-[16px] flex items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]"
+                          >
+                            <LuScanLine /> Check In Guests
+                          </Link>
+                        </div>
+
+                        <div className="flex  flex-1 gap-2">
+                          <Sheet>
+                            <SheetTrigger asChild>
+                              <div className="mt-[16px] flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]">
+                                Edit Event
+                              </div>
+                            </SheetTrigger>
+
+                            <SheetContent className="z-[900] w-full bg-[#1C1E20] md:w-[550px]">
+                              <SheetHeader className="sticky">
+                                <SheetTitle className="border-b border-gray-600/30">
+                                  <div className="flex flex-row items-center gap-3 p-[16px] pb-4">
+                                    <LuChevronsRight
+                                      onClick={() => dialogClose()}
+                                    />
+                                    <p className="text-[16px]">Edit Event</p>
+                                  </div>
+                                </SheetTitle>
+                                <SheetDescription className="h-[90vh] overflow-y-auto">
+                                  <Form {...form}>
+                                    <form
+                                      onSubmit={form.handleSubmit(handleSubmit)}
+                                      className="space-y-8 p-[16px]"
+                                    >
+                                      <div className="">
+                                        <div className="flex flex-1 items-center justify-center">
+                                          <FormItem>
+                                            <FormControl>
+                                              <FileDialog
+                                                setValue={form.setValue}
+                                                name="banner"
+                                                maxFiles={1}
+                                                maxSize={1024 * 1024 * 1}
+                                                accept={{ "image/*": [] }}
+                                                isUploading={false}
+                                                disabled={false}
                                               >
-                                                <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
-                                                  <LuImage className="h-5 w-5" />
-                                                </div>
-                                              </Button>
-                                            </FileDialog>
-                                          </FormControl>
-                                        </FormItem>
-                                      </div>
+                                                <Button
+                                                  variant="outline"
+                                                  style={{
+                                                    backgroundImage: `url(${urlify(data?.banner)})`,
+                                                  }}
+                                                  className="relative flex aspect-[1/1] h-[358px] flex-col items-center justify-center rounded-xl bg-cover bg-no-repeat md:h-[280px] lg:h-[330px]"
+                                                >
+                                                  <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
+                                                    <LuImage className="h-5 w-5" />
+                                                  </div>
+                                                </Button>
+                                              </FileDialog>
+                                            </FormControl>
+                                          </FormItem>
+                                        </div>
 
-                                      <div className="my-[16px] text-left text-[18px] font-bold text-white">
-                                        Basic Info
-                                      </div>
+                                        <div className="my-[16px] text-left text-[18px] font-bold text-white">
+                                          Basic Info
+                                        </div>
 
-                                      <div className="flex flex-col gap-8">
-                                        <FormField
-                                          control={form.control}
-                                          name="name"
-                                          render={({ field }) => (
-                                            <FormItem>
-                                              <FormControl>
-                                                <Input
-                                                  type="text"
-                                                  className="py-[8px] text-[18px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#FFFFFFC9]"
-                                                  placeholder="Event Name"
-                                                  {...field}
-                                                />
-                                              </FormControl>
-                                            </FormItem>
-                                          )}
-                                        />
-
-                                        <div className="grid grid-cols-1 gap-2">
-                                          <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
-                                            Description
-                                          </div>
+                                        <div className="flex flex-col gap-8">
                                           <FormField
                                             control={form.control}
-                                            name="description"
+                                            name="name"
                                             render={({ field }) => (
                                               <FormItem>
                                                 <FormControl>
-                                                  <Textarea
-                                                    className="h-[100px] resize-none text-[16px] text-white outline-none placeholder:text-[14px] dark:border-white/30 dark:bg-[#131517]  placeholder:dark:text-[#FFFFFFC9]"
-                                                    placeholder="Who should come? What's the event about?"
+                                                  <Input
+                                                    type="text"
+                                                    className="py-[8px] text-[18px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#FFFFFFC9]"
+                                                    placeholder="Event Name"
                                                     {...field}
                                                   />
                                                 </FormControl>
                                               </FormItem>
                                             )}
                                           />
-                                        </div>
 
-                                        <div className="w-full">
-                                          <DropdownMenu>
-                                            <DropdownMenuTrigger
-                                              asChild
-                                              className="flex w-full flex-1"
-                                            >
-                                              <Button
-                                                variant="outline"
-                                                className="flex justify-between gap-2 dark:border-[#FFFFFF14] dark:bg-[#FFFFFF14]"
-                                              >
-                                                <div className="text-[16px] text-[#FFFFFFC9]">
-                                                  Visibility
-                                                </div>
-                                                <div className="flex items-center text-[16px] text-[#FFFFFF80]">
-                                                  {showPublic
-                                                    ? "Public"
-                                                    : "Private"}{" "}
-                                                  <LuChevronsUpDown className="ml-2" />
-                                                </div>
-                                              </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent className="z-[999] w-56 dark:border-[#FFFFFF14] dark:bg-[#1C1E20]">
-                                              <DropdownMenuCheckboxItem
-                                                checked={showPublic}
-                                                onCheckedChange={(e) => {
-                                                  setPublic(e);
-                                                  setType("0");
-                                                  setPrivate(false);
-                                                }}
-                                                disabled={Boolean(showPublic)}
-                                                className="flex flex-col items-start justify-start gap-1"
-                                              >
-                                                Public
-                                                <p className="text-[#FFFFFF80]">
-                                                  Shown on your calendar and
-                                                  eligible to be featured.
-                                                </p>
-                                              </DropdownMenuCheckboxItem>
-                                              <DropdownMenuCheckboxItem
-                                                checked={showPrivate}
-                                                onCheckedChange={(e) => {
-                                                  setPrivate(e);
-                                                  setType("1");
-                                                  setPublic(false);
-                                                }}
-                                                disabled={Boolean(showPrivate)}
-                                                className="flex flex-col items-start justify-start gap-1"
-                                              >
-                                                Private
-                                                <p className="text-[#FFFFFF80]">
-                                                  Unlisted. Only people with the
-                                                  link can register.
-                                                </p>
-                                              </DropdownMenuCheckboxItem>
-                                            </DropdownMenuContent>
-                                          </DropdownMenu>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 gap-2">
-                                          <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
-                                            Time
+                                          <div className="grid grid-cols-1 gap-2">
+                                            <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
+                                              Description
+                                            </div>
+                                            <FormField
+                                              control={form.control}
+                                              name="description"
+                                              render={({ field }) => (
+                                                <FormItem>
+                                                  <FormControl>
+                                                    <Textarea
+                                                      className="h-[100px] resize-none text-[16px] text-white outline-none placeholder:text-[14px] dark:border-white/30 dark:bg-[#131517]  placeholder:dark:text-[#FFFFFFC9]"
+                                                      placeholder="Who should come? What's the event about?"
+                                                      {...field}
+                                                    />
+                                                  </FormControl>
+                                                </FormItem>
+                                              )}
+                                            />
                                           </div>
-                                          <div className="bg-[#131517]/ flex flex-row justify-between gap-1 rounded-md border border-gray-600/30 px-5 py-3 backdrop-blur-md">
-                                            <div className="relative w-full">
-                                              <div className="absolute top-5 hidden h-8 border-l-[1px] border-dashed border-[#5F6062] md:block"></div>
-                                              <div className="absolute -left-[5.8px] top-[5px] hidden h-3 w-3 rounded-full bg-[#5F6062] md:block"></div>
-                                              <div className="absolute -left-[5.8px] bottom-[5px] hidden h-3 w-3 rounded-full border border-[#5F6062] md:block"></div>
 
-                                              <div className="flex w-full flex-1 justify-between">
-                                                <div className="ml-6 hidden flex-col justify-between gap-1 md:flex dark:text-[#FFFFFFA3]">
-                                                  <div>Start</div>
-                                                  <div>End</div>
-                                                </div>
-                                                <div className="flex w-full flex-col gap-1 md:w-[221px]">
-                                                  <div className="grid w-full grid-cols-1 gap-1">
-                                                    <div className="flex items-center justify-between gap-4">
-                                                      <div className="block text-[#FFFFFFA3] md:hidden">
-                                                        Start
-                                                      </div>
-                                                      <FormField
-                                                        control={form.control}
-                                                        name="start_at"
-                                                        render={({ field }) => (
-                                                          <FormItem>
-                                                            <FormControl>
-                                                              <input
-                                                                defaultValue={new Date().toISOString()}
-                                                                type="datetime-local"
-                                                                className="w-[230px] rounded-lg px-4 py-1 md:rounded-sm dark:bg-[#FFFFFF14] dark:text-[#FFFFFF]"
-                                                                {...field}
-                                                                onChange={(
-                                                                  e,
-                                                                ) => {
-                                                                  field.onChange(
-                                                                    e.target
-                                                                      .value,
-                                                                  );
-                                                                  setStartAt(
-                                                                    e.target
-                                                                      .value,
-                                                                  );
-                                                                }}
-                                                              />
-                                                            </FormControl>
-                                                          </FormItem>
-                                                        )}
-                                                      />
-                                                    </div>
+                                          <div className="w-full">
+                                            <DropdownMenu>
+                                              <DropdownMenuTrigger
+                                                asChild
+                                                className="flex w-full flex-1"
+                                              >
+                                                <Button
+                                                  variant="outline"
+                                                  className="flex justify-between gap-2 dark:border-[#FFFFFF14] dark:bg-[#FFFFFF14]"
+                                                >
+                                                  <div className="text-[16px] text-[#FFFFFFC9]">
+                                                    Visibility
+                                                  </div>
+                                                  <div className="flex items-center text-[16px] text-[#FFFFFF80]">
+                                                    {showPublic
+                                                      ? "Public"
+                                                      : "Private"}{" "}
+                                                    <LuChevronsUpDown className="ml-2" />
+                                                  </div>
+                                                </Button>
+                                              </DropdownMenuTrigger>
+                                              <DropdownMenuContent className="z-[999] w-56 dark:border-[#FFFFFF14] dark:bg-[#1C1E20]">
+                                                <DropdownMenuCheckboxItem
+                                                  checked={showPublic}
+                                                  onCheckedChange={(e) => {
+                                                    setPublic(e);
+                                                    setType("0");
+                                                    setPrivate(false);
+                                                  }}
+                                                  disabled={Boolean(showPublic)}
+                                                  className="flex flex-col items-start justify-start gap-1"
+                                                >
+                                                  Public
+                                                  <p className="text-[#FFFFFF80]">
+                                                    Shown on your calendar and
+                                                    eligible to be featured.
+                                                  </p>
+                                                </DropdownMenuCheckboxItem>
+                                                <DropdownMenuCheckboxItem
+                                                  checked={showPrivate}
+                                                  onCheckedChange={(e) => {
+                                                    setPrivate(e);
+                                                    setType("1");
+                                                    setPublic(false);
+                                                  }}
+                                                  disabled={Boolean(
+                                                    showPrivate,
+                                                  )}
+                                                  className="flex flex-col items-start justify-start gap-1"
+                                                >
+                                                  Private
+                                                  <p className="text-[#FFFFFF80]">
+                                                    Unlisted. Only people with
+                                                    the link can register.
+                                                  </p>
+                                                </DropdownMenuCheckboxItem>
+                                              </DropdownMenuContent>
+                                            </DropdownMenu>
+                                          </div>
 
-                                                    <div className="flex items-center justify-between gap-4">
-                                                      <div className="block text-[#FFFFFFA3] md:hidden">
-                                                        End
+                                          <div className="grid grid-cols-1 gap-2">
+                                            <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
+                                              Time
+                                            </div>
+                                            <div className="bg-[#131517]/ flex flex-row justify-between gap-1 rounded-md border border-gray-600/30 px-5 py-3 backdrop-blur-md">
+                                              <div className="relative w-full">
+                                                <div className="absolute top-5 hidden h-8 border-l-[1px] border-dashed border-[#5F6062] md:block"></div>
+                                                <div className="absolute -left-[5.8px] top-[5px] hidden h-3 w-3 rounded-full bg-[#5F6062] md:block"></div>
+                                                <div className="absolute -left-[5.8px] bottom-[5px] hidden h-3 w-3 rounded-full border border-[#5F6062] md:block"></div>
+
+                                                <div className="flex w-full flex-1 justify-between">
+                                                  <div className="ml-6 hidden flex-col justify-between gap-1 md:flex dark:text-[#FFFFFFA3]">
+                                                    <div>Start</div>
+                                                    <div>End</div>
+                                                  </div>
+                                                  <div className="flex w-full flex-col gap-1 md:w-[221px]">
+                                                    <div className="grid w-full grid-cols-1 gap-1">
+                                                      <div className="flex items-center justify-between gap-4">
+                                                        <div className="block text-[#FFFFFFA3] md:hidden">
+                                                          Start
+                                                        </div>
+                                                        <FormField
+                                                          control={form.control}
+                                                          name="start_at"
+                                                          render={({
+                                                            field,
+                                                          }) => (
+                                                            <FormItem>
+                                                              <FormControl>
+                                                                <input
+                                                                  defaultValue={new Date().toISOString()}
+                                                                  type="datetime-local"
+                                                                  className="w-[230px] rounded-lg px-4 py-1 md:rounded-sm dark:bg-[#FFFFFF14] dark:text-[#FFFFFF]"
+                                                                  {...field}
+                                                                  onChange={(
+                                                                    e,
+                                                                  ) => {
+                                                                    field.onChange(
+                                                                      e.target
+                                                                        .value,
+                                                                    );
+                                                                    setStartAt(
+                                                                      e.target
+                                                                        .value,
+                                                                    );
+                                                                  }}
+                                                                />
+                                                              </FormControl>
+                                                            </FormItem>
+                                                          )}
+                                                        />
                                                       </div>
-                                                      <FormField
-                                                        control={form.control}
-                                                        name="end_at"
-                                                        render={({ field }) => (
-                                                          <FormItem>
-                                                            <FormControl>
-                                                              <input
-                                                                defaultValue={new Date().toISOString()}
-                                                                type="datetime-local"
-                                                                className="w-[230px] rounded-lg px-4 py-1 md:rounded-sm dark:bg-[#FFFFFF14] dark:text-[#FFFFFF]"
-                                                                {...field}
-                                                                onChange={(
-                                                                  e,
-                                                                ) => {
-                                                                  field.onChange(
-                                                                    e.target
-                                                                      .value,
-                                                                  );
-                                                                  setEndAt(
-                                                                    e.target
-                                                                      .value,
-                                                                  );
-                                                                }}
-                                                              />
-                                                            </FormControl>
-                                                          </FormItem>
-                                                        )}
-                                                      />
+
+                                                      <div className="flex items-center justify-between gap-4">
+                                                        <div className="block text-[#FFFFFFA3] md:hidden">
+                                                          End
+                                                        </div>
+                                                        <FormField
+                                                          control={form.control}
+                                                          name="end_at"
+                                                          render={({
+                                                            field,
+                                                          }) => (
+                                                            <FormItem>
+                                                              <FormControl>
+                                                                <input
+                                                                  defaultValue={new Date().toISOString()}
+                                                                  type="datetime-local"
+                                                                  className="w-[230px] rounded-lg px-4 py-1 md:rounded-sm dark:bg-[#FFFFFF14] dark:text-[#FFFFFF]"
+                                                                  {...field}
+                                                                  onChange={(
+                                                                    e,
+                                                                  ) => {
+                                                                    field.onChange(
+                                                                      e.target
+                                                                        .value,
+                                                                    );
+                                                                    setEndAt(
+                                                                      e.target
+                                                                        .value,
+                                                                    );
+                                                                  }}
+                                                                />
+                                                              </FormControl>
+                                                            </FormItem>
+                                                          )}
+                                                        />
+                                                      </div>
                                                     </div>
                                                   </div>
                                                 </div>
                                               </div>
                                             </div>
                                           </div>
-                                        </div>
 
-                                        <div className="grid grid-cols-1 gap-2">
-                                          <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
-                                            Location
-                                          </div>
-                                          <div className="flex flex-1 gap-2">
-                                            <div
-                                              onClick={() =>
-                                                setLocationType("OFFLINE")
-                                              }
-                                              className="relative flex h-[45px] w-full cursor-pointer items-center justify-start gap-2 rounded-md border border-white/30 bg-slate-900 p-2 font-semibold hover:bg-transparent md:h-[56px] dark:border-white/30 dark:bg-transparent dark:text-[#FFFFFF] dark:hover:bg-transparent"
-                                            >
-                                              <div className="flex items-center justify-center rounded-lg border border-gray-600/30 bg-[#29804e]/25 p-1 text-center md:p-3">
-                                                <LuMapPin className="text-xl text-[#50bd7d]" />
-                                              </div>
-                                              In Person
-                                              {locationType === "OFFLINE" && (
-                                                <div className="absolute right-2 rounded-full bg-[#50bd7d] p-1 md:right-4">
-                                                  <LuCheck className="text-sm text-gray-950" />
-                                                </div>
-                                              )}
-                                            </div>
-
-                                            <div
-                                              onClick={() =>
-                                                setLocationType("VIRTUAL")
-                                              }
-                                              className="relative flex h-[45px] w-full items-center justify-start gap-2 rounded-md border border-white/30 bg-slate-900 p-2 font-semibold hover:bg-transparent md:h-[56px] dark:border-white/30 dark:bg-transparent dark:text-[#FFFFFF] dark:hover:bg-transparent"
-                                            >
-                                              <div className="flex items-center justify-center rounded-lg border border-gray-600/30 bg-[#3787ff]/25 p-1 text-center md:p-3">
-                                                <LuVideo className="text-xl text-[#3787ff] md:text-base" />
-                                              </div>
-                                              Virtual
-                                              {locationType === "VIRTUAL" && (
-                                                <div className="absolute right-2 rounded-full bg-[#3787ff] p-1 md:right-4">
-                                                  <LuCheck className="text-sm text-gray-950 md:text-xl" />
-                                                </div>
-                                              )}
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        {locationType === "OFFLINE" && (
                                           <div className="grid grid-cols-1 gap-2">
                                             <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
-                                              Event Location
+                                              Location
                                             </div>
-                                            <FormField
-                                              control={form.control}
-                                              name="location"
-                                              render={({ field }) => (
-                                                <FormItem>
-                                                  <FormControl>
-                                                    <Input
-                                                      type="text"
-                                                      className="py-[8px] text-[15px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#ffffff86]"
-                                                      placeholder="Whats the address?"
-                                                      {...field}
-                                                    />
-                                                  </FormControl>
-                                                </FormItem>
-                                              )}
-                                            />
-                                          </div>
-                                        )}
+                                            <div className="flex flex-1 gap-2">
+                                              <div
+                                                onClick={() =>
+                                                  setLocationType("OFFLINE")
+                                                }
+                                                className="relative flex h-[45px] w-full cursor-pointer items-center justify-start gap-2 rounded-md border border-white/30 bg-slate-900 p-2 font-semibold hover:bg-transparent md:h-[56px] dark:border-white/30 dark:bg-transparent dark:text-[#FFFFFF] dark:hover:bg-transparent"
+                                              >
+                                                <div className="flex items-center justify-center rounded-lg border border-gray-600/30 bg-[#29804e]/25 p-1 text-center md:p-3">
+                                                  <LuMapPin className="text-xl text-[#50bd7d]" />
+                                                </div>
+                                                In Person
+                                                {locationType === "OFFLINE" && (
+                                                  <div className="absolute right-2 rounded-full bg-[#50bd7d] p-1 md:right-4">
+                                                    <LuCheck className="text-sm text-gray-950" />
+                                                  </div>
+                                                )}
+                                              </div>
 
-                                        {locationType === "VIRTUAL" && (
-                                          <div className="grid grid-cols-1 gap-2">
-                                            <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
-                                              Join URL
+                                              <div
+                                                onClick={() =>
+                                                  setLocationType("VIRTUAL")
+                                                }
+                                                className="relative flex h-[45px] w-full items-center justify-start gap-2 rounded-md border border-white/30 bg-slate-900 p-2 font-semibold hover:bg-transparent md:h-[56px] dark:border-white/30 dark:bg-transparent dark:text-[#FFFFFF] dark:hover:bg-transparent"
+                                              >
+                                                <div className="flex items-center justify-center rounded-lg border border-gray-600/30 bg-[#3787ff]/25 p-1 text-center md:p-3">
+                                                  <LuVideo className="text-xl text-[#3787ff] md:text-base" />
+                                                </div>
+                                                Virtual
+                                                {locationType === "VIRTUAL" && (
+                                                  <div className="absolute right-2 rounded-full bg-[#3787ff] p-1 md:right-4">
+                                                    <LuCheck className="text-sm text-gray-950 md:text-xl" />
+                                                  </div>
+                                                )}
+                                              </div>
                                             </div>
-                                            <FormField
-                                              control={form.control}
-                                              name="location"
-                                              render={({ field }) => (
-                                                <FormItem>
-                                                  <FormControl>
-                                                    <Input
-                                                      type="text"
-                                                      className="py-[8px] text-[15px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#ffffff86]"
-                                                      placeholder="https://meet.google.com/abc-defg-hij"
-                                                      {...field}
-                                                    />
-                                                  </FormControl>
-                                                </FormItem>
-                                              )}
-                                            />
                                           </div>
-                                        )}
+
+                                          {locationType === "OFFLINE" && (
+                                            <div className="grid grid-cols-1 gap-2">
+                                              <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
+                                                Event Location
+                                              </div>
+                                              <FormField
+                                                control={form.control}
+                                                name="location"
+                                                render={({ field }) => (
+                                                  <FormItem>
+                                                    <FormControl>
+                                                      <Input
+                                                        type="text"
+                                                        className="py-[8px] text-[15px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#ffffff86]"
+                                                        placeholder="Whats the address?"
+                                                        {...field}
+                                                      />
+                                                    </FormControl>
+                                                  </FormItem>
+                                                )}
+                                              />
+                                            </div>
+                                          )}
+
+                                          {locationType === "VIRTUAL" && (
+                                            <div className="grid grid-cols-1 gap-2">
+                                              <div className="text-left text-[14px] font-semibold text-[#FFFFFFc8]">
+                                                Join URL
+                                              </div>
+                                              <FormField
+                                                control={form.control}
+                                                name="location"
+                                                render={({ field }) => (
+                                                  <FormItem>
+                                                    <FormControl>
+                                                      <Input
+                                                        type="text"
+                                                        className="py-[8px] text-[15px] font-semibold text-white dark:border-white/30 dark:bg-[#131517] placeholder:dark:text-[#ffffff86]"
+                                                        placeholder="https://meet.google.com/abc-defg-hij"
+                                                        {...field}
+                                                      />
+                                                    </FormControl>
+                                                  </FormItem>
+                                                )}
+                                              />
+                                            </div>
+                                          )}
+                                        </div>
                                       </div>
-                                    </div>
-                                    <Button type="submit">Update Event</Button>
-                                  </form>
-                                </Form>
-                              </SheetDescription>
-                            </SheetHeader>
-                          </SheetContent>
-                        </Sheet>
+                                      <Button type="submit">
+                                        Update Event
+                                      </Button>
+                                    </form>
+                                  </Form>
+                                </SheetDescription>
+                              </SheetHeader>
+                            </SheetContent>
+                          </Sheet>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2 className="mb-[10px] text-[20px] font-medium text-[#FFFFFF]">
+                      Host
+                    </h2>
+                    <div className="flex gap-x-[20px] rounded-lg border border-gray-600/30 bg-gray-800/40 p-[12px] text-white backdrop-blur-sm">
+                      <div className="flex items-center text-[14px] text-[#818384]">
+                        <img
+                          className="h-5 rounded-full"
+                          src={
+                            urlify(data?.user?.profile_photo) ||
+                            "/assets/logo/icon.png"
+                          }
+                          alt=""
+                        />
+                        <h1 className="ml-2 line-clamp-1 text-[14px] font-medium text-white md:text-[16px]">
+                          {data?.user?.name} {data?.user?.email}
+                        </h1>
+
+                        <div className="ml-2 flex items-center justify-center rounded-2xl bg-[#07A46022] px-[7px] py-[4px] text-[12px] font-medium leading-none text-[#47C97E]">
+                          Creator
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
+              </TabsContent>
 
-                <div>
-                  <h2 className="mb-[10px] text-[20px] font-medium text-[#FFFFFF]">
-                    Host
-                  </h2>
-                  <div className="flex gap-x-[20px] rounded-lg border border-gray-600/30 bg-gray-800/40 p-[12px] text-white backdrop-blur-sm">
-                    <div className="flex items-center text-[14px] text-[#818384]">
-                      <img
-                        className="h-5 rounded-full"
-                        src={
-                          urlify(data?.user?.profile_photo) ||
-                          "/assets/logo/icon.png"
-                        }
-                        alt=""
-                      />
-                      <h1 className="ml-2 line-clamp-1 text-[14px] font-medium text-white md:text-[16px]">
-                        {data?.user?.name} {data?.user?.email}
-                      </h1>
-
-                      <div className="ml-2 flex items-center justify-center rounded-2xl bg-[#07A46022] px-[7px] py-[4px] text-[12px] font-medium leading-none text-[#47C97E]">
-                        Creator
+              <TabsContent
+                value="guest"
+                className="border-t border-gray-600/30"
+              >
+                <div className="mx-auto mt-[28px] flex max-w-[788px] flex-col gap-[20px] px-4 lg:px-0">
+                  <div className="flex text-[20px] font-semibold text-white">
+                    At a Glance
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex w-full justify-between pb-[8px]">
+                      <div className="text-[24px] text-[#939597]">
+                        {guestList.length}{" "}
+                        <span className="text-[16px]">guests</span>
+                      </div>
+                      <div className="text-[24px] text-[#939597]">
+                        <span className="text-[16px]">cap</span>{" "}
+                        {data?.capacity}
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
 
-            <TabsContent value="guest" className="border-t border-gray-600/30">
-              <div className="mx-auto mt-[28px] flex max-w-[788px] flex-col gap-[20px] px-4 lg:px-0">
-                <div className="flex text-[20px] font-semibold text-white">
-                  At a Glance
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex w-full justify-between pb-[8px]">
-                    <div className="text-[24px] text-[#939597]">
-                      {guestList.length}{" "}
-                      <span className="text-[16px]">guests</span>
-                    </div>
-                    <div className="text-[24px] text-[#939597]">
-                      <span className="text-[16px]">cap</span> {data?.capacity}
-                    </div>
+                    <progress
+                      value={guestList.length}
+                      max={data?.capacity}
+                      className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
+                    />
                   </div>
 
-                  <progress
-                    value={guestList.length}
-                    max={data?.capacity}
-                    className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
-                  />
-                </div>
-
-                <div className="flex gap-4 border-b border-gray-600/30 pb-[32px]">
-                  <a
-                    href={`/check-in/${slug}/scan`}
-                    className="flex w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-gray-800/40 py-[9px] pl-[10px] pr-[40px] text-[18px] font-semibold text-white backdrop-blur-sm"
-                  >
-                    <div className="rounded-md bg-[#29804e]/25 p-2">
-                      <LuQrCode className="text-[25px] text-[#50bd7d]" />
-                    </div>
-                    Check In Guests
-                  </a>
-                  {/* <a
+                  <div className="flex gap-4 border-b border-gray-600/30 pb-[32px]">
+                    <a
+                      href={`/check-in/${slug}/scan`}
+                      className="flex w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-gray-800/40 py-[9px] pl-[10px] pr-[40px] text-[18px] font-semibold text-white backdrop-blur-sm"
+                    >
+                      <div className="rounded-md bg-[#29804e]/25 p-2">
+                        <LuQrCode className="text-[25px] text-[#50bd7d]" />
+                      </div>
+                      Check In Guests
+                    </a>
+                    {/* <a
                     href="#"
                     className="flex w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-gray-800/40 py-[9px] pl-[10px] pr-[40px] text-[18px] font-semibold text-white backdrop-blur-sm"
                   >
@@ -924,95 +945,96 @@ const ManageEvent: NextPage = () => {
                       </span>
                     </div>
                   </a> */}
-                </div>
-
-                <div>
-                  <div className="flex pb-[12px] text-[20px] font-semibold text-white">
-                    Guest List
                   </div>
-                  <div className="relative">
-                    <Input
-                      onChange={(event) => {
-                        onHandleSearch(event.target.value);
-                      }}
-                      className="pl-10 text-[18px] font-semibold text-[#939597] dark:bg-transparent placeholder:dark:text-[#939597]"
-                      placeholder="Search..."
-                    />
-                    <LuSearch className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#939597]" />
-                  </div>
-                </div>
 
-                <Table className="border-gray-600/30">
-                  <TableBody className="rounded-lg border-gray-600/30">
-                    {searchList?.map((guest, index) => (
-                      <TableRow
-                        key={index}
-                        className="border-gray-600/30 bg-gray-800/40"
-                      >
-                        <TableCell className="flex gap-2 ">
-                          <img
-                            className="h-5 rounded-full"
-                            src={
-                              urlify(guest?.user?.profile_photo) ||
-                              "/assets/logo/icon.png"
-                            }
-                            alt=""
-                          />
-                          <p className="text-[16px] font-medium text-[#FFFFFF]">
-                            {guest?.user?.name}{" "}
-                            <span className="ml-2 text-[15px] text-[#FFFFFF80]">
-                              {guest?.user?.email}
-                            </span>
-                          </p>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {guest?.going_status === 1 && guest?.status === 1 && (
-                            <div className="rounded-md bg-[#29804e]/25 text-center text-[12px] font-medium text-[#29804e] ">
-                              Going
-                            </div>
-                          )}
-                          {guest?.status === 2 && (
-                            <div className="rounded-md bg-red-500/25 text-center text-[12px] font-medium text-red-500">
-                              Rejected
-                            </div>
-                          )}
-                          {guest?.status === 0 && (
-                            <div className="flex items-center">
-                              <Button
-                                onClick={() => {
-                                  manageGuestStatus(1, guest?.id);
-                                }}
-                                variant="ghost"
-                                size="sm"
-                                className="h-fit text-green-500"
-                              >
-                                <LuCheck className="mr-2 h-4 w-4 text-green-500" />
-                                Approve
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  manageGuestStatus(2, guest?.id);
-                                }}
-                                variant="ghost"
-                                size="sm"
-                                className="h-fit text-red-500"
-                              >
-                                <LuX className="mr-2 h-4 w-4 text-red-500" />
-                                Decline
-                              </Button>
-                            </div>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right text-[14px] font-medium text-[#FFFFFF80]">
-                          {new Date(guest?.created_at).toDateString()}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </TabsContent>
-            {/* <TabsContent
+                  <div>
+                    <div className="flex pb-[12px] text-[20px] font-semibold text-white">
+                      Guest List
+                    </div>
+                    <div className="relative">
+                      <Input
+                        onChange={(event) => {
+                          onHandleSearch(event.target.value);
+                        }}
+                        className="pl-10 text-[18px] font-semibold text-[#939597] dark:bg-transparent placeholder:dark:text-[#939597]"
+                        placeholder="Search..."
+                      />
+                      <LuSearch className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#939597]" />
+                    </div>
+                  </div>
+
+                  <Table className="border-gray-600/30">
+                    <TableBody className="rounded-lg border-gray-600/30">
+                      {searchList?.map((guest, index) => (
+                        <TableRow
+                          key={index}
+                          className="border-gray-600/30 bg-gray-800/40"
+                        >
+                          <TableCell className="flex gap-2 ">
+                            <img
+                              className="h-5 rounded-full"
+                              src={
+                                urlify(guest?.user?.profile_photo) ||
+                                "/assets/logo/icon.png"
+                              }
+                              alt=""
+                            />
+                            <p className="text-[16px] font-medium text-[#FFFFFF]">
+                              {guest?.user?.name}{" "}
+                              <span className="ml-2 text-[15px] text-[#FFFFFF80]">
+                                {guest?.user?.email}
+                              </span>
+                            </p>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {guest?.going_status === 1 &&
+                              guest?.status === 1 && (
+                                <div className="rounded-md bg-[#29804e]/25 text-center text-[12px] font-medium text-[#29804e] ">
+                                  Going
+                                </div>
+                              )}
+                            {guest?.status === 2 && (
+                              <div className="rounded-md bg-red-500/25 text-center text-[12px] font-medium text-red-500">
+                                Rejected
+                              </div>
+                            )}
+                            {guest?.status === 0 && (
+                              <div className="flex items-center">
+                                <Button
+                                  onClick={() => {
+                                    manageGuestStatus(1, guest?.id);
+                                  }}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-fit text-green-500"
+                                >
+                                  <LuCheck className="mr-2 h-4 w-4 text-green-500" />
+                                  Approve
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    manageGuestStatus(2, guest?.id);
+                                  }}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-fit text-red-500"
+                                >
+                                  <LuX className="mr-2 h-4 w-4 text-red-500" />
+                                  Decline
+                                </Button>
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right text-[14px] font-medium text-[#FFFFFF80]">
+                            {new Date(guest?.created_at).toDateString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TabsContent>
+              {/* <TabsContent
               value="registration"
               className="border-t border-gray-600/30"
             >
@@ -1020,9 +1042,10 @@ const ManageEvent: NextPage = () => {
                 Registration
               </div>
             </TabsContent> */}
-          </Tabs>
-        </div>
-      </section>
+            </Tabs>
+          </div>
+        </section>
+      )}
     </div>
   );
 };
