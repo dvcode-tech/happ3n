@@ -404,12 +404,6 @@ const ManageEvent: NextPage = () => {
                 >
                   Guests
                 </TabsTrigger>
-                {/* <TabsTrigger
-                value="registration"
-                className="mr-3 items-start rounded-none text-[16px] dark:data-[state=active]:border-b dark:data-[state=active]:bg-transparent"
-              >
-                Registration
-              </TabsTrigger> */}
               </TabsList>
 
               <TabsContent
@@ -417,14 +411,14 @@ const ManageEvent: NextPage = () => {
                 className="border-t border-gray-600/30"
               >
                 <div className="mx-auto mt-[28px] flex max-w-[788px] flex-col gap-[20px] px-4 lg:px-0">
-                  <div>
+                  {/* <div>
                     <a
                       href="#"
                       className="flex w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-gray-800/40 px-[22px] py-[9px] text-[18px] font-semibold text-white backdrop-blur-sm"
                     >
                       <LuShare /> Share Event
                     </a>
-                  </div>
+                  </div> */}
 
                   <div className="flex flex-col gap-x-[20px] rounded-lg border border-gray-600/30 bg-gray-800/40 p-[12px] text-white backdrop-blur-sm md:flex-row">
                     <div className="flex flex-1">
@@ -458,13 +452,6 @@ const ManageEvent: NextPage = () => {
                           >
                             <LuCopy />
                           </button>
-
-                          {/* <Button
-                            data-copy
-                            className="pr-4 text-[14px] uppercase text-[#FFFFFF7A]"
-                          >
-                            Copy
-                          </Button> */}
                         </div>
                       </div>
                     </div>
@@ -540,7 +527,7 @@ const ManageEvent: NextPage = () => {
                         <div className="flex  flex-1 gap-2">
                           <Sheet>
                             <SheetTrigger asChild>
-                              <div className="mt-[16px] flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]">
+                              <div className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#FFFFFF14] px-[10px] py-[6px] text-[14px] font-medium text-[#FFFFFFA3]">
                                 Edit Event
                               </div>
                             </SheetTrigger>
@@ -947,15 +934,15 @@ const ManageEvent: NextPage = () => {
                   </div>
 
                   <div className="flex gap-4 border-b border-gray-600/30 pb-[32px]">
-                    <a
-                      href={`/check-in/${slug}/scan`}
+                    <Link
+                      href={`/check-in?q=${slug}`}
                       className="flex w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-gray-800/40 py-[9px] pl-[10px] pr-[40px] text-[18px] font-semibold text-white backdrop-blur-sm"
                     >
                       <div className="rounded-md bg-[#29804e]/25 p-2">
                         <LuQrCode className="text-[25px] text-[#50bd7d]" />
                       </div>
                       Check In Guests
-                    </a>
+                    </Link>
                     {/* <a
                     href="#"
                     className="flex w-fit items-center gap-2 rounded-lg border border-gray-600/30 bg-gray-800/40 py-[9px] pl-[10px] pr-[40px] text-[18px] font-semibold text-white backdrop-blur-sm"

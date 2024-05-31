@@ -21,6 +21,7 @@ import React from "react";
 import { useRouter } from "next/router";
 import { useHappenContext } from "@/context/HappenContext";
 import { urlify } from "@/lib/utils";
+import { LuTicket } from "react-icons/lu";
 
 const formatTime = (date: Date) => {
   return date.toLocaleTimeString("en-US", {
@@ -109,6 +110,17 @@ const Navbar: NextPage = () => {
                     >
                       <User className="mr-2 h-4 w-4" />
                       <span>View Profile</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="dark:bg-[#FFFFFF14]" />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        router.push(`/home`);
+                      }}
+                    >
+                      <LuTicket className="mr-2 h-4 w-4" />
+                      <span>Events</span>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator className="dark:bg-[#FFFFFF14]" />
