@@ -138,7 +138,7 @@ export function FileDialog<TFieldValues extends FieldValues>({
               </div>
               <object
                 data={file.preview}
-                className={`checkers-bg items-center justify-center rounded-xl object-scale-down ${size}`}
+                className={`checkers-bg items-center justify-center rounded-md object-scale-down md:rounded-xl ${size}`}
                 type={file.type}
               />
             </div>

@@ -284,7 +284,7 @@ const User: NextPage = () => {
                               onSubmit={form.handleSubmit(handleSubmit)}
                               className="space-y-8"
                             >
-                              <DialogTitle className="relative text-left">
+                              <DialogTitle className="relative overflow-hidden text-left">
                                 <div className="mb-[20px] flex flex-col gap-2">
                                   <h1 className="text-left text-[20px] text-[#FFFFFF]">
                                     Your Profile
@@ -301,10 +301,10 @@ const User: NextPage = () => {
                                         Cover photo
                                       </div>
                                       <FormItem>
-                                        <div className="flex flex-row gap-1.5">
+                                        <div className="flex flex-row items-center justify-center gap-1.5">
                                           <FormControl>
                                             <FileDialog
-                                              size="h-44"
+                                              size="h-24 md:h-44"
                                               setValue={form.setValue}
                                               name="banner_photo"
                                               maxFiles={1}
@@ -315,7 +315,7 @@ const User: NextPage = () => {
                                             >
                                               <Button
                                                 variant="outline"
-                                                className="relative flex h-[187px] max-w-full flex-1 flex-col items-center justify-center rounded-xl bg-[url('/assets/placeholder/cover.png')] bg-cover bg-no-repeat"
+                                                className="h- relative flex h-[187px] max-w-full flex-1 flex-col items-center justify-center rounded-xl bg-[url('/assets/placeholder/cover.png')] bg-cover bg-no-repeat"
                                               >
                                                 <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
                                                   <LuImage className="h-5 w-5" />
