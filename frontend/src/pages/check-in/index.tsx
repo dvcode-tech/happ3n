@@ -147,12 +147,17 @@ const CheckIn: NextPage = () => {
             <div className="flex items-center justify-center gap-2">
               <img
                 onClick={() => router.push("/home")}
-                className="h-5 cursor-pointer rounded-full"
-                src="/assets/logo/icon.png"
+                className="h-8 cursor-pointer rounded-full"
+                src={urlify(data?.banner) || "/assets/logo/icon.png"}
+                onError={({ currentTarget }) => {
+                  currentTarget.onerror = null;
+                  currentTarget.src =
+                    "/assets/placeholder/placeholder_banner.png";
+                }}
                 alt=""
               />
-              <div>
-                <div className="text-[16px] font-medium text-[#FFFFFF]">
+              <div className="cursor-pointer" onClick={() => router.back()}>
+                <div className="text-[16px] font-medium text-[#FFFFFF] hover:text-violet-700">
                   {data?.name}
                 </div>
                 <p className="text-[13px] text-[#FFFFFFCC]">

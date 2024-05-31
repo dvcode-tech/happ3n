@@ -288,7 +288,7 @@ const User: NextPage = () => {
           <section className="mb-[24px] border-t-white lg:px-[14px] lg:py-[8px]">
             <div className="relative mx-auto max-w-[1008px]">
               <img
-                className="w-full bg-cover bg-no-repeat lg:rounded-xl"
+                className="max-h-[357px] w-full bg-no-repeat object-cover object-top lg:rounded-xl"
                 src={
                   urlify(eventState?.userInfo?.banner_photo) ||
                   "/assets/placeholder/cover.png"
@@ -370,7 +370,7 @@ const User: NextPage = () => {
                                                     style={{
                                                       backgroundImage: `url(${urlify(eventState?.userInfo?.banner_photo)})`,
                                                     }}
-                                                    className="h- relative flex h-[187px] max-w-full flex-1 flex-col items-center justify-center rounded-xl bg-cover bg-no-repeat"
+                                                    className="relative flex h-[187px] max-w-full flex-1 flex-col items-center justify-center rounded-xl bg-cover bg-no-repeat"
                                                   >
                                                     <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
                                                       <LuImage className="h-5 w-5" />

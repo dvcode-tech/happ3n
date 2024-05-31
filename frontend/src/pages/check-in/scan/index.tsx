@@ -124,7 +124,8 @@ const Scan: NextPage = () => {
           <div className="mx-auto flex w-full max-w-[788px] items-center justify-between px-[16px] py-[10px]">
             <div className="flex items-center justify-center gap-2">
               <img
-                className="h-5 rounded-full"
+                onClick={() => router.push("/home")}
+                className="h-8 cursor-pointer rounded-full"
                 src={urlify(data?.banner) || "/assets/logo/icon.png"}
                 onError={({ currentTarget }) => {
                   currentTarget.onerror = null;
@@ -133,8 +134,8 @@ const Scan: NextPage = () => {
                 }}
                 alt=""
               />
-              <div>
-                <div className="text-[16px] font-medium text-[#FFFFFF]">
+              <div className="cursor-pointer" onClick={() => router.back()}>
+                <div className="text-[16px] font-medium text-[#FFFFFF] hover:text-violet-700">
                   {data?.name}
                 </div>
                 <p className="text-[13px] text-[#FFFFFFCC]">
