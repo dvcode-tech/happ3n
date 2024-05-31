@@ -56,6 +56,7 @@ const EventPage = () => {
   const [data, setData] = useState<any>(null);
   const [status, setStatus] = useState<any>("");
   const slug = router?.query?.q;
+  const [submittingLoading, setSubmittingLoading] = useState(false);
 
   const fetchEvent = async (q: any) => {
     try {
@@ -80,18 +81,9 @@ const EventPage = () => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const data = {
-      fullname: values.fullname,
-      email: values.email,
-    };
-    console.log(data);
-
-    // await onRequest(data);
-  }
-
   const handleJoinEvent = async () => {
     try {
+      setSubmittingLoading(true);
       const joinEventPost = await backend.post(
         `/event/${data?.id}/register`,
         {},
@@ -117,7 +109,9 @@ const EventPage = () => {
         duration: 1000,
       });
     } finally {
-      checkJoinEvent();
+      checkJoinEvent().finally(() => {
+        setSubmittingLoading(false);
+      });
     }
   };
 
@@ -339,100 +333,25 @@ const EventPage = () => {
                         </p>
                       </div>
                     )}
-                    <div className="flex flex-col items-center gap-4 px-4 md:flex-row">
+                    <div className="flex flex-col items-center gap-2 px-4 md:flex-row">
                       {!isAuthenticated && (
                         <LoginButton className="mt-4 inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md bg-slate-900 px-4 py-2 text-[16px] font-medium text-slate-50 ring-offset-white transition-colors hover:bg-slate-900/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:bg-slate-50 dark:text-slate-900 dark:ring-offset-slate-950 dark:hover:bg-slate-50/90 dark:focus-visible:ring-slate-300">
                           Register
                         </LoginButton>
                       )}
-                      {isAuthenticated && status === "NONE" && (
-                        <Button
-                          onClick={handleJoinEvent}
-                          className="w-full text-[16px]"
-                        >
-                          Request to Join
-                        </Button>
-                        // <Dialog>
-                        //   <DialogTrigger className="w-full">
-                        //     <Button className="w-full text-[16px]">
-                        //       Request to Join
-                        //     </Button>
-                        //   </DialogTrigger>
-                        //   <DialogContent className="overflow-hidden rounded-md border bg-gray-500/40 p-0 py-8 backdrop-blur-md md:rounded-3xl">
-                        //     <DialogHeader className="">
-                        //       <DialogDescription className="flex w-full flex-1 flex-col px-4">
-                        //         <div className="p-4 text-left text-[17px] text-white">
-                        //           Your Info
-                        //         </div>
-                        //         <Form {...form}>
-                        //           <form
-                        //             onSubmit={form.handleSubmit(onSubmit)}
-                        //             className="flex max-h-[87vh] flex-col gap-4 overflow-y-auto md:max-h-[100vh]"
-                        //           >
-                        //             <FormField
-                        //               control={form.control}
-                        //               name="fullname"
-                        //               render={({ field }) => (
-                        //                 <FormItem className="px-4">
-                        //                   <div className="grid grid-cols-1 gap-2 text-left">
-                        //                     <Label>
-                        //                       Fullname{" "}
-                        //                       <span className="text-red-500">
-                        //                         *
-                        //                       </span>
-                        //                     </Label>
-                        //                     <FormControl>
-                        //                       <Input
-                        //                         placeholder="Fullname"
-                        //                         className="col-span-3"
-                        //                         {...field}
-                        //                       />
-                        //                     </FormControl>
-                        //                   </div>
-                        //                   <FormMessage />
-                        //                 </FormItem>
-                        //               )}
-                        //             />
+                      {isAuthenticated &&
+                        status === "NONE" &&
+                        !submittingLoading && (
+                          <Button
+                            onClick={handleJoinEvent}
+                            className="w-full text-[16px]"
+                          >
+                            Request to Join
+                          </Button>
+                        )}
 
-                        //             <FormField
-                        //               control={form.control}
-                        //               name="email"
-                        //               render={({ field }) => (
-                        //                 <FormItem className="px-4">
-                        //                   <div className="grid grid-cols-1 gap-2 text-left">
-                        //                     <Label>
-                        //                       Email{" "}
-                        //                       <span className="text-red-500">
-                        //                         *
-                        //                       </span>
-                        //                     </Label>
-                        //                     <FormControl>
-                        //                       <Input
-                        //                         placeholder="Email"
-                        //                         className="col-span-3"
-                        //                         {...field}
-                        //                       />
-                        //                     </FormControl>
-                        //                   </div>
-                        //                   <FormMessage />
-                        //                 </FormItem>
-                        //               )}
-                        //             />
-
-                        //             <div className="px-4">
-                        //               <Button
-                        //                 type="submit"
-                        //                 className="w-full hover:bg-[#2F3136] hover:text-[#2F3136] active:bg-[#141414] dark:text-black"
-                        //               >
-                        //                 Request to Join
-                        //               </Button>
-                        //             </div>
-                        //           </form>
-                        //         </Form>
-                        //       </DialogDescription>
-                        //     </DialogHeader>
-                        //   </DialogContent>
-                        // </Dialog>
+                      {submittingLoading && (
+                        <LuLoader className="mx-auto my-2 h-6 w-6 animate-spin text-white" />
                       )}
 
                       {status === "REJECTED" && (
@@ -450,7 +369,7 @@ const EventPage = () => {
                             onClick={() => {
                               router.push(`/e/ticket?q=${slug}`);
                             }}
-                            className="w-full text-[16px] !text-gray-500 md:w-2/5"
+                            className="w-full text-[16px] !text-blue-500 md:w-2/5"
                           >
                             My Ticket
                           </Button>

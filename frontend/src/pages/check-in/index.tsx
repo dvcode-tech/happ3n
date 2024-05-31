@@ -28,6 +28,7 @@ const CheckIn: NextPage = () => {
   const [guestList, setGuestList] = useState<any[]>([]);
   const [guestListLoading, setGuestListLoading] = useState(true);
   const [searchList, setSearchList] = useState<any[]>([]);
+  const [submittingLoading, setSubmittingLoading] = useState(false);
 
   const getGuestList = async () => {
     try {
@@ -84,6 +85,7 @@ const CheckIn: NextPage = () => {
 
   const manageCheckinStatus = async (guestId: number) => {
     try {
+      setSubmittingLoading(true);
       const response: any = await backend.post(
         `/event/${data?.id}/guests/${guestId}/checkedin`,
         {},
@@ -109,7 +111,9 @@ const CheckIn: NextPage = () => {
         duration: 1000,
       });
     } finally {
-      getGuestList();
+      getGuestList().finally(() => {
+        setSubmittingLoading(false);
+      });
     }
   };
 
@@ -219,17 +223,22 @@ const CheckIn: NextPage = () => {
 
                         {guest?.entry_status === 0 && (
                           <div className="flex items-center">
-                            <Button
-                              onClick={() => {
-                                manageCheckinStatus(guest?.id);
-                              }}
-                              variant="ghost"
-                              size="sm"
-                              className="h-fit text-green-500"
-                            >
-                              <LuCheck className="mr-2 h-4 w-4 text-green-500" />
-                              Check In
-                            </Button>
+                            {!submittingLoading && (
+                              <Button
+                                onClick={() => {
+                                  manageCheckinStatus(guest?.id);
+                                }}
+                                variant="ghost"
+                                size="sm"
+                                className="h-fit text-green-500"
+                              >
+                                <LuCheck className="mr-2 h-4 w-4 text-green-500" />
+                                Check In
+                              </Button>
+                            )}
+                            {submittingLoading && (
+                              <LuLoader className="mx-auto h-4 w-4 animate-spin text-white" />
+                            )}
                           </div>
                         )}
                       </TableCell>

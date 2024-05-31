@@ -26,6 +26,7 @@ const Scan: NextPage = () => {
   const [data, setData] = useState<any>(null);
   const [qrData, setQrData] = useState<any>(null);
   const [guestList, setGuestList] = useState<any[]>([]);
+  const [submittingLoading, setSubmittingLoading] = useState(false);
 
   const fetchEvent = async (q: any) => {
     try {
@@ -62,6 +63,7 @@ const Scan: NextPage = () => {
 
   const manageCheckinStatus = async (eventId: number, guestId: number) => {
     try {
+      setSubmittingLoading(true);
       const response: any = await backend.post(
         `/event/${eventId}/guests/${guestId}/checkedin`,
         {},
@@ -87,6 +89,7 @@ const Scan: NextPage = () => {
         duration: 1000,
       });
     } finally {
+      setSubmittingLoading(false);
       getGuestList();
       setQrData(null);
     }
@@ -225,17 +228,27 @@ const Scan: NextPage = () => {
                 )}
                 <div className="flex w-full items-center justify-end bg-black/20 p-4">
                   {qrData?.eventId === data?.id && (
-                    <Button
-                      onClick={() => {
-                        manageCheckinStatus(qrData?.eventId, qrData?.guestId);
-                      }}
-                      variant="ghost"
-                      size="sm"
-                      className="h-fit text-green-500"
-                    >
-                      <LuCheck className="mr-2 h-4 w-4 text-green-500" />
-                      Check In
-                    </Button>
+                    <>
+                      {!submittingLoading && (
+                        <Button
+                          onClick={() => {
+                            manageCheckinStatus(
+                              qrData?.eventId,
+                              qrData?.guestId,
+                            );
+                          }}
+                          variant="ghost"
+                          size="sm"
+                          className="h-fit text-green-500"
+                        >
+                          <LuCheck className="mr-2 h-4 w-4 text-green-500" />
+                          Check In
+                        </Button>
+                      )}
+                      {submittingLoading && (
+                        <LuLoader className="h-4 w-4 animate-spin text-white" />
+                      )}
+                    </>
                   )}
                   <Button
                     onClick={() => {
