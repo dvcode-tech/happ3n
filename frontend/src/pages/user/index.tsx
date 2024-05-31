@@ -44,9 +44,9 @@ import {
 import { FaTiktok } from "react-icons/fa";
 import { useHappenContext } from "@/context/HappenContext";
 import useUserEvent from "@/hooks/useUserEvent";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { formatDate, urlify } from "@/lib/utils";
+import { formatDate, removeNullValues, urlify } from "@/lib/utils";
 
 import {
   Form,
@@ -62,6 +62,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FileDialog } from "@/components/ui/file-dialog";
 import path from "path";
+import { toast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   name: z.string().optional(),
@@ -99,6 +100,7 @@ const User: NextPage = () => {
   const { ctxAccount, isAuthenticated, backend } = useHappenContext();
   const [eventState, eventFunction] = useUserEvent();
   const slug = router?.query?.p;
+  const [submittingLoading, setSubmittingLoading] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -122,6 +124,7 @@ const User: NextPage = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setSubmittingLoading(true);
       let banner_url = null;
       let cover_url = null;
 
@@ -148,6 +151,7 @@ const User: NextPage = () => {
           reader.readAsDataURL(file);
         });
       };
+
       const handleUploadCover = async () => {
         //@ts-ignore
         if (!values.banner_photo?.[0]) return null;
@@ -173,6 +177,7 @@ const User: NextPage = () => {
       };
 
       const bannerRessult = await handleUploadProfile();
+
       const coverResult = await handleUploadCover();
 
       if (bannerRessult) {
@@ -213,7 +218,36 @@ const User: NextPage = () => {
         banner_photo: cover_url,
       };
       console.log(dataSubmit);
-    } catch (e: any) {}
+
+      const userPost = await backend.post(
+        `/user/update`,
+        removeNullValues(dataSubmit),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      toast({
+        variant: "default",
+        title: "Success",
+        description: (userPost.data as any)?.message,
+        duration: 2000,
+      });
+    } catch (e: any) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: e?.message || e?.data?.message,
+        duration: 1000,
+      });
+    } finally {
+      dialogClose();
+      eventFunction.fetchEvents?.(slug).finally(() => {
+        setSubmittingLoading(false);
+      });
+    }
   }
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -223,6 +257,22 @@ const User: NextPage = () => {
   const dialogClose = () => {
     document.getElementById("closeDialog")?.click();
   };
+
+  useEffect(() => {
+    if (!eventState?.userInfo) return;
+
+    form.reset({
+      name: eventState?.userInfo?.name || "",
+      bio: eventState?.userInfo?.bio || "",
+      facebook: eventState?.userInfo?.facebook || "",
+      twitter: eventState?.userInfo?.twitter || "",
+      tiktok: eventState?.userInfo?.tiktok || "",
+      instagram: eventState?.userInfo?.instagram || "",
+      website: eventState?.userInfo?.website || "",
+      profile_photo: "",
+      banner_photo: "",
+    });
+  }, [eventState?.userInfo]);
 
   return (
     <div className="min-h-screen bg-black bg-[url('/assets/bg.png')] bg-cover bg-center bg-no-repeat">
@@ -238,7 +288,7 @@ const User: NextPage = () => {
           <section className="mb-[24px] border-t-white lg:px-[14px] lg:py-[8px]">
             <div className="relative mx-auto max-w-[1008px]">
               <img
-                className="lg:rounded-xl"
+                className="w-full bg-cover bg-no-repeat lg:rounded-xl"
                 src={
                   urlify(eventState?.userInfo?.banner_photo) ||
                   "/assets/placeholder/cover.png"
@@ -266,223 +316,239 @@ const User: NextPage = () => {
                       alt=""
                     />
                   </div>
-                  <div className="flex items-end justify-end pt-1.5">
-                    <Dialog>
-                      <DialogTrigger>
-                        <Button
-                          variant="outline"
-                          size={"sm"}
-                          className="flex w-[110px] border border-white bg-gray-800/40 px-[10px] py-2 text-[12px] md:px-[14px] md:py-[10px] md:text-[16px] dark:bg-transparent dark:text-[#FFFFFF]"
-                        >
-                          Edit Profile
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="z-[999] max-h-[90vh] overflow-y-auto border border-gray-600/30 bg-[#1F1E21]/60 px-5 py-3 backdrop-blur-md sm:max-w-[480px] md:max-w-[700px]">
-                        <DialogHeader className="flex flex-col space-y-[80px]">
-                          <Form {...form}>
-                            <form
-                              onSubmit={form.handleSubmit(handleSubmit)}
-                              className="space-y-8"
+                  {isAuthenticated &&
+                    eventState?.userInfo?.username === ctxAccount?.username && (
+                      <div className="flex items-end justify-end pt-1.5">
+                        <Dialog>
+                          <DialogTrigger>
+                            <Button
+                              variant="outline"
+                              size={"sm"}
+                              className="flex w-[110px] border border-white bg-gray-800/40 px-[10px] py-2 text-[12px] md:px-[14px] md:py-[10px] md:text-[16px] dark:bg-transparent dark:text-[#FFFFFF]"
                             >
-                              <DialogTitle className="relative overflow-hidden text-left">
-                                <div className="mb-[20px] flex flex-col gap-2">
-                                  <h1 className="text-left text-[20px] text-[#FFFFFF]">
-                                    Your Profile
-                                  </h1>
-                                  <p className="text-left text-[16px] font-normal text-[#D2D4D7]">
-                                    Choose how you are displayed as a host or
-                                    guest.
-                                  </p>
-                                </div>
-                                <div className="flex flex-col gap-4">
-                                  <div className="flex flex-col items-center gap-4">
-                                    <div className="flex w-full flex-col gap-2">
-                                      <div className="text-[14px] text-[#FFFFFFC9]">
-                                        Cover photo
-                                      </div>
-                                      <FormItem>
-                                        <div className="flex flex-row items-center justify-center gap-1.5">
-                                          <FormControl>
-                                            <FileDialog
-                                              size="h-24 md:h-44"
-                                              setValue={form.setValue}
-                                              name="banner_photo"
-                                              maxFiles={1}
-                                              maxSize={1024 * 1024 * 0.8}
-                                              accept={{ "image/*": [] }}
-                                              isUploading={false}
-                                              disabled={false}
-                                            >
-                                              <Button
-                                                variant="outline"
-                                                className="h- relative flex h-[187px] max-w-full flex-1 flex-col items-center justify-center rounded-xl bg-[url('/assets/placeholder/cover.png')] bg-cover bg-no-repeat"
-                                              >
-                                                <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
-                                                  <LuImage className="h-5 w-5" />
-                                                </div>
-                                              </Button>
-                                            </FileDialog>
-                                          </FormControl>
-                                        </div>
-                                      </FormItem>
+                              Edit Profile
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="z-[999] max-h-[90vh] overflow-y-auto border border-gray-600/30 bg-[#1F1E21]/60 px-5 py-3 backdrop-blur-md sm:max-w-[480px] md:max-w-[700px]">
+                            <DialogHeader className="flex flex-col space-y-[80px]">
+                              <Form {...form}>
+                                <form
+                                  onSubmit={form.handleSubmit(handleSubmit)}
+                                  className="space-y-8"
+                                >
+                                  <DialogTitle className="relative overflow-hidden text-left">
+                                    <div className="mb-[20px] flex flex-col gap-2">
+                                      <h1 className="text-left text-[20px] text-[#FFFFFF]">
+                                        Your Profile
+                                      </h1>
+                                      <p className="text-left text-[16px] font-normal text-[#D2D4D7]">
+                                        Choose how you are displayed as a host
+                                        or guest.
+                                      </p>
                                     </div>
-
-                                    <div className="flex w-full flex-1 flex-col gap-2">
-                                      <div className="text-[14px] text-[#FFFFFFC9]">
-                                        Profile photo
-                                      </div>
-                                      <div className="flex items-center justify-center">
-                                        <FormItem>
-                                          <div className="flex flex-row gap-1.5">
-                                            <FormControl>
-                                              <FileDialog
-                                                size="h-40"
-                                                setValue={form.setValue}
-                                                name="profile_photo"
-                                                maxFiles={1}
-                                                maxSize={1024 * 1024 * 0.8}
-                                                accept={{ "image/*": [] }}
-                                                isUploading={false}
-                                                disabled={false}
-                                              >
-                                                <Button
-                                                  variant="outline"
-                                                  className="relative flex aspect-[1/1] h-40 w-40 flex-col items-center justify-center rounded-xl bg-[url('/assets/placeholder/placeholder_banner.png')] bg-cover bg-no-repeat"
-                                                >
-                                                  <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
-                                                    <LuImage className="h-5 w-5" />
-                                                  </div>
-                                                </Button>
-                                              </FileDialog>
-                                            </FormControl>
+                                    <div className="flex flex-col gap-4">
+                                      <div className="flex flex-col items-center gap-4">
+                                        <div className="flex w-full flex-col gap-2">
+                                          <div className="text-[14px] text-[#FFFFFFC9]">
+                                            Cover photo
                                           </div>
-                                        </FormItem>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="flex flex-col gap-4 md:mt-[20px] md:flex-row">
-                                    <div className="flex flex-1 flex-col space-y-3">
-                                      <FormField
-                                        control={form.control}
-                                        name="name"
-                                        render={({ field }) => (
                                           <FormItem>
-                                            <FormLabel className="text-[#FFFFFFC9]">
-                                              Name
-                                            </FormLabel>
-                                            <FormControl>
-                                              <Input
-                                                className="text-white outline-none dark:border dark:border-gray-600/30"
-                                                {...field}
-                                              />
-                                            </FormControl>
-                                            <FormMessage />
+                                            <div className="flex flex-row items-center justify-center gap-1.5">
+                                              <FormControl>
+                                                <FileDialog
+                                                  size="h-24 md:h-44"
+                                                  setValue={form.setValue}
+                                                  name="banner_photo"
+                                                  maxFiles={1}
+                                                  maxSize={1024 * 1024 * 0.8}
+                                                  accept={{ "image/*": [] }}
+                                                  isUploading={false}
+                                                  disabled={false}
+                                                >
+                                                  <Button
+                                                    variant="outline"
+                                                    style={{
+                                                      backgroundImage: `url(${urlify(eventState?.userInfo?.banner_photo)})`,
+                                                    }}
+                                                    className="h- relative flex h-[187px] max-w-full flex-1 flex-col items-center justify-center rounded-xl bg-cover bg-no-repeat"
+                                                  >
+                                                    <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
+                                                      <LuImage className="h-5 w-5" />
+                                                    </div>
+                                                  </Button>
+                                                </FileDialog>
+                                              </FormControl>
+                                            </div>
                                           </FormItem>
-                                        )}
-                                      />
-                                      <FormField
-                                        control={form.control}
-                                        name="bio"
-                                        render={({ field }) => (
-                                          <FormItem>
-                                            <FormLabel className="text-[#FFFFFFC9]">
-                                              Bio
-                                            </FormLabel>
-                                            <FormControl>
-                                              <Textarea
-                                                className="h-[100px] resize-none text-[16px] text-white outline-none placeholder:text-[14px] dark:border-gray-600/30 dark:bg-[#131517]  placeholder:dark:text-[#FFFFFFC9]"
-                                                placeholder="Share a litte about background amd interest."
-                                                {...field}
-                                              />
-                                            </FormControl>
-                                            <FormMessage />
-                                          </FormItem>
-                                        )}
-                                      />
-                                    </div>
-                                    <div className="flex flex-1 flex-col space-y-3">
-                                      <div className="text-[14px] text-[#FFFFFFC9]">
-                                        Socials
-                                      </div>
-                                      <FormField
-                                        control={form.control}
-                                        name="instagram"
-                                        render={({ field }) => (
-                                          <FormItem className="flex items-center space-x-2 space-y-0">
-                                            <LuInstagram className="text-[#FFFFFF80]" />
-                                            <FormControl>
-                                              <Input
-                                                className="text-white outline-none dark:border dark:border-gray-600/30"
-                                                {...field}
-                                              />
-                                            </FormControl>
-                                            <FormMessage />
-                                          </FormItem>
-                                        )}
-                                      />
-                                      <FormField
-                                        control={form.control}
-                                        name="facebook"
-                                        render={({ field }) => (
-                                          <FormItem className="flex items-center space-x-2 space-y-0">
-                                            <LuFacebook className="text-[#FFFFFF80]" />
-                                            <FormControl>
-                                              <Input
-                                                className="text-white outline-none dark:border dark:border-gray-600/30"
-                                                {...field}
-                                              />
-                                            </FormControl>
-                                            <FormMessage />
-                                          </FormItem>
-                                        )}
-                                      />
-                                      <FormField
-                                        control={form.control}
-                                        name="twitter"
-                                        render={({ field }) => (
-                                          <FormItem className="flex items-center space-x-2 space-y-0">
-                                            <LuTwitter className="text-[#FFFFFF80]" />
-                                            <FormControl>
-                                              <Input
-                                                className="text-white outline-none dark:border dark:border-gray-600/30"
-                                                {...field}
-                                              />
-                                            </FormControl>
-                                            <FormMessage />
-                                          </FormItem>
-                                        )}
-                                      />
-                                      <FormField
-                                        control={form.control}
-                                        name="website"
-                                        render={({ field }) => (
-                                          <FormItem className="flex items-center space-x-2 space-y-0">
-                                            <LuGlobe className="text-[#FFFFFF80]" />
-                                            <FormControl>
-                                              <Input
-                                                className="text-white outline-none dark:border dark:border-gray-600/30 dark:placeholder:text-[#4f4f4f]"
-                                                placeholder="Your Website"
-                                                {...field}
-                                              />
-                                            </FormControl>
-                                            <FormMessage />
-                                          </FormItem>
-                                        )}
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              </DialogTitle>
+                                        </div>
 
-                              <div>
-                                <Button type="submit">Save Changes</Button>
-                              </div>
-                            </form>
-                          </Form>
-                        </DialogHeader>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
+                                        <div className="flex w-full flex-1 flex-col gap-2">
+                                          <div className="text-[14px] text-[#FFFFFFC9]">
+                                            Profile photo
+                                          </div>
+                                          <div className="flex items-center justify-center">
+                                            <FormItem>
+                                              <div className="flex flex-row gap-1.5">
+                                                <FormControl>
+                                                  <FileDialog
+                                                    size="h-40"
+                                                    setValue={form.setValue}
+                                                    name="profile_photo"
+                                                    maxFiles={1}
+                                                    maxSize={1024 * 1024 * 0.8}
+                                                    accept={{ "image/*": [] }}
+                                                    isUploading={false}
+                                                    disabled={false}
+                                                  >
+                                                    <Button
+                                                      variant="outline"
+                                                      style={{
+                                                        backgroundImage: `url(${urlify(eventState?.userInfo?.profile_photo)})`,
+                                                      }}
+                                                      className="relative flex aspect-[1/1] h-40 w-40 flex-col items-center justify-center rounded-xl bg-cover bg-no-repeat"
+                                                    >
+                                                      <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
+                                                        <LuImage className="h-5 w-5" />
+                                                      </div>
+                                                    </Button>
+                                                  </FileDialog>
+                                                </FormControl>
+                                              </div>
+                                            </FormItem>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="flex flex-col gap-4 md:mt-[20px] md:flex-row">
+                                        <div className="flex flex-1 flex-col space-y-3">
+                                          <FormField
+                                            control={form.control}
+                                            name="name"
+                                            render={({ field }) => (
+                                              <FormItem>
+                                                <FormLabel className="text-[#FFFFFFC9]">
+                                                  Name
+                                                </FormLabel>
+                                                <FormControl>
+                                                  <Input
+                                                    className="text-white outline-none dark:border dark:border-gray-600/30"
+                                                    {...field}
+                                                  />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                          <FormField
+                                            control={form.control}
+                                            name="bio"
+                                            render={({ field }) => (
+                                              <FormItem>
+                                                <FormLabel className="text-[#FFFFFFC9]">
+                                                  Bio
+                                                </FormLabel>
+                                                <FormControl>
+                                                  <Textarea
+                                                    className="h-[100px] resize-none text-[16px] text-white outline-none placeholder:text-[14px] dark:border-gray-600/30 dark:bg-[#131517]  placeholder:dark:text-[#FFFFFFC9]"
+                                                    placeholder="Share a litte about background amd interest."
+                                                    {...field}
+                                                  />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                        </div>
+                                        <div className="flex flex-1 flex-col space-y-3">
+                                          <div className="text-[14px] text-[#FFFFFFC9]">
+                                            Socials
+                                          </div>
+                                          <FormField
+                                            control={form.control}
+                                            name="instagram"
+                                            render={({ field }) => (
+                                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                                <LuInstagram className="text-[#FFFFFF80]" />
+                                                <FormControl>
+                                                  <Input
+                                                    className="text-white outline-none dark:border dark:border-gray-600/30"
+                                                    {...field}
+                                                  />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                          <FormField
+                                            control={form.control}
+                                            name="facebook"
+                                            render={({ field }) => (
+                                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                                <LuFacebook className="text-[#FFFFFF80]" />
+                                                <FormControl>
+                                                  <Input
+                                                    className="text-white outline-none dark:border dark:border-gray-600/30"
+                                                    {...field}
+                                                  />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                          <FormField
+                                            control={form.control}
+                                            name="twitter"
+                                            render={({ field }) => (
+                                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                                <LuTwitter className="text-[#FFFFFF80]" />
+                                                <FormControl>
+                                                  <Input
+                                                    className="text-white outline-none dark:border dark:border-gray-600/30"
+                                                    {...field}
+                                                  />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                          <FormField
+                                            control={form.control}
+                                            name="website"
+                                            render={({ field }) => (
+                                              <FormItem className="flex items-center space-x-2 space-y-0">
+                                                <LuGlobe className="text-[#FFFFFF80]" />
+                                                <FormControl>
+                                                  <Input
+                                                    className="text-white outline-none dark:border dark:border-gray-600/30 dark:placeholder:text-[#4f4f4f]"
+                                                    placeholder="Your Website"
+                                                    {...field}
+                                                  />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </DialogTitle>
+
+                                  <div>
+                                    {!submittingLoading && (
+                                      <Button type="submit">
+                                        Save Changes
+                                      </Button>
+                                    )}
+                                    {submittingLoading && (
+                                      <LuLoader className="mx-auto h-6 w-6 animate-spin text-white" />
+                                    )}
+                                  </div>
+                                </form>
+                              </Form>
+                            </DialogHeader>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                    )}
                 </div>
               </div>
             </div>
