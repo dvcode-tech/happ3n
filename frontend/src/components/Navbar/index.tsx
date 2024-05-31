@@ -83,7 +83,13 @@ const Navbar: NextPage = () => {
                 <>
                   <DropdownMenuLabel className="flex items-center gap-2 font-normal">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src="/assets/logo/icon.png" className="" />
+                      <AvatarImage
+                        src={
+                          urlify(ctxAccount?.profile_photo!) ||
+                          "/assets/logo/icon.png"
+                        }
+                        className=""
+                      />
                     </Avatar>
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">

@@ -587,7 +587,7 @@ const Create: NextPage = () => {
                                 </div>
                               </div>
                               <div className="flex items-center gap-2 text-gray-400">
-                                {Number(capacity) <= 0 ? "Unlimited" : capacity}{" "}
+                                {Number(capacity) <= 0 ? "" : capacity}{" "}
                                 <LuPenLine />
                               </div>
                             </div>
