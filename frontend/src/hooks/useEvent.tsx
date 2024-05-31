@@ -27,11 +27,20 @@ export default function useEvent() {
         guestGoingStatus: item.going_status,
       }));
 
-      const filterUpcoming = [...allEvent, ...allJoinedEvent]
+      const combinedEvent = Object.values(
+        [...allEvent, ...allJoinedEvent].reduce((acc: any, obj: any) => {
+          if (!acc[obj.id] || obj.isOwned) {
+            acc[obj.id] = obj;
+          }
+          return acc;
+        }, {}),
+      );
+
+      const filterUpcoming = combinedEvent
         ?.filter((event: any) => event.end_at >= Date.now())
         .sort((a: any, b: any) => a.start_at - b.start_at);
 
-      const filterPast = [...allEvent, ...allJoinedEvent]
+      const filterPast = combinedEvent
         ?.filter((event: any) => event.end_at < Date.now())
         .sort((a: any, b: any) => a.start_at - b.start_at);
 
