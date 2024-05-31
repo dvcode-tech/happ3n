@@ -4,6 +4,7 @@ import { NextPage } from "next";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
+import * as clipboard from "clipboard-polyfill";
 
 import {
   LuArrowUpRight,
@@ -19,6 +20,7 @@ import {
   LuX,
   LuImage,
   LuLoader,
+  LuCopy,
 } from "react-icons/lu";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -435,11 +437,34 @@ const ManageEvent: NextPage = () => {
                       >
                         <div className="absolute bottom-2 left-1/2 mx-auto flex w-[355px] -translate-x-1/2 justify-between rounded-md bg-[#13151752] py-2 backdrop-blur-md">
                           <div className="flex items-center gap-1 pl-4 text-[14px] text-[#FFFFFFCC]">
-                            {`happ3n/${slug}`} <LuArrowUpRight />
+                            {`${data?.slug}`} <LuArrowUpRight />
                           </div>
-                          <div className="pr-4 text-[14px] uppercase text-[#FFFFFF7A]">
+
+                          <button
+                            id="copy"
+                            // data-clipboard-text={`${location.origin}/event?q=${data?.slug}`}
+
+                            onClick={() => {
+                              clipboard.writeText(
+                                `${location.origin}/event?q=${data?.slug}`,
+                              );
+                              toast({
+                                variant: "default",
+                                title: "Copied",
+                                duration: 2000,
+                              });
+                            }}
+                            className="pr-4 text-[14px] uppercase text-[#FFFFFF7A]"
+                          >
+                            <LuCopy />
+                          </button>
+
+                          {/* <Button
+                            data-copy
+                            className="pr-4 text-[14px] uppercase text-[#FFFFFF7A]"
+                          >
                             Copy
-                          </div>
+                          </Button> */}
                         </div>
                       </div>
                     </div>
