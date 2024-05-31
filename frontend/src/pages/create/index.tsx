@@ -58,14 +58,22 @@ import { useHappenContext } from "@/context/HappenContext";
 import { useRouter } from "next/router";
 
 const formSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().refine((value) => value !== "", {
+    message: "This is required",
+  }),
   slug: z.string(),
   start_at: z.string(),
   end_at: z.string(),
-  location_type: z.string().min(1),
-  location: z.string().min(1),
+  location_type: z.string().refine((value) => value !== "", {
+    message: "This is required",
+  }),
+  location: z.string().refine((value) => value !== "", {
+    message: "This is required",
+  }),
   required_approval: z.boolean(),
-  capacity: z.string(),
+  capacity: z.string().refine((value) => value !== "", {
+    message: "This is required",
+  }),
   banner: z
     .unknown()
     .refine((val) => {
@@ -77,7 +85,9 @@ const formSchema = z.object({
     .nullable()
     .default(null),
   type: z.string(),
-  description: z.string().min(1),
+  description: z.string().refine((value) => value !== "", {
+    message: "This is required",
+  }),
 });
 
 const Create: NextPage = () => {
@@ -241,6 +251,7 @@ const Create: NextPage = () => {
               <div className="flex flex-row gap-1.5">
                 <FormControl>
                   <FileDialog
+                    size="h-80"
                     setValue={form.setValue}
                     name="banner"
                     maxFiles={1}
@@ -259,6 +270,7 @@ const Create: NextPage = () => {
                     </Button>
                   </FileDialog>
                 </FormControl>
+                <FormMessage />
               </div>
             </FormItem>
 
@@ -328,6 +340,7 @@ const Create: NextPage = () => {
                           {...field}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -367,6 +380,7 @@ const Create: NextPage = () => {
                                     }}
                                   />
                                 </FormControl>
+                                <FormMessage />
                               </div>
                             </FormItem>
                           )}
@@ -422,7 +436,7 @@ const Create: NextPage = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <div className="flex h-full flex-1">
+                          <div className="flex flex-1">
                             <Select
                               onValueChange={(e) => {
                                 field.onChange(e);
@@ -457,6 +471,7 @@ const Create: NextPage = () => {
                             </Select>
                           </div>
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -465,7 +480,7 @@ const Create: NextPage = () => {
                     control={form.control}
                     name="location"
                     render={({ field }) => (
-                      <FormItem className="flex w-full flex-1">
+                      <FormItem className="flex w-full flex-1 flex-col">
                         <FormControl>
                           <div className="flex h-full w-full flex-1">
                             <input
@@ -475,6 +490,7 @@ const Create: NextPage = () => {
                             />
                           </div>
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -528,6 +544,7 @@ const Create: NextPage = () => {
                         </div>
                       </Dialog>
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -592,6 +609,7 @@ const Create: NextPage = () => {
                               </div>
                             </div>
                           </DialogTrigger>
+                          <FormMessage />
                           <DialogContent className="max-w-[340px] overflow-hidden rounded-3xl bg-black/60 p-0">
                             <DialogHeader className="space-y-0">
                               <DialogDescription className="flex flex-col gap-2 bg-[#1D2025]/40 px-4 pt-5 backdrop-blur-md">
