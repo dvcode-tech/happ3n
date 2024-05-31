@@ -59,9 +59,11 @@ const Navbar: NextPage = () => {
       <div className="flex items-center gap-4 text-[14px] font-medium text-[#FFFFFFA3]">
         <div className="hidden md:block">{formatTime(currentTime)} GMT+8</div>
         {/* <button>Explore Events</button> */}
-        <Link href="/create" className="text-[14px]">
-          Create Event
-        </Link>
+        {ctxAccount && (
+          <Link href="/create" className="text-[14px]">
+            Create Event
+          </Link>
+        )}
 
         {isAuthenticated ? (
           <DropdownMenu>
@@ -77,33 +79,37 @@ const Navbar: NextPage = () => {
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="z-[999] w-56 dark:border-[#FFFFFF14] dark:bg-[#1C1E20]">
-              <DropdownMenuLabel className="flex items-center gap-2 font-normal">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/assets/logo/icon.png" className="" />
-                </Avatar>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    {ctxAccount?.name}
-                  </p>
-                  <p className="text-muted-foreground text-xs leading-none">
-                    {ctxAccount?.email}
-                  </p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator className="dark:bg-[#FFFFFF14]" />
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  onClick={() => {
-                    router.push(`/user?p=${ctxAccount?.username}`);
-                  }}
-                >
-                  <User className="mr-2 h-4 w-4" />
-                  <span>View Profile</span>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator className="dark:bg-[#FFFFFF14]" />
+              {ctxAccount && (
+                <>
+                  <DropdownMenuLabel className="flex items-center gap-2 font-normal">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src="/assets/logo/icon.png" className="" />
+                    </Avatar>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {ctxAccount?.name}
+                      </p>
+                      <p className="text-muted-foreground text-xs leading-none">
+                        {ctxAccount?.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="dark:bg-[#FFFFFF14]" />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        router.push(`/user?p=${ctxAccount?.username}`);
+                      }}
+                    >
+                      <User className="mr-2 h-4 w-4" />
+                      <span>View Profile</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator className="dark:bg-[#FFFFFF14]" />
+                </>
+              )}
               <DropdownMenuItem>
-                <LogoutButton />
+                <LogoutButton className="w-full" />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

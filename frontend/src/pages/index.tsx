@@ -5,10 +5,11 @@ import Navbar from "@/components/Navbar";
 import { useHappenContext } from "@/context/HappenContext";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import { LoginButton } from "@/components/AuthButton";
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const { restoreSession, ctxAccount } = useHappenContext();
+  const { restoreSession, ctxAccount, isAuthenticated } = useHappenContext();
 
   useEffect(() => {
     if (!ctxAccount) {
@@ -42,9 +43,21 @@ const Home: NextPage = () => {
                 Set up an event page, invite friends and sell tickets. Host a
                 memorable event today.
               </p>
-              <button className="mx-auto mt-[32px] rounded-lg bg-white px-4 py-2 text-[16px] md:mx-0 md:text-[18px]">
-                Create Your First Event
-              </button>
+              {ctxAccount && (
+                <button
+                  onClick={() => {
+                    router.push("/create");
+                  }}
+                  className="mx-auto mt-[32px] rounded-lg bg-white px-4 py-2 text-[16px] md:mx-0 md:text-[18px]"
+                >
+                  Create Your First Event
+                </button>
+              )}
+              {!isAuthenticated && (
+                <LoginButton className="mx-auto mt-[32px] rounded-lg bg-white px-4 py-2 text-[16px] md:mx-0 md:text-[18px]">
+                  Create Your First Event
+                </LoginButton>
+              )}
             </div>
           </div>
 

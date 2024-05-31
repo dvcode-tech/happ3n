@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
 import path from "path";
@@ -54,6 +54,7 @@ import { FileDialog } from "@/components/ui/file-dialog";
 import { useRestActor } from "@bundly/ares-react";
 import { toast } from "@/components/ui/use-toast";
 import { useHappenContext } from "@/context/HappenContext";
+import { useRouter } from "next/router";
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -79,7 +80,8 @@ const formSchema = z.object({
 });
 
 const Create: NextPage = () => {
-  const { backend } = useHappenContext();
+  const router = useRouter();
+  const { backend, ctxAccount } = useHappenContext();
   const [locationValue, setLocationValue] = useState(
     "Offline Location or Virtual Link",
   );
@@ -205,6 +207,12 @@ const Create: NextPage = () => {
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     await onSubmit(values);
   };
+
+  useEffect(() => {
+    if (!ctxAccount) {
+      router.push("/");
+    }
+  }, [ctxAccount]);
 
   return (
     <div className="min-h-screen overflow-hidden bg-gradient-to-b from-[#131517] from-10% via-[#00071C] via-50% to-[#00071C] to-90% bg-fixed">
