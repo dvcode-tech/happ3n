@@ -40,6 +40,7 @@ interface FileDialogProps<
   isUploading?: boolean;
   disabled?: boolean;
   showSelected?: boolean;
+  size?: string;
 }
 
 export function FileDialog<TFieldValues extends FieldValues>({
@@ -55,6 +56,7 @@ export function FileDialog<TFieldValues extends FieldValues>({
   disabled = false,
   className,
   children,
+  size = "md:h-72 lg:h-80 h-96",
   showSelected = true,
   ...props
 }: FileDialogProps<TFieldValues>) {
@@ -136,7 +138,7 @@ export function FileDialog<TFieldValues extends FieldValues>({
               </div>
               <object
                 data={file.preview}
-                className="checkers-bg aspect-[1/1] h-[358px] items-center justify-center rounded-xl md:h-[280px] lg:h-[330px]"
+                className={`checkers-bg items-center justify-center rounded-xl object-scale-down ${size}`}
                 type={file.type}
               />
             </div>

@@ -1,10 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
-// TODO: Add update profile
 
 import { NextPage } from "next";
 import Header from "@/components/Header";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -15,25 +18,85 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   LuArrowUpRight,
   LuLoader,
   LuMapPin,
   LuPlus,
-  LuX,
+  LuInstagram,
+  LuTwitter,
+  LuFacebook,
+  LuGlobe,
   LuVideo,
   LuChevronsRight,
+  LuImage,
 } from "react-icons/lu";
+import { FaTiktok } from "react-icons/fa";
 import { useHappenContext } from "@/context/HappenContext";
 import useUserEvent from "@/hooks/useUserEvent";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { formatDate, urlify } from "@/lib/utils";
 
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { FileDialog } from "@/components/ui/file-dialog";
+import path from "path";
+
+const formSchema = z.object({
+  name: z.string().optional(),
+  bio: z.string().optional(),
+  facebook: z.string().optional(),
+  twitter: z.string().optional(),
+  tiktok: z.string().optional(),
+  instagram: z.string().optional(),
+  website: z.string().optional(),
+  profile_photo: z
+    .unknown()
+    .refine((val) => {
+      if (!Array.isArray(val)) return false;
+      if (val.some((file) => !(file instanceof File))) return false;
+      return true;
+    }, "Must be an array of File")
+    .optional()
+    .nullable()
+    .default(null),
+  banner_photo: z
+    .unknown()
+    .refine((val) => {
+      if (!Array.isArray(val)) return false;
+      if (val.some((file) => !(file instanceof File))) return false;
+      return true;
+    }, "Must be an array of File")
+    .optional()
+    .nullable()
+    .default(null),
+  // banner_photo: z.string().optional(),
+});
+
 const User: NextPage = () => {
   const router = useRouter();
-  const { ctxAccount, isAuthenticated } = useHappenContext();
+  const { ctxAccount, isAuthenticated, backend } = useHappenContext();
   const [eventState, eventFunction] = useUserEvent();
   const slug = router?.query?.p;
 
@@ -41,6 +104,121 @@ const User: NextPage = () => {
     if (!slug) return;
     eventFunction.fetchEvents?.(slug);
   }, [slug]);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      bio: "",
+      facebook: "facebook.com/",
+      twitter: "twitter.com/",
+      tiktok: "",
+      instagram: "instagram.com/",
+      website: "",
+      profile_photo: "",
+      banner_photo: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      let banner_url = null;
+      let cover_url = null;
+
+      const handleUploadProfile = async () => {
+        //@ts-ignore
+        if (!values.profile_photo?.[0]) return null;
+
+        const file = (values.profile_photo as unknown as any)[0];
+        const reference = (
+          new Date().getTime().toString(36) +
+          Math.random().toString(36).slice(2)
+        ).toLowerCase();
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve({
+              filename: `${reference}${path.extname(file.name)}`,
+              contents: (reader.result as any)?.split(",")[1],
+            });
+          };
+          reader.onerror = (error) => {
+            reject(error);
+          };
+          reader.readAsDataURL(file);
+        });
+      };
+      const handleUploadCover = async () => {
+        //@ts-ignore
+        if (!values.banner_photo?.[0]) return null;
+
+        const file = (values.banner_photo as unknown as any)[0];
+        const reference = (
+          new Date().getTime().toString(36) +
+          Math.random().toString(36).slice(2)
+        ).toLowerCase();
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve({
+              filename: `${reference}${path.extname(file.name)}`,
+              contents: (reader.result as any)?.split(",")[1],
+            });
+          };
+          reader.onerror = (error) => {
+            reject(error);
+          };
+          reader.readAsDataURL(file);
+        });
+      };
+
+      const bannerRessult = await handleUploadProfile();
+      const coverResult = await handleUploadCover();
+
+      if (bannerRessult) {
+        const imagePost = await backend.post(
+          "/upload",
+          { file: bannerRessult },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+        banner_url = (imagePost.data as any)?.data;
+      }
+
+      if (coverResult) {
+        const imagePost = await backend.post(
+          "/upload",
+          { file: coverResult },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+        cover_url = (imagePost.data as any)?.data;
+      }
+
+      const dataSubmit = {
+        name: values.name,
+        bio: values.bio,
+        facebook: values.facebook,
+        twitter: values.twitter,
+        tiktok: values.tiktok,
+        instagram: values.instagram,
+        website: values.website,
+        profile_photo: banner_url,
+        banner_photo: cover_url,
+      };
+      console.log(dataSubmit);
+    } catch (e: any) {}
+  }
+
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    await onSubmit(values);
+  };
 
   const dialogClose = () => {
     document.getElementById("closeDialog")?.click();
@@ -89,13 +267,221 @@ const User: NextPage = () => {
                     />
                   </div>
                   <div className="flex items-end justify-end pt-1.5">
-                    <Button
-                      variant="outline"
-                      size={"sm"}
-                      className="flex w-[110px] border border-white bg-gray-800/40 px-[10px] py-2 text-[12px] md:px-[14px] md:py-[10px] md:text-[16px] dark:bg-transparent dark:text-[#FFFFFF]"
-                    >
-                      Edit Profile
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger>
+                        <Button
+                          variant="outline"
+                          size={"sm"}
+                          className="flex w-[110px] border border-white bg-gray-800/40 px-[10px] py-2 text-[12px] md:px-[14px] md:py-[10px] md:text-[16px] dark:bg-transparent dark:text-[#FFFFFF]"
+                        >
+                          Edit Profile
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="z-[999] max-h-[90vh] overflow-y-auto border border-gray-600/30 bg-[#1F1E21]/60 px-5 py-3 backdrop-blur-md sm:max-w-[480px] md:max-w-[700px]">
+                        <DialogHeader className="flex flex-col space-y-[80px]">
+                          <Form {...form}>
+                            <form
+                              onSubmit={form.handleSubmit(handleSubmit)}
+                              className="space-y-8"
+                            >
+                              <DialogTitle className="relative text-left">
+                                <div className="mb-[20px] flex flex-col gap-2">
+                                  <h1 className="text-left text-[20px] text-[#FFFFFF]">
+                                    Your Profile
+                                  </h1>
+                                  <p className="text-left text-[16px] font-normal text-[#D2D4D7]">
+                                    Choose how you are displayed as a host or
+                                    guest.
+                                  </p>
+                                </div>
+                                <div className="flex flex-col gap-4">
+                                  <div className="flex flex-col items-center gap-4">
+                                    <div className="flex w-full flex-col gap-2">
+                                      <div className="text-[14px] text-[#FFFFFFC9]">
+                                        Cover photo
+                                      </div>
+                                      <FormItem>
+                                        <div className="flex flex-row gap-1.5">
+                                          <FormControl>
+                                            <FileDialog
+                                              size="h-44"
+                                              setValue={form.setValue}
+                                              name="banner_photo"
+                                              maxFiles={1}
+                                              maxSize={1024 * 1024 * 0.8}
+                                              accept={{ "image/*": [] }}
+                                              isUploading={false}
+                                              disabled={false}
+                                            >
+                                              <Button
+                                                variant="outline"
+                                                className="relative flex h-[187px] max-w-full flex-1 flex-col items-center justify-center rounded-xl bg-[url('/assets/placeholder/cover.png')] bg-cover bg-no-repeat"
+                                              >
+                                                <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
+                                                  <LuImage className="h-5 w-5" />
+                                                </div>
+                                              </Button>
+                                            </FileDialog>
+                                          </FormControl>
+                                        </div>
+                                      </FormItem>
+                                    </div>
+
+                                    <div className="flex w-full flex-1 flex-col gap-2">
+                                      <div className="text-[14px] text-[#FFFFFFC9]">
+                                        Profile photo
+                                      </div>
+                                      <div className="flex items-center justify-center">
+                                        <FormItem>
+                                          <div className="flex flex-row gap-1.5">
+                                            <FormControl>
+                                              <FileDialog
+                                                size="h-40"
+                                                setValue={form.setValue}
+                                                name="profile_photo"
+                                                maxFiles={1}
+                                                maxSize={1024 * 1024 * 0.8}
+                                                accept={{ "image/*": [] }}
+                                                isUploading={false}
+                                                disabled={false}
+                                              >
+                                                <Button
+                                                  variant="outline"
+                                                  className="relative flex aspect-[1/1] h-40 w-40 flex-col items-center justify-center rounded-xl bg-[url('/assets/placeholder/placeholder_banner.png')] bg-cover bg-no-repeat"
+                                                >
+                                                  <div className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full border border-black bg-white hover:text-gray-700">
+                                                    <LuImage className="h-5 w-5" />
+                                                  </div>
+                                                </Button>
+                                              </FileDialog>
+                                            </FormControl>
+                                          </div>
+                                        </FormItem>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col gap-4 md:mt-[20px] md:flex-row">
+                                    <div className="flex flex-1 flex-col space-y-3">
+                                      <FormField
+                                        control={form.control}
+                                        name="name"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel className="text-[#FFFFFFC9]">
+                                              Name
+                                            </FormLabel>
+                                            <FormControl>
+                                              <Input
+                                                className="text-white outline-none dark:border dark:border-gray-600/30"
+                                                {...field}
+                                              />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={form.control}
+                                        name="bio"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel className="text-[#FFFFFFC9]">
+                                              Bio
+                                            </FormLabel>
+                                            <FormControl>
+                                              <Textarea
+                                                className="h-[100px] resize-none text-[16px] text-white outline-none placeholder:text-[14px] dark:border-gray-600/30 dark:bg-[#131517]  placeholder:dark:text-[#FFFFFFC9]"
+                                                placeholder="Share a litte about background amd interest."
+                                                {...field}
+                                              />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                    </div>
+                                    <div className="flex flex-1 flex-col space-y-3">
+                                      <div className="text-[14px] text-[#FFFFFFC9]">
+                                        Socials
+                                      </div>
+                                      <FormField
+                                        control={form.control}
+                                        name="instagram"
+                                        render={({ field }) => (
+                                          <FormItem className="flex items-center space-x-2 space-y-0">
+                                            <LuInstagram className="text-[#FFFFFF80]" />
+                                            <FormControl>
+                                              <Input
+                                                className="text-white outline-none dark:border dark:border-gray-600/30"
+                                                {...field}
+                                              />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={form.control}
+                                        name="facebook"
+                                        render={({ field }) => (
+                                          <FormItem className="flex items-center space-x-2 space-y-0">
+                                            <LuFacebook className="text-[#FFFFFF80]" />
+                                            <FormControl>
+                                              <Input
+                                                className="text-white outline-none dark:border dark:border-gray-600/30"
+                                                {...field}
+                                              />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={form.control}
+                                        name="twitter"
+                                        render={({ field }) => (
+                                          <FormItem className="flex items-center space-x-2 space-y-0">
+                                            <LuTwitter className="text-[#FFFFFF80]" />
+                                            <FormControl>
+                                              <Input
+                                                className="text-white outline-none dark:border dark:border-gray-600/30"
+                                                {...field}
+                                              />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={form.control}
+                                        name="website"
+                                        render={({ field }) => (
+                                          <FormItem className="flex items-center space-x-2 space-y-0">
+                                            <LuGlobe className="text-[#FFFFFF80]" />
+                                            <FormControl>
+                                              <Input
+                                                className="text-white outline-none dark:border dark:border-gray-600/30 dark:placeholder:text-[#4f4f4f]"
+                                                placeholder="Your Website"
+                                                {...field}
+                                              />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </DialogTitle>
+
+                              <div>
+                                <Button type="submit">Save Changes</Button>
+                              </div>
+                            </form>
+                          </Form>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               </div>
@@ -226,12 +612,6 @@ const User: NextPage = () => {
                                 <SheetHeader className="sticky">
                                   <SheetTitle className="border-b border-gray-600/30">
                                     <div className="flex flex-row items-center gap-3 p-[16px] pb-4">
-                                      {/* <a
-                                      href="#"
-                                      className="rounded-md bg-gray-500/50 px-4 py-1 text-[14px] text-[#FFFFFFA3] hover:bg-gray-400"
-                                    >
-                                      Copy Link
-                                    </a> */}
                                       <LuChevronsRight
                                         className="text-xl"
                                         onClick={() => dialogClose()}
