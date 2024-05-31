@@ -20,6 +20,7 @@ import { Avatar, AvatarImage } from "../ui/avatar";
 import React from "react";
 import { useRouter } from "next/router";
 import { useHappenContext } from "@/context/HappenContext";
+import { urlify } from "@/lib/utils";
 
 const formatTime = (date: Date) => {
   return date.toLocaleTimeString("en-US", {
@@ -66,7 +67,13 @@ const Navbar: NextPage = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="h-6 w-6 rounded-full">
-                <AvatarImage src="/assets/logo/icon.png" className="" />
+                <AvatarImage
+                  src={
+                    urlify(ctxAccount?.profile_photo!) ||
+                    "/assets/logo/icon.png"
+                  }
+                  className=""
+                />
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="z-[999] w-56 dark:border-[#FFFFFF14] dark:bg-[#1C1E20]">
@@ -76,10 +83,10 @@ const Navbar: NextPage = () => {
                 </Avatar>
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">
-                    Jirumaa Dev
+                    {ctxAccount?.name}
                   </p>
                   <p className="text-muted-foreground text-xs leading-none">
-                    dev.jirumaa@happen.today
+                    {ctxAccount?.email}
                   </p>
                 </div>
               </DropdownMenuLabel>

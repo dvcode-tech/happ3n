@@ -103,7 +103,9 @@ const Ticket: NextPage = () => {
                   : ""}
                 {formatDate(data?.end_at).time} GMT+8
               </p>
-              <p>{JSON.parse(data?.location || "{}")?.location}</p>
+              {JSON.parse(data?.location || "{}")?.type !== "VIRTUAL" && (
+                <p>{JSON.parse(data?.location || "{}")?.location}</p>
+              )}
             </div>
           </div>
 

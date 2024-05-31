@@ -222,17 +222,9 @@ const EventPage = () => {
 
           {data?.guests_list?.length > 0 && (
             <div>
-              <h3 className="mb-[16px] border-b border-gray-600/30 pb-[8px] text-[14px] font-semibold text-[#818384]">
+              <h3 className="mb-[16px] border-gray-600/30 pb-[8px] text-[14px] font-semibold text-[#818384]">
                 {data?.guests_list?.length} Going
               </h3>
-              <div className="flex items-center gap-2">
-                <img
-                  className="h-6 rounded-full"
-                  src="assets/logo/icon.png"
-                  alt=""
-                />
-                <p className="text-[16px] text-[#FFFFFF]">Jirumaa</p>
-              </div>
             </div>
           )}
         </div>
@@ -297,9 +289,12 @@ const EventPage = () => {
                       {JSON.parse(data?.location || "{}")?.type}{" "}
                       <LuArrowUpRight className="text-[#818384]" />
                     </div>
-                    <div className="text-[14px] font-medium text-[#818384]">
-                      {JSON.parse(data?.location || "{}")?.location}
-                    </div>
+                    {(JSON.parse(data?.location || "{}")?.type !== "VIRTUAL" ||
+                      status === "APPROVED") && (
+                      <div className="text-[14px] font-medium text-[#818384]">
+                        {JSON.parse(data?.location || "{}")?.location}
+                      </div>
+                    )}
                   </a>
                 </div>
               </div>
@@ -488,9 +483,11 @@ const EventPage = () => {
                 <h3 className="text-[18px] leading-6 text-[#FFFFFF]">
                   {JSON.parse(data?.location || "{}")?.type}
                 </h3>
-                <p className="text-[14px] leading-6 text-[#FFFFFFC9]">
-                  {JSON.parse(data?.location || "{}")?.location}
-                </p>
+                {JSON.parse(data?.location || "{}")?.type !== "VIRTUAL" && (
+                  <p className="text-[14px] leading-6 text-[#FFFFFFC9]">
+                    {JSON.parse(data?.location || "{}")?.location}
+                  </p>
+                )}
                 {/* {JSON.parse(data?.location || "{}")?.type !== "VIRTUAL" && (
                   <iframe
                     className="mt-[16px] aspect-[2/1] w-full rounded-md bg-gray-400 invert-[90%] filter"
@@ -501,34 +498,6 @@ const EventPage = () => {
                   ></iframe>
                 )} */}
               </div>
-
-              {/* <div>
-                <h3 className="mb-[16px] border-b border-gray-600/30 pb-[8px] text-[14px] font-medium text-[#818384]">
-                  Hosted by
-                </h3>
-                <div className="flex items-center gap-2">
-                  <img
-                    className="h-6 rounded-full"
-                    src="assets/logo/icon.png"
-                    alt=""
-                  />
-                  <p className="text-[16px] text-[#FFFFFF]">Jirumaa</p>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="mb-[16px] border-b border-gray-600/30 pb-[8px] text-[14px] font-semibold text-[#818384]">
-                  {"100 "} Going
-                </h3>
-                <div className="flex items-center gap-2">
-                  <img
-                    className="h-6 rounded-full"
-                    src="assets/logo/icon.png"
-                    alt=""
-                  />
-                  <p className="text-[16px] text-[#FFFFFF]">Jirumaa</p>
-                </div>
-              </div> */}
             </div>
           </div>
         </div>

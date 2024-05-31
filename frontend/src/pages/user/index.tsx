@@ -186,12 +186,15 @@ const User: NextPage = () => {
                                   ) : (
                                     <LuMapPin className="h-7" />
                                   )}
-                                  <h3 className="line-clamp-1 text-[16px] font-semibold text-[#88898A]">
-                                    {
-                                      JSON.parse(event?.location || "{}")
-                                        ?.location
-                                    }
-                                  </h3>
+                                  {JSON.parse(event?.location || "{}")?.type !==
+                                    "VIRTUAL" && (
+                                    <h3 className="line-clamp-1 text-[16px] font-semibold text-[#88898A]">
+                                      {
+                                        JSON.parse(event?.location || "{}")
+                                          ?.location
+                                      }
+                                    </h3>
+                                  )}
                                 </div>
                                 {event?.isOwned === true && (
                                   <div className="flex items-center pt-1">
@@ -322,13 +325,16 @@ const User: NextPage = () => {
                                             }{" "}
                                             <LuArrowUpRight className="text-[#818384]" />
                                           </div>
-                                          <div className="text-[14px] font-medium text-[#818384]">
-                                            {
-                                              JSON.parse(
-                                                event?.location || "{}",
-                                              )?.location
-                                            }
-                                          </div>
+                                          {JSON.parse(event?.location || "{}")
+                                            ?.type !== "VIRTUAL" && (
+                                            <div className="text-[14px] font-medium text-[#818384]">
+                                              {
+                                                JSON.parse(
+                                                  event?.location || "{}",
+                                                )?.location
+                                              }
+                                            </div>
+                                          )}
                                         </Link>
                                       </div>
                                     </div>
@@ -371,12 +377,15 @@ const User: NextPage = () => {
                                             ?.type
                                         }
                                       </h3>
-                                      <p className="text-[14px] leading-6 text-[#FFFFFFC9]">
-                                        {
-                                          JSON.parse(event?.location || "{}")
-                                            ?.location
-                                        }
-                                      </p>
+                                      {JSON.parse(event?.location || "{}")
+                                        ?.type !== "VIRTUAL" && (
+                                        <p className="text-[14px] leading-6 text-[#FFFFFFC9]">
+                                          {
+                                            JSON.parse(event?.location || "{}")
+                                              ?.location
+                                          }
+                                        </p>
+                                      )}
                                       {/* {JSON.parse(event?.location || "{}")
                                           ?.type !== "VIRTUAL" && (
                                           <iframe
@@ -476,12 +485,15 @@ const User: NextPage = () => {
                                 ) : (
                                   <LuMapPin className="h-7" />
                                 )}
-                                <h3 className="line-clamp-1 text-[16px] font-semibold text-[#88898A]">
-                                  {
-                                    JSON.parse(event?.location || "{}")
-                                      ?.location
-                                  }
-                                </h3>
+                                {JSON.parse(event?.location || "{}")?.type !==
+                                  "VIRTUAL" && (
+                                  <h3 className="line-clamp-1 text-[16px] font-semibold text-[#88898A]">
+                                    {
+                                      JSON.parse(event?.location || "{}")
+                                        ?.location
+                                    }
+                                  </h3>
+                                )}
                               </div>
                               {event?.isOwned === true && (
                                 <div className="flex items-center pt-1">
@@ -606,12 +618,16 @@ const User: NextPage = () => {
                                           }{" "}
                                           <LuArrowUpRight className="text-[#818384]" />
                                         </div>
-                                        <div className="text-[14px] font-medium text-[#818384]">
-                                          {
-                                            JSON.parse(event?.location || "{}")
-                                              ?.location
-                                          }
-                                        </div>
+                                        {JSON.parse(event?.location || "{}")
+                                          ?.type !== "VIRTUAL" && (
+                                          <div className="text-[14px] font-medium text-[#818384]">
+                                            {
+                                              JSON.parse(
+                                                event?.location || "{}",
+                                              )?.location
+                                            }
+                                          </div>
+                                        )}
                                       </Link>
                                     </div>
                                   </div>
@@ -654,12 +670,15 @@ const User: NextPage = () => {
                                           ?.type
                                       }
                                     </h3>
-                                    <p className="text-[14px] leading-6 text-[#FFFFFFC9]">
-                                      {
-                                        JSON.parse(event?.location || "{}")
-                                          ?.location
-                                      }
-                                    </p>
+                                    {JSON.parse(event?.location || "{}")
+                                      ?.type !== "VIRTUAL" && (
+                                      <p className="text-[14px] leading-6 text-[#FFFFFFC9]">
+                                        {
+                                          JSON.parse(event?.location || "{}")
+                                            ?.location
+                                        }
+                                      </p>
+                                    )}
                                     {/* {JSON.parse(event?.location || "{}")
                                         ?.type !== "VIRTUAL" && (
                                         <iframe

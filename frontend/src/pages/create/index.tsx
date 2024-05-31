@@ -421,13 +421,13 @@ const Create: NextPage = () => {
                                   </SelectLabel>
                                   <SelectItem
                                     className="text-[14px] text-white"
-                                    value="Offline Location"
+                                    value="OFFLINE"
                                   >
                                     Offline Location
                                   </SelectItem>
                                   <SelectItem
                                     className="text-[14px] text-white"
-                                    value="Virtual Link"
+                                    value="VIRTUAL"
                                   >
                                     Virtual Link
                                   </SelectItem>

@@ -98,69 +98,6 @@ const formSchema = z.object({
   description: z.string().min(1),
 });
 
-const GuestList = [
-  {
-    name: "Juan Dela Cruz",
-    email: "jdcruz@me.com",
-    status: 0,
-    date: "Sept 20, 2024",
-  },
-  {
-    name: "Jirumaa Dev",
-    email: "dev.jirumaa@me.com",
-    status: 0,
-    date: "Sept 20, 2024",
-  },
-  {
-    name: "Sandugo Dimagiba",
-    email: "jdcruz@me.com",
-    status: 1,
-    date: "Sept 20, 2024",
-  },
-  {
-    name: "Juan Dela Cruz",
-    email: "jdcruz@me.com",
-    status: 0,
-    date: "Sept 20, 2024",
-  },
-  {
-    name: "Juan Dela Cruz",
-    email: "jdcruz@me.com",
-    status: 0,
-    date: "Sept 20, 2024",
-  },
-  {
-    name: "Juan Dela Cruz",
-    email: "jdcruz@me.com",
-    status: 0,
-    date: "Sept 20, 2024",
-  },
-  {
-    name: "Juan Dela Cruz",
-    email: "jdcruz@me.com",
-    status: 0,
-    date: "Sept 20, 2024",
-  },
-  {
-    name: "Juan Dela Cruz",
-    email: "jdcruz@me.com",
-    status: 0,
-    date: "Sept 20, 2024",
-  },
-  {
-    name: "Juan Dela Cruz",
-    email: "jdcruz@me.com",
-    status: 0,
-    date: "Sept 20, 2024",
-  },
-  {
-    name: "Juan Dela Cruz",
-    email: "jdcruz@me.com",
-    status: 0,
-    date: "Sept 20, 2024",
-  },
-];
-
 const ManageEvent: NextPage = () => {
   const { isAuthenticated, ctxAccount, backend } = useHappenContext();
   const router = useRouter();
