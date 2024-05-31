@@ -2,36 +2,36 @@ import { useEffect, useState } from "react";
 
 import { toast, useToast } from "@/components/ui/use-toast";
 import { useHappenContext } from "@/context/HappenContext";
+import { useRouter } from "next/router";
 
-export default function useEvent() {
-  const { backend } = useHappenContext();
+export default function useUserEvent() {
+  const router = useRouter();
+  const { backend, ctxAccount } = useHappenContext();
   const [loading, setLoading] = useState(true);
   const [pastEvent, setPastEvent] = useState<any>([]);
+  const [userInfo, setUserInfo] = useState<any>([]);
   const [upcomingEvent, setUpcomingEvent] = useState<any>([]);
 
-  const fetchEvents = async () => {
+  const fetchEvents = async (username: any) => {
     setLoading(true);
     try {
-      const data: any = (await backend.get("/event/list")).data;
-      const joinedList: any = (await backend.get("/event/joined/list")).data;
+      const userData: any = (await backend.get(`/user/${username}/info`)).data;
+
+      setUserInfo(userData?.data);
+
+      const data: any = (await backend.get(`/user/${username}/event/list`))
+        .data;
 
       const allEvent = data?.data?.map((item: any) => ({
         ...item,
-        isOwned: true,
+        isOwned: item?.user?.username === ctxAccount?.username,
       }));
 
-      const allJoinedEvent = joinedList?.data?.map((item: any) => ({
-        ...item.event,
-        isOwned: false,
-        guestStatus: item.status,
-        guestGoingStatus: item.going_status,
-      }));
-
-      const filterUpcoming = [...allEvent, ...allJoinedEvent]
+      const filterUpcoming = [...allEvent]
         ?.filter((event: any) => event.end_at >= Date.now())
         .sort((a: any, b: any) => a.start_at - b.start_at);
 
-      const filterPast = [...allEvent, ...allJoinedEvent]
+      const filterPast = [...allEvent]
         ?.filter((event: any) => event.end_at < Date.now())
         .sort((a: any, b: any) => a.start_at - b.start_at);
 
@@ -51,6 +51,8 @@ export default function useEvent() {
         description: error,
         duration: 1000,
       });
+
+      router.push("/");
     } finally {
       setLoading(false);
     }
@@ -61,6 +63,7 @@ export default function useEvent() {
       loading,
       pastEvent,
       upcomingEvent,
+      userInfo,
     },
     {
       setLoading,

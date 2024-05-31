@@ -318,7 +318,7 @@ const Home: NextPage = () => {
                                         </div>
                                       </div>
 
-                                      {event.start_at < Date.now() && (
+                                      {event.end_at < Date.now() && (
                                         <div className="container flex flex-col gap-2 rounded-md border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
                                           <img
                                             className="h-10 w-10 rounded-full"
@@ -646,7 +646,7 @@ const Home: NextPage = () => {
                                       </div>
                                     </div>
 
-                                    {event.start_at < Date.now() && (
+                                    {event.end_at < Date.now() && (
                                       <div className="container flex flex-col gap-2 rounded-md border border-gray-600/30 bg-gray-500/20 px-5 py-3 backdrop-blur-md">
                                         <img
                                           className="h-10 w-10 rounded-full"
