@@ -9,6 +9,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useAuth, useRestActor } from "@bundly/ares-react";
 import { useRouter } from "next/router";
 import { useHappenContext } from "@/context/HappenContext";
+import { LuLoader } from "react-icons/lu";
 
 const Signin: NextPage = () => {
   const router = useRouter();
@@ -82,6 +83,7 @@ const Signin: NextPage = () => {
 
       console.log(response.data);
       setIsLoading(false);
+      router.push("/home");
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -148,9 +150,14 @@ const Signin: NextPage = () => {
                 disabled={isLoading}
                 onChange={updateData}
               />
-              <Button className="mt-4" type="submit">
-                Register
-              </Button>
+              {!isLoading && (
+                <Button className="mt-4" type="submit">
+                  Register
+                </Button>
+              )}
+              {isLoading && (
+                <LuLoader className="mx-auto mt-4 h-6 w-6 animate-spin text-white" />
+              )}
             </form>
           </div>
         </div>

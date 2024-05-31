@@ -17,7 +17,7 @@ import {
 import slugify from "react-slugify";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { date, z } from "zod";
+import { ZodNullableType, date, z } from "zod";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 
@@ -123,9 +123,12 @@ const Create: NextPage = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       setSubmittingLoading(true);
+
+      let banner_url = "https://i.imgur.com/XkHp9zo.png";
+
       const handleUpload = async () => {
         // @ts-ignore
-        if (!values.banner[0]) return;
+        if (!values.banner?.[0]) return null;
         const file = (values.banner as unknown as any)[0];
 
         const reference = (
@@ -150,15 +153,18 @@ const Create: NextPage = () => {
 
       const bannerRessult = await handleUpload();
 
-      const imagePost = await backend.post(
-        "/upload",
-        { file: bannerRessult },
-        {
-          headers: {
-            "Content-Type": "application/json",
+      if (bannerRessult) {
+        const imagePost = await backend.post(
+          "/upload",
+          { file: bannerRessult },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
           },
-        },
-      );
+        );
+        banner_url = (imagePost.data as any)?.data;
+      }
 
       const slug = slugify(values.name);
 
@@ -171,7 +177,7 @@ const Create: NextPage = () => {
 
       const data = {
         type: Number(type),
-        banner: (imagePost.data as any)?.data,
+        banner: banner_url,
         name: values.name,
         slug: slug,
         start_at: Number(new Date(startAt).getTime()),
